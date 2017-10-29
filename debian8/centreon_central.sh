@@ -585,7 +585,7 @@ cd ${DL_DIR}
 
 function main () {
 echo "
-================| Install details v1.03 |============================
+================| Centreon Central Install details $VERSION_BATCH |============
                   MariaDB    : ${MARIADB_VER}
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
