@@ -497,7 +497,7 @@ if [[ -e centreon-web-${CENTREON_VER}.tar.gz ]]
 fi
 
 groupadd -g 6000 ${CENTREON_GROUP}
-useradd -u 6000 -g ${CENTREON_GROUP} -m -r -d ${INSTALL_DIR}/centreon -c "Centreon Web user" -s /bin/bash ${CENTREON_USER}
+useradd -u 6000 -g ${CENTREON_GROUP} -m -r -d /var/lib/centreon -c "Centreon Web user" -s /bin/bash ${CENTREON_USER}
 usermod -aG ${CENTREON_GROUP} ${ENGINE_USER}
 
 
