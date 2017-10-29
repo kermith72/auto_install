@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.00
-# 21/06/2017
+# v 1.01
+# 05/07/2017
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -11,7 +11,7 @@ CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.2"
 ENGINE_VER="1.7.2"
 PLUGIN_VER="2.2"
-BROKER_VER="3.0.7"
+BROKER_VER="3.0.8"
 CENTREON_VER="2.8.9"
 # MariaDB Series
 MARIADB_VER='10.0'
