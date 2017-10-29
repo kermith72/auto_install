@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.01
-# 05/07/2017
+# v 1.02
+# 04/09/2017
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -12,7 +12,7 @@ CONNECTOR_VER="1.1.2"
 ENGINE_VER="1.7.2"
 PLUGIN_VER="2.2"
 BROKER_VER="3.0.8"
-CENTREON_VER="2.8.9"
+CENTREON_VER="2.8.12"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -25,16 +25,16 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgets
-WIDGET_HOST_VER="1.5.2"
-WIDGET_HOSTGROUP_VER="1.3.0"
-WIDGET_SERVICE_VER="1.5.3"
-WIDGET_SERVICEGROUP_VER="1.3.1"
+WIDGET_HOST_VER="1.6.0"
+WIDGET_HOSTGROUP_VER="1.6.0"
+WIDGET_SERVICE_VER="1.6.0"
+WIDGET_SERVICEGROUP_VER="1.6.0"
 WIDGET_GRID_MAP_VER="1.0.0"
 WIDGET_TOP_CPU_VER="1.1.1"
 WIDGET_TOP_MEMORY_VER="1.1.1"
 WIDGET_TACTICAL_OVERVIEW_VER="1.0.1"
 WIDGET_HTTP_LOADER_VER="1.0.0"
-WIDGET_ENGINE_STATUS_VER="1.0.0"
+WIDGET_ENGINE_STATUS_VER="1.0.2"
 WIDGET_GRAPH_VER="1.5.2"
 WIDGET_BASE="https://s3-eu-west-1.amazonaws.com/centreon-download/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
@@ -581,7 +581,7 @@ cd ${DL_DIR}
 
 function main () {
 echo "
-================| Install details v1.00 |============================
+================| Install details v1.02 |============================
                   MariaDB    : ${MARIADB_VER}
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
