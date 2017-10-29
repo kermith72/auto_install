@@ -1,24 +1,28 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.02
-# 04/09/2017
+# v 1.03
+# 15/09/2017
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
 CLIB_VER="1.4.2"
-CONNECTOR_VER="1.1.2"
+CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.7.2"
 PLUGIN_VER="2.2"
-BROKER_VER="3.0.8"
+BROKER_VER="3.0.9"
 CENTREON_VER="2.8.12"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
 BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
-CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
+if [[ "$CONNECTOR_VER" == "1.1.3" ]]; then
+    CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
+else
+    CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
+fi
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
@@ -581,7 +585,7 @@ cd ${DL_DIR}
 
 function main () {
 echo "
-================| Install details v1.02 |============================
+================| Install details v1.03 |============================
                   MariaDB    : ${MARIADB_VER}
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
