@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.03
-# 15/09/2017
+# v 1.04
+# 04/10/2017
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -9,10 +9,10 @@ export DEBIAN_FRONTEND=noninteractive
 ## Versions
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
-ENGINE_VER="1.7.2"
+ENGINE_VER="1.8.0"
 PLUGIN_VER="2.2"
 BROKER_VER="3.0.9"
-CENTREON_VER="2.8.12"
+CENTREON_VER="2.8.14"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -29,9 +29,9 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgets
-WIDGET_HOST_VER="1.6.0"
+WIDGET_HOST_VER="1.6.1"
 WIDGET_HOSTGROUP_VER="1.6.0"
-WIDGET_SERVICE_VER="1.6.0"
+WIDGET_SERVICE_VER="1.6.1"
 WIDGET_SERVICEGROUP_VER="1.6.0"
 WIDGET_GRID_MAP_VER="1.0.0"
 WIDGET_TOP_CPU_VER="1.1.1"
@@ -298,7 +298,7 @@ apt-get clean
 
 cd ${DL_DIR}
 if [[ -e centreon-broker-${BROKER_VER}.tar.gz ]]
-  then 
+  then
     echo 'File already exist !'
   else
     wget ${BROKER_URL} -O ${DL_DIR}/centreon-broker-${BROKER_VER}.tar.gz
