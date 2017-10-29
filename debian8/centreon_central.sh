@@ -1,18 +1,19 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.04
-# 04/10/2017
+# v 1.05
+# 28/10/2017
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
+VERSION_BATCH="v 1.05"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.0"
 PLUGIN_VER="2.2"
-BROKER_VER="3.0.9"
-CENTREON_VER="2.8.14"
+BROKER_VER="3.0.10"
+CENTREON_VER="2.8.15"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -650,49 +651,49 @@ fi
 centreon_plugins_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step6${normal}  => Centreon plugins install                              ${STATUS_FAIL}"
+    echo -e "${bold}Step7${normal}  => Centreon plugins install                              ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step6${normal}  => Centreon plugins install                              ${STATUS_OK}"
+    echo -e "${bold}Step7${normal}  => Centreon plugins install                              ${STATUS_OK}"
 fi
 
 centreon_broker_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
+    echo -e "${bold}Step8${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_OK}"
+    echo -e "${bold}Step8${normal}  => Centreon Broker install                               ${STATUS_OK}"
 fi
 
 create_centreon_tmpl >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step8${normal}  => Centreon template generation                          ${STATUS_FAIL}"
+    echo -e "${bold}Step9${normal}  => Centreon template generation                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step8${normal}  => Centreon template generation                          ${STATUS_OK}"
+    echo -e "${bold}Step9${normal}  => Centreon template generation                          ${STATUS_OK}"
 fi
 
 centreon_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step9${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
+    echo -e "${bold}Step10${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step9${normal}  => Centreon web interface install                        ${STATUS_OK}"
+    echo -e "${bold}Step10${normal}  => Centreon web interface install                        ${STATUS_OK}"
 fi
 
 post_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step10${normal} => Post install                                          ${STATUS_FAIL}"
+    echo -e "${bold}Step11${normal} => Post install                                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step10${normal} => Post install                                          ${STATUS_OK}"
+    echo -e "${bold}Step11${normal} => Post install                                          ${STATUS_OK}"
 fi
 
 widget_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step11${normal} => Widgets install                                       ${STATUS_FAIL}"
+    echo -e "${bold}Step12${normal} => Widgets install                                       ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step11${normal} => Widgets install                                       ${STATUS_OK}"
+    echo -e "${bold}Step12${normal} => Widgets install                                       ${STATUS_OK}"
 fi
 echo ""
 echo "##### Install completed #####" >> ${INSTALL_LOG} 2>&1
