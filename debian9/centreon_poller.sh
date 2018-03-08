@@ -1,19 +1,19 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.08
-# 28/12/2017
+# v 1.09
+# 08/03/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.08"
+VERSION_BATCH="v 1.09"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"
 PLUGIN_VER="2.2"
-BROKER_VER="3.0.11"
-CENTREON_VER="2.8.17"
+BROKER_VER="3.0.13"
+CENTREON_VER="2.8.18"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -295,7 +295,7 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install -y librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release
+apt-get install -y librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.1-dev
 
 # Cleanup to prevent space full on /var
 apt-get clean
