@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.10
-# 18/03/2018
+# v 1.11
+# 07/04/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.10"
+VERSION_BATCH="v 1.11"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"

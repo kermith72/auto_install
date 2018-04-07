@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon poller install script for Debian Jessie
-# v 1.10
-# 18/03/2018
+# v 1.11
+# 07/04/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.10"
+VERSION_BATCH="v 1.11"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"
@@ -333,7 +333,7 @@ echo "
 cat > ${DL_DIR}/${CENTREON_TMPL} << EOF
 #Centreon template
 PROCESS_CENTREON_WWW=0
-PROCESS_CENTSTORAGE=1
+PROCESS_CENTSTORAGE=0
 PROCESS_CENTCORE=0
 PROCESS_CENTREON_PLUGINS=1
 PROCESS_CENTREON_SNMP_TRAPS=1
@@ -560,7 +560,22 @@ chmod g-w /var/lib/centreon
 
 }
 
-
+#### change right to /usr/lib/centreon/plugins
+#### version 1.11
+cd /usr/lib/centreon/plugins
+chown ${CENTREON_USER}:${ENGINE_GROUP} centreon*
+chown -R ${CENTREON_USER}:${ENGINE_GROUP} Centreon*
+chown ${CENTREON_USER}:${ENGINE_GROUP} check_centreon*
+chown ${CENTREON_USER}:${ENGINE_GROUP} check_snmp*
+chown ${CENTREON_USER}:${ENGINE_GROUP} submit*
+chown ${CENTREON_USER}:${ENGINE_GROUP} process*
+chmod 664 centreon.conf
+chmod +x centreon.pm
+chmod +x Centreon/SNMP/Utils.pm
+chmod +x check_centreon*
+chmod +x check_snmp*
+chmod +x submit*
+chmod +x process*
 
 function main () {
 echo "
