@@ -7,13 +7,13 @@
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.13"
+VERSION_BATCH="v 1.14"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"
 PLUGIN_VER="2.2"
 BROKER_VER="3.0.14"
-CENTREON_VER="2.8.22"
+CENTREON_VER="2.8.23"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -33,7 +33,7 @@ CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 WIDGET_HOST_VER="1.6.2"
 WIDGET_HOSTGROUP_VER="1.6.0"
 WIDGET_SERVICE_VER="1.6.2"
-WIDGET_SERVICEGROUP_VER="1.6.0"
+WIDGET_SERVICEGROUP_VER="1.6.1"
 WIDGET_GRID_MAP_VER="1.0.0"
 WIDGET_TOP_CPU_VER="1.1.1"
 WIDGET_TOP_MEMORY_VER="1.1.1"
@@ -295,7 +295,7 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install -y librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.1-dev
+apt-get install -y librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev
 
 # Cleanup to prevent space full on /var
 apt-get clean
