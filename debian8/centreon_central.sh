@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.15
-# 27/06/2018
+# v 1.16
+# 10/07/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -273,6 +273,7 @@ echo "
 "
 cd ${DL_DIR}
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl \
+            libxml-simple-perl libdatetime-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core
 git clone https://github.com/centreon/centreon-plugins.git
 cd centreon-plugins
