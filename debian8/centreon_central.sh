@@ -1,19 +1,19 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.16
-# 10/07/2018
+# v 1.17
+# 18/08/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.15"
+VERSION_BATCH="v 1.17"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"
 PLUGIN_VER="2.2"
 BROKER_VER="3.0.14"
-CENTREON_VER="2.8.24"
+CENTREON_VER="2.8.25"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -30,9 +30,9 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgets
-WIDGET_HOST_VER="1.6.2"
+WIDGET_HOST_VER="1.6.3"
 WIDGET_HOSTGROUP_VER="1.6.0"
-WIDGET_SERVICE_VER="1.6.2"
+WIDGET_SERVICE_VER="1.6.3"
 WIDGET_SERVICEGROUP_VER="1.6.1"
 WIDGET_GRID_MAP_VER="1.0.0"
 WIDGET_TOP_CPU_VER="1.1.1"
@@ -53,6 +53,8 @@ WIDGET_TACTICAL_OVERVIEW="${WIDGET_BASE}/centreon-widget-tactical-overview/centr
 WIDGET_HTTP_LOADER="${WIDGET_BASE}/centreon-widget-httploader/centreon-widget-httploader-${WIDGET_HTTP_LOADER_VER}.tar.gz"
 WIDGET_ENGINE_STATUS="${WIDGET_BASE}/centreon-widget-engine-status/centreon-widget-engine-status-${WIDGET_ENGINE_STATUS_VER}.tar.gz"
 WIDGET_GRAPH="https://github.com/Centreon-Widgets/centreon-widget-graph-monitoring.git"
+## source script
+DIR_SCRIPT=`dirname $0`
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
@@ -273,7 +275,7 @@ echo "
 "
 cd ${DL_DIR}
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl \
-            libxml-simple-perl libdatetime-perl \
+            libxml-simple-perl libdatetime-perl libdate-manip-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core
 git clone https://github.com/centreon/centreon-plugins.git
 cd centreon-plugins
@@ -520,6 +522,13 @@ echo "
                           Post install
 =====================================================================
 "
+#add new menu header
+if [[ "CENTREON_VER="2.8.25"" ]]; then
+  cp $DIR_SCRIPT/header/react-header.tpl $INSTALL_DIR/centreon/www/include/core/menu/templates
+  cp $DIR_SCRIPT/header/main.a7fa5629e9f7440c7910.js $INSTALL_DIR/centreon/www/include/core/menu/templates
+fi
+
+
 #Modify default config
 # Monitoring engine information
 sed -i -e "s/share\/centreon-engine/sbin/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
