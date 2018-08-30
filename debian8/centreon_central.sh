@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
 # v 1.17
-# 18/08/2018
+# 30/08/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -54,7 +54,7 @@ WIDGET_HTTP_LOADER="${WIDGET_BASE}/centreon-widget-httploader/centreon-widget-ht
 WIDGET_ENGINE_STATUS="${WIDGET_BASE}/centreon-widget-engine-status/centreon-widget-engine-status-${WIDGET_ENGINE_STATUS_VER}.tar.gz"
 WIDGET_GRAPH="https://github.com/Centreon-Widgets/centreon-widget-graph-monitoring.git"
 ## source script
-DIR_SCRIPT=`dirname $0`
+DIR_SCRIPT=$(cd $( dirname ${BASH_SOURCE[0]}) && pwd )
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
@@ -522,23 +522,23 @@ echo "
                           Post install
 =====================================================================
 "
+
 #add new menu header
 if [[ "CENTREON_VER="2.8.25"" ]]; then
-  cp $DIR_SCRIPT/header/react-header.tpl $INSTALL_DIR/centreon/www/include/core/menu/templates
-  cp $DIR_SCRIPT/header/main.a7fa5629e9f7440c7910.js $INSTALL_DIR/centreon/www/include/core/menu/templates
+  cp ${DIR_SCRIPT}/header/react-header.tpl ${INSTALL_DIR}/centreon/www/include/core/menu/templates
+  cp ${DIR_SCRIPT}/header/main.a7fa5629e9f7440c7910.js ${INSTALL_DIR}/centreon/www/include/core/menu/templates
 fi
-
 
 #Modify default config
 # Monitoring engine information
-sed -i -e "s/share\/centreon-engine/sbin/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
-sed -i -e "s/lib64/lib/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
+sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
 # Broker module information
-sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" /usr/share/centreon/www/install/var/brokers/centreon-broker;
+sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL_DIR}/centreon/www/install/var/brokers/centreon-broker;
 # bug Centreon_plugin
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" /usr/share/centreon/www/install/steps/functions.php;
-sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" /usr/share/centreon/www/install/install.conf.php;
+# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
+sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
 
 # Add mysql config for Centreon
 echo '[mysqld]
@@ -550,6 +550,7 @@ service mysql restart
 # add Timezone
 VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
 sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php5/apache2/php.ini;
+
 
 # reload conf apache
 a2enconf centreon.conf

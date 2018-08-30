@@ -1,19 +1,19 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.16
-# 10/07/2018
+# v 1.17
+# 30/08/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.16"
+VERSION_BATCH="v 1.17"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"
 PLUGIN_VER="2.2"
 BROKER_VER="3.0.14"
-CENTREON_VER="2.8.24"
+CENTREON_VER="2.8.25"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -29,30 +29,6 @@ PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLU
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
-## Sources widgets
-WIDGET_HOST_VER="1.6.2"
-WIDGET_HOSTGROUP_VER="1.6.0"
-WIDGET_SERVICE_VER="1.6.2"
-WIDGET_SERVICEGROUP_VER="1.6.1"
-WIDGET_GRID_MAP_VER="1.0.0"
-WIDGET_TOP_CPU_VER="1.1.1"
-WIDGET_TOP_MEMORY_VER="1.1.1"
-WIDGET_TACTICAL_OVERVIEW_VER="1.0.1"
-WIDGET_HTTP_LOADER_VER="1.0.0"
-WIDGET_ENGINE_STATUS_VER="1.0.2"
-WIDGET_GRAPH_VER="1.5.2"
-WIDGET_BASE="https://s3-eu-west-1.amazonaws.com/centreon-download/public/centreon-widgets"
-WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
-WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"
-WIDGET_SERVICE="${WIDGET_BASE}/centreon-widget-service-monitoring/centreon-widget-service-monitoring-${WIDGET_SERVICE_VER}.tar.gz"
-WIDGET_SERVICEGROUP="${WIDGET_BASE}/centreon-widget-servicegroup-monitoring/centreon-widget-servicegroup-monitoring-${WIDGET_SERVICEGROUP_VER}.tar.gz"
-WIDGET_GRID_MAP="${WIDGET_BASE}/centreon-widget-grid-map/centreon-widget-grid-map-${WIDGET_GRID_MAP_VER}.tar.gz"
-WIDGET_TOP_CPU="${WIDGET_BASE}/centreon-widget-live-top10-cpu/centreon-widget-live-top10-cpu-usage-${WIDGET_TOP_CPU_VER}.tar.gz"
-WIDGET_TOP_MEMORY="${WIDGET_BASE}/centreon-widget-live-top10-memory/centreon-widget-live-top10-memory-usage-${WIDGET_TOP_MEMORY_VER}.tar.gz"
-WIDGET_TACTICAL_OVERVIEW="${WIDGET_BASE}/centreon-widget-tactical-overview/centreon-widget-tactical-overview-${WIDGET_TACTICAL_OVERVIEW_VER}.tar.gz"
-WIDGET_HTTP_LOADER="${WIDGET_BASE}/centreon-widget-httploader/centreon-widget-httploader-${WIDGET_HTTP_LOADER_VER}.tar.gz"
-WIDGET_ENGINE_STATUS="${WIDGET_BASE}/centreon-widget-engine-status/centreon-widget-engine-status-${WIDGET_ENGINE_STATUS_VER}.tar.gz"
-WIDGET_GRAPH="https://github.com/Centreon-Widgets/centreon-widget-graph-monitoring.git"
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
