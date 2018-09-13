@@ -1,19 +1,19 @@
 #!/bin/bash
 # Centreon poller install script for Debian Jessie
-# v 1.17
-# 30/08/2018
+# v 1.18
+# 12/09/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.17"
+VERSION_BATCH="v 1.18"
 CLIB_VER="1.4.2"
 CONNECTOR_VER="1.1.3"
 ENGINE_VER="1.8.1"
 PLUGIN_VER="2.2"
 BROKER_VER="3.0.14"
-CENTREON_VER="2.8.25"
+CENTREON_VER="2.8.26"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -224,7 +224,7 @@ tar xzf monitoring-plugins-${PLUGIN_VER}.tar.gz
 cd ${DL_DIR}/monitoring-plugins-${PLUGIN_VER}
 
 ./configure --with-nagios-user=${ENGINE_USER} --with-nagios-group=${ENGINE_GROUP} \
---prefix=/usr/lib/centreon/plugins --libexecdir=/usr/lib/centreon/plugins --enable-perl-modules --with-openssl=/usr/bin/openssl \
+--prefix=/usr/lib/nagios/plugins --libexecdir=/usr/lib/nagios/plugins --enable-perl-modules --with-openssl=/usr/bin/openssl \
 --enable-extra-opts
 
 make
@@ -245,6 +245,7 @@ git clone https://github.com/centreon/centreon-plugins.git
 cd centreon-plugins
 chmod +x centreon_plugins.pl
 chown -R ${ENGINE_USER}:${ENGINE_GROUP} ${DL_DIR}/centreon-plugins
+mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
 }
 
@@ -327,7 +328,7 @@ CENTREON_BINDIR="${INSTALL_DIR}/centreon/bin"
 CENTREON_DATADIR="${INSTALL_DIR}/centreon/data"
 CENTREON_USER=${CENTREON_USER}
 CENTREON_GROUP=${CENTREON_GROUP}
-PLUGIN_DIR="/usr/lib/centreon/plugins"
+PLUGIN_DIR="/usr/lib/nagios/plugins"
 CENTREON_LOG="/var/log/centreon"
 CENTREON_ETC="/etc/centreon"
 CENTREON_RUNDIR="/var/run/centreon"
@@ -346,6 +347,7 @@ CENTSTORAGE_INSTALL_RUNLVL=0
 CENTREONTRAPD_BINDIR="${INSTALL_DIR}/centreon/bin"
 CENTREONTRAPD_INSTALL_INIT=1
 CENTREONTRAPD_INSTALL_RUNLVL=1
+CENTREON_PLUGINS=/usr/lib/centreon/plugins
 
 INSTALL_DIR_NAGIOS="/usr/bin"
 CENTREON_ENGINE_USER="${ENGINE_USER}"
@@ -354,7 +356,7 @@ MONITORINGENGINE_LOG="/var/log/centreon-engine"
 MONITORINGENGINE_INIT_SCRIPT="centengine"
 MONITORINGENGINE_BINARY="/usr/sbin/centengine"
 MONITORINGENGINE_ETC="/etc/centreon-engine"
-NAGIOS_PLUGIN="/usr/lib/centreon/plugins"
+NAGIOS_PLUGIN="/usr/lib/nagios/plugins"
 FORCE_NAGIOS_USER=1
 NAGIOS_GROUP="${CENTREON_USER}"
 FORCE_NAGIOS_GROUP=1
