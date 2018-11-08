@@ -1,29 +1,25 @@
 #!/bin/bash
 # Centreon poller install script for Debian Jessie
-# v 1.18
-# 12/09/2018
+# v 1.19
+# 08/11/2018
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.18"
-CLIB_VER="1.4.2"
-CONNECTOR_VER="1.1.3"
-ENGINE_VER="1.8.1"
+VERSION_BATCH="v 1.19"
+CLIB_VER="18.10.0"
+CONNECTOR_VER="18.10.0"
+ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
-BROKER_VER="3.0.14"
-CENTREON_VER="2.8.26"
+BROKER_VER="18.10.0"
+CENTREON_VER="18.10.0"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
 BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
-if [[ "$CONNECTOR_VER" == "1.1.3" ]]; then
-    CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
-else
-    CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
-fi
+CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
@@ -34,7 +30,7 @@ DL_DIR="/usr/local/src"
 ## Install dir
 INSTALL_DIR="/usr/share"
 ## Log install file
-INSTALL_LOG="/usr/local/src/centreon-install.log"
+INSTALL_LOG=${DL_DIR}"/centreon-install.log"
 ## Set mysql-server root password
 MYSQL_PASSWORD="password"
 ## Users and groups
@@ -187,15 +183,16 @@ cmake \
    -DWITH_LOGROTATE_SCRIPT=1 \
    -DWITH_VAR_DIR=/var/log/centreon-engine \
    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
-   -DWITH_STARTUP_DIR=/etc/init.d \
+   -DWITH_STARTUP_SCRIPT=systemd  \
+   -DWITH_STARTUP_DIR=/lib/systemd/system  \
    -DWITH_PKGCONFIG_SCRIPT=1 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
    -DWITH_TESTING=0 .
 make
 make install
 
-chmod +x /etc/init.d/centengine
-update-rc.d centengine defaults
+systemctl enable centengine.service
+systemctl daemon-reload
 }
 
 function monitoring_plugin_install () {
@@ -285,8 +282,8 @@ cmake \
     -DWITH_PREFIX_LIB=/usr/lib/centreon-broker \
     -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
     -DWITH_PREFIX_MODULES=/usr/share/centreon/lib/centreon-broker \
-    -DWITH_STARTUP_DIR=/etc/init.d \
-    -DWITH_STARTUP_SCRIPT=auto \
+    -DWITH_STARTUP_SCRIPT=systemd  \
+    -DWITH_STARTUP_DIR=/lib/systemd/system  \
     -DWITH_TESTING=0 \
     -DWITH_USER=${BROKER_USER} .
 make
@@ -391,6 +388,8 @@ FORCE_SUDO_CONF=1
 INIT_D="/etc/init.d"
 CRON_D="/etc/cron.d"
 PEAR_PATH="/usr/share/php/"
+PHP_FPM_SERVICE="php7.1-fpm"
+PHP_FPM_RELOAD=1
 EOF
 }
 
@@ -470,6 +469,21 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 # clean /tmp
 rm -rf /tmp/*
 
+# add DEFAULT_PHP_FPM_SERVICE
+sed -i '$aDEFAULT_PHP_FPM_SERVICE="fpm-php"' ${DL_DIR}/centreon-web-${CENTREON_VER}/varinstall/vars
+
+# remplace script functions
+
+rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentWeb.sh
+rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentPluginsTraps.sh
+cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+cp ${DIR_SCRIPT}/libinstall/CentWeb.sh ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentWeb.sh
+cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps.sh ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentPluginsTraps.sh
+chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentWeb.sh
+chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentPluginsTraps.sh
+
 echo " Generate Centreon template "
 
 ./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL}
@@ -540,20 +554,20 @@ chmod g-w /var/lib/centreon
 
 #### change right to /usr/lib/centreon/plugins
 #### version 1.11
-cd /usr/lib/centreon/plugins
-chown ${CENTREON_USER}:${ENGINE_GROUP} centreon*
-chown -R ${CENTREON_USER}:${ENGINE_GROUP} Centreon*
-chown ${CENTREON_USER}:${ENGINE_GROUP} check_centreon*
-chown ${CENTREON_USER}:${ENGINE_GROUP} check_snmp*
-chown ${CENTREON_USER}:${ENGINE_GROUP} submit*
-chown ${CENTREON_USER}:${ENGINE_GROUP} process*
-chmod 664 centreon.conf
-chmod +x centreon.pm
-chmod +x Centreon/SNMP/Utils.pm
-chmod +x check_centreon*
-chmod +x check_snmp*
-chmod +x submit*
-chmod +x process*
+#cd /usr/lib/centreon/plugins
+#chown ${CENTREON_USER}:${ENGINE_GROUP} centreon*
+#chown -R ${CENTREON_USER}:${ENGINE_GROUP} Centreon*
+#chown ${CENTREON_USER}:${ENGINE_GROUP} check_centreon*
+#chown ${CENTREON_USER}:${ENGINE_GROUP} check_snmp*
+#chown ${CENTREON_USER}:${ENGINE_GROUP} submit*
+#chown ${CENTREON_USER}:${ENGINE_GROUP} process*
+#chmod 664 centreon.conf
+#chmod +x centreon.pm
+#chmod +x Centreon/SNMP/Utils.pm
+#chmod +x check_centreon*
+#chmod +x check_snmp*
+#chmod +x submit*
+#chmod +x process*
 
 }
 
