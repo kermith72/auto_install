@@ -574,6 +574,7 @@ echo "
 mkdir /usr/share/centreon/vendor
 cp -r ${DL_DIR}/centreon-web-${CENTREON_VER}/vendor/* ${INSTALL_DIR}/centreon/vendor/
 
+#bug fix 
 sed -i -e 's/@CENTREON_ETC@/\/etc\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
 sed -i -e 's/@CENTREON_LOG@/\/var\/log\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
 sed -i -e 's/@CENTREON_VARLIB@/\/var\/lib\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
@@ -582,6 +583,7 @@ sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www
 
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/cron/centreon-backup.pl
 
 #Modify default config
 # Monitoring engine information
