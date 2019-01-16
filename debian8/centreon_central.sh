@@ -1,19 +1,19 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.19
-# 08/11/2018
+# v 1.20
+# 14/01/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.19"
+VERSION_BATCH="v 1.20"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
-BROKER_VER="18.10.0"
-CENTREON_VER="18.10.0"
+BROKER_VER="18.10.1"
+CENTREON_VER="18.10.2"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -583,7 +583,7 @@ sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www
 
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 
-sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/cron/centreon-backup.pl
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
 
 #Modify default config
 # Monitoring engine information
@@ -609,6 +609,33 @@ sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.1/fp
 
 # modify listen fpm
 sed -i -e 's/listen = \/run\/php\/php7.1-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php/7.1/fpm/pool.d/www.conf
+
+# add node-js
+apt-get install curl
+curl -sL https://deb.nodesource.com/setup_8.x | bash -
+apt-get install -y nodejs
+
+#copy json file
+cp ${DL_DIR}/centreon-web-${CENTREON_VER}/package* ${INSTALL_DIR}/centreon/
+
+#build javascript dependencies
+cd ${INSTALL_DIR}/centreon
+npm install
+npm run build
+npm prune --production
+
+#create htaccess file
+cat >  ${INSTALL_DIR}/centreon/www/.htaccess << EOF
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+ErrorDocument 404 /centreon/index.html
+EOF
+
+#apply owner
+chown -R www-data: ${INSTALL_DIR}/centreon/www
+
 
 cat > /etc/apache2/conf-available/centreon.conf << EOF
 #

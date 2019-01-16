@@ -1,7 +1,7 @@
 #!/bin/bash
-# Centreon poller install script for Debian Jessie
+# Centreon + engine install script for Debian Stretch
 # v 1.20
-# 15/01/2019
+# 14/01/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -25,6 +25,32 @@ PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLU
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
+## Sources widgetsMonitoring engine init.d script
+WIDGET_HOST_VER="18.10.0"
+WIDGET_HOSTGROUP_VER="18.10.0"
+WIDGET_SERVICE_VER="18.10.0"
+WIDGET_SERVICEGROUP_VER="18.10.0"
+WIDGET_GRID_MAP_VER="18.10.0"
+WIDGET_TOP_CPU_VER="1.1.1"
+WIDGET_TOP_MEMORY_VER="1.1.1"
+WIDGET_TACTICAL_OVERVIEW_VER="18.10.0"
+WIDGET_HTTP_LOADER_VER="18.10.0"
+WIDGET_ENGINE_STATUS_VER="18.10.0"
+WIDGET_GRAPH_VER="18.10.0"
+WIDGET_BASE="https://s3-eu-west-1.amazonaws.com/centreon-download/public/centreon-widgets"
+WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
+WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"
+WIDGET_SERVICE="${WIDGET_BASE}/centreon-widget-service-monitoring/centreon-widget-service-monitoring-${WIDGET_SERVICE_VER}.tar.gz"
+WIDGET_SERVICEGROUP="${WIDGET_BASE}/centreon-widget-servicegroup-monitoring/centreon-widget-servicegroup-monitoring-${WIDGET_SERVICEGROUP_VER}.tar.gz"
+WIDGET_GRID_MAP="${WIDGET_BASE}/centreon-widget-grid-map/centreon-widget-grid-map-${WIDGET_GRID_MAP_VER}.tar.gz"
+WIDGET_TOP_CPU="${WIDGET_BASE}/centreon-widget-live-top10-cpu/centreon-widget-live-top10-cpu-usage-${WIDGET_TOP_CPU_VER}.tar.gz"
+WIDGET_TOP_MEMORY="${WIDGET_BASE}/centreon-widget-live-top10-memory/centreon-widget-live-top10-memory-usage-${WIDGET_TOP_MEMORY_VER}.tar.gz"
+WIDGET_TACTICAL_OVERVIEW="${WIDGET_BASE}/centreon-widget-tactical-overview/centreon-widget-tactical-overview-${WIDGET_TACTICAL_OVERVIEW_VER}.tar.gz"
+WIDGET_HTTP_LOADER="${WIDGET_BASE}/centreon-widget-httploader/centreon-widget-httploader-${WIDGET_HTTP_LOADER_VER}.tar.gz"
+WIDGET_ENGINE_STATUS="${WIDGET_BASE}/centreon-widget-engine-status/centreon-widget-engine-status-${WIDGET_ENGINE_STATUS_VER}.tar.gz"
+WIDGET_GRAPH="${WIDGET_BASE}/centreon-widget-graph-monitoring/centreon-widget-graph-monitoring-${WIDGET_GRAPH_VER}.tar.gz"
+## source script
+DIR_SCRIPT=$(cd $( dirname ${BASH_SOURCE[0]}) && pwd )
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
@@ -42,7 +68,7 @@ CENTREON_USER="centreon"
 CENTREON_GROUP="centreon"
 ## TMPL file (template install file for Centreon)
 CENTREON_TMPL="centreon_engine.tmpl"
-ETH0_IP=`/sbin/ifconfig eth0 | grep 'inet adr:' | cut -d: -f2 | awk '{ print $1}'`
+ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $NF}'`
 ## TimeZone php
 VARTIMEZONE="Europe/Paris"
 
@@ -64,11 +90,21 @@ echo "
 ======================================================================
 "
 
-echo 'deb http://ftp.fr.debian.org/debian/ jessie non-free' > /etc/apt/sources.list.d/jessie-nonfree.list
+echo 'deb http://ftp.fr.debian.org/debian/ stretch non-free' > /etc/apt/sources.list.d/jessie-nonfree.list
 
 apt-get update
 }
 
+
+function mariadb_install() {
+echo "
+======================================================================
+                        Install MariaDB
+======================================================================
+"
+
+apt-get install -y mariadb-server
+}
 
 function clib_install () {
 echo "
@@ -90,6 +126,9 @@ fi
 tar xzf centreon-clib-${CLIB_VER}.tar.gz
 cd centreon-clib-${CLIB_VER}/build
 
+# add directive compilation
+sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-clib-${CLIB_VER}/build/CMakeLists.txt
+
 cmake \
    -DWITH_TESTING=0 \
    -DWITH_PREFIX=/usr \
@@ -107,7 +146,6 @@ echo "
                Install Centreon Perl and SSH connectors
 ======================================================================
 "
-
 apt-get install -y libperl-dev
 
 cd ${DL_DIR}
@@ -120,6 +158,9 @@ fi
 
 tar xzf centreon-connector-${CONNECTOR_VER}.tar.gz
 cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
+
+# add directive compilation
+sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build/CMakeLists.txt
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -172,6 +213,9 @@ fi
 tar xzf centreon-engine-${ENGINE_VER}.tar.gz
 cd ${DL_DIR}/centreon-engine-${ENGINE_VER}/build
 
+# add directive compilation
+sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-engine-${ENGINE_VER}/build/CMakeLists.txt
+
 cmake \
    -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
    -DWITH_CENTREON_CLIB_LIBRARY_DIR=/usr/lib \
@@ -203,7 +247,7 @@ echo "
 "
 
 apt-get install --force-yes -y libgnutls28-dev libssl-dev libkrb5-dev libldap2-dev libsnmp-dev gawk \
-        libwrap0-dev libmcrypt-dev smbclient fping gettext dnsutils  libmysqlclient-dev \
+        libwrap0-dev libmcrypt-dev smbclient fping gettext dnsutils libmodule-build-perl libmodule-install-perl \
         libnet-snmp-perl
 
 # Cleanup to prevent space full on /var
@@ -228,6 +272,7 @@ make
 make install
 }
 
+
 function centreon_plugins_install() {
 echo "
 =======================================================================
@@ -236,7 +281,7 @@ echo "
 "
 cd ${DL_DIR}
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl \
-            libxml-simple-perl libdatetime-perl \
+            libxml-simple-perl libdatetime-perl libdate-manip-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core
 git clone https://github.com/centreon/centreon-plugins.git
 cd centreon-plugins
@@ -257,7 +302,27 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install -y librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev 
+apt-get install -y libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev lsb-release
+
+# package for rrdtools
+apt-get install -y libpango1.0-dev libxml2-dev
+
+# compile rrdtools
+cd ${DL_DIR}
+wget http://oss.oetiker.ch/rrdtool/pub/rrdtool-1.4.7.tar.gz
+tar xzf rrdtool-1.4.7.tar.gz
+cd ${DL_DIR}/rrdtool-1.4.7
+./configure --prefix=/opt/rddtool-broker
+make
+make install
+
+cp /opt/rddtool-broker/lib/pkgconfig/librrd.pc /usr/lib/pkgconfig/
+
+#create ldconfig file
+cat >  /etc/ld.so.conf.d/rrdtool-broker.conf << EOF
+# lib rrdtools for Centreon
+/opt/rddtool-broker/lib
+EOF
 
 # Cleanup to prevent space full on /var
 apt-get clean
@@ -272,6 +337,9 @@ fi
 
 tar xzf centreon-broker-${BROKER_VER}.tar.gz
 cd ${DL_DIR}/centreon-broker-${BROKER_VER}/build/
+
+# add directive compilation
+sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-broker-${BROKER_VER}/build/CMakeLists.txt
 
 cmake \
     -DWITH_DAEMONS='central-broker;central-rrd' \
@@ -288,7 +356,17 @@ cmake \
     -DWITH_USER=${BROKER_USER} .
 make
 make install
+systemctl enable cbd.service
+systemctl daemon-reload
 
+if [[ -d /var/log/centreon-broker ]]
+  then
+    echo "Directory already exist!"
+  else
+    mkdir /var/log/centreon-broker
+fi
+chown ${BROKER_USER}:${ENGINE_GROUP} /var/log/centreon-broker
+chmod 775 /var/log/centreon-broker
 if [[ -d /var/lib/centreon-broker ]]
   then
     chmod 775 /var/lib/centreon-broker
@@ -299,6 +377,45 @@ fi
 apt-get clean
 }
 
+function php_fpm_install() {
+echo "
+======================================================================
+                     Install Php-fpm
+======================================================================
+"
+apt-get install apt-transport-https lsb-release ca-certificates -y
+
+wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/php.list
+apt-get update
+
+apt-get install php7.1 php7.1-opcache libapache2-mod-php7.1 php7.1-mysql \
+	php7.1-curl php7.1-json php7.1-gd php7.1-mcrypt php7.1-intl php7.1-mbstring \
+	php7.1-xml php7.1-zip php7.1-fpm php7.1-readline -y
+	
+
+DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php7.1-sqlite3 \
+	php-pear sudo tofrodos bsd-mailx lsb-release mariadb-server \
+	libconfig-inifiles-perl libcrypt-des-perl \
+	libdigest-hmac-perl libdigest-sha-perl libgd-perl php7.1-ldap php7.1-snmp \
+	snmp snmpd snmptrapd libnet-snmp-perl libsnmp-perl snmp-mibs-downloader
+
+
+# Cleanup to prevent space full on /var
+apt-get clean
+
+a2enmod proxy_fcgi setenvif proxy rewrite
+a2enconf php7.1-fpm
+a2dismod php7.1
+systemctl restart apache2 php7.1-fpm
+
+#install composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php --install-dir=/usr/bin --filename=composer
+
+
+}
+
 function create_centreon_tmpl() {
 echo "
 ======================================================================
@@ -307,9 +424,9 @@ echo "
 "
 cat > ${DL_DIR}/${CENTREON_TMPL} << EOF
 #Centreon template
-PROCESS_CENTREON_WWW=0
-PROCESS_CENTSTORAGE=0
-PROCESS_CENTCORE=0
+PROCESS_CENTREON_WWW=1
+PROCESS_CENTSTORAGE=1
+PROCESS_CENTCORE=1
 PROCESS_CENTREON_PLUGINS=1
 PROCESS_CENTREON_SNMP_TRAPS=1
 
@@ -371,7 +488,7 @@ APACHE_CONF="apache.conf"
 WEB_USER="www-data"
 WEB_GROUP="www-data"
 APACHE_RELOAD=1
-BIN_RRDTOOL="/usr/bin/rrdtool"
+BIN_RRDTOOL="/opt/rddtool-broker/bin/rrdtool"
 BIN_MAIL="/usr/bin/mail"
 BIN_SSH="/usr/bin/ssh"
 BIN_SCP="/usr/bin/scp"
@@ -399,17 +516,7 @@ echo "
                   Install Centreon Web Interface
 ======================================================================
 "
-DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes sudo tofrodos bsd-mailx \
-  lsb-release apache2  \
-  librrds-perl libconfig-inifiles-perl libcrypt-des-perl \
-  libdigest-hmac-perl libdigest-sha-perl  \
-  snmp snmpd snmptrapd libnet-snmp-perl libsnmp-perl snmp-mibs-downloader
 
-
-# Cleanup to prevent space full on /var
-apt-get clean
-
-ln -s /usr/share/mibs/ /usr/share/snmp/mibs
 
 echo "# This file controls the activity of snmpd
 
@@ -442,9 +549,13 @@ sed -i -e "s/linkUpDownNotifications/#linkUpDownNotifications/g" /etc/snmp/snmpd
 
 sed -i -e "s/mibs/#mibs/g" /etc/snmp/snmp.conf;
 
-service snmpd restart
+systemctl restart snmpd snmptrapd restart
 
-service snmptrapd restart
+# make lib perl rrd
+cd ${DL_DIR}/rrdtool-1.4.7/bindings/perl-shared
+perl Makefile.PL
+make test
+make install
 
 cd ${DL_DIR}
 
@@ -458,13 +569,10 @@ fi
 groupadd -g 6000 ${CENTREON_GROUP}
 useradd -u 6000 -g ${CENTREON_GROUP} -m -r -d /var/lib/centreon -c "Centreon Web user" -s /bin/bash ${CENTREON_USER}
 usermod -aG ${CENTREON_GROUP} ${ENGINE_USER}
-usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
-usermod -aG ${BROKER_GROUP} ${CENTREON_USER}
-usermod -aG ${CENTREON_GROUP} ${BROKER_USER}
-usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
 tar xzf centreon-web-${CENTREON_VER}.tar.gz
 cd ${DL_DIR}/centreon-web-${CENTREON_VER}
+
 
 # clean /tmp
 rm -rf /tmp/*
@@ -486,7 +594,7 @@ chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentPluginsTraps.sh
 
 echo " Generate Centreon template "
 
-./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL}
+ ./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL}
 }
 
 function post_install () {
@@ -495,85 +603,153 @@ echo "
                           Post install
 =====================================================================
 "
+
+#add directory vendor
+mkdir /usr/share/centreon/vendor
+cp -r ${DL_DIR}/centreon-web-${CENTREON_VER}/vendor/* ${INSTALL_DIR}/centreon/vendor/
+
+#bug fix 
+sed -i -e 's/@CENTREON_ETC@/\/etc\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
+sed -i -e 's/@CENTREON_LOG@/\/var\/log\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
+sed -i -e 's/@CENTREON_VARLIB@/\/var\/lib\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
+
+sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www/index.html
+
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
+
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
+
 #Modify default config
 # Monitoring engine information
-sed -i -e "s/share\/centreon-engine/sbin/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
-sed -i -e "s/lib64/lib/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" /usr/share/centreon/www/install/var/engines/centreon-engine;
+sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
 # Broker module information
-sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" /usr/share/centreon/www/install/var/brokers/centreon-broker;
+sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL_DIR}/centreon/www/install/var/brokers/centreon-broker;
 # bug Centreon_plugin
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" /usr/share/centreon/www/install/steps/functions.php;
-sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" /usr/share/centreon/www/install/install.conf.php;
+# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
+sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
 
-# Add /etc/sudoers.d/centreon
-echo "## BEGIN: CENTREON SUDO
+# Add mysql config for Centreon
+echo '[mysqld]
+innodb_file_per_table=1' > /etc/mysql/conf.d/centreon.cnf
 
-User_Alias      CENTREON=%centreon
-Defaults:CENTREON !requiretty
+# Modifiy config systemd
+sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
 
-# centreontrapd
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centreontrapd start
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centreontrapd stop
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centreontrapd restart
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centreontrapd reload
+systemctl daemon-reload
+systemctl restart mysql
 
-# Centreon Engine
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centengine start
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centengine stop
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centengine restart
-CENTREON   ALL = NOPASSWD: /usr/sbin/service centengine reload
-CENTREON   ALL = NOPASSWD: /usr/sbin/centengine -v *
+/usr/bin/mysql <<EOF
+use mysql;
+update user set plugin='' where user='root';
+flush privileges;
+EOF
 
-# Centreon Broker
-CENTREON   ALL = NOPASSWD: /usr/sbin/service cbd start
-CENTREON   ALL = NOPASSWD: /usr/sbin/service cbd stop
-CENTREON   ALL = NOPASSWD: /usr/sbin/service cbd restart
-CENTREON   ALL = NOPASSWD: /usr/sbin/service cbd reload
+# add Timezone
+VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
+sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.1/fpm/php.ini
 
-## END: CENTREON SUDO" > /etc/sudoers.d/centreon
+# modify listen fpm
+sed -i -e 's/listen = \/run\/php\/php7.1-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php/7.1/fpm/pool.d/www.conf
 
+# add node-js
+apt-get install curl
+curl -sL https://deb.nodesource.com/setup_8.x | bash -
+apt-get install -y nodejs
+
+#copy json file
+cp ${DL_DIR}/centreon-web-${CENTREON_VER}/package* ${INSTALL_DIR}/centreon/
+
+#build javascript dependencies
+cd ${INSTALL_DIR}/centreon
+npm install
+npm run build
+npm prune --production
+
+#create htaccess file
+cat >  ${INSTALL_DIR}/centreon/www/.htaccess << EOF
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+ErrorDocument 404 /centreon/index.html
+EOF
+
+#apply owner
+chown -R www-data: ${INSTALL_DIR}/centreon/www
+
+
+cat > /etc/apache2/conf-available/centreon.conf << EOF
+#
+# Section add by Centreon Install Setup
+#
+
+Alias /centreon /usr/share/centreon/www/
+
+<LocationMatch ^/centreon/(.*\.php(/.*)?)\$>
+  ProxyPassMatch fcgi://127.0.0.1:9000/usr/share/centreon/www/\$1
+</LocationMatch>
+
+<Directory "/usr/share/centreon/www">
+    DirectoryIndex index.php
+    Options Indexes
+    AllowOverride all
+    Order allow,deny
+    Allow from all
+    Require all granted
+</Directory>
+
+RedirectMatch ^/\$ /centreon
+EOF
+
+
+# reload conf apache
+a2enconf centreon.conf
+systemctl restart apache2 php7.1-fpm
 
 ## Workarounds
 ## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
 ## (mode w+): Permission denied)
-chown centreon: /var/log/centreon
-chmod 775 /var/log/centreon
-chown centreon-broker: /etc/centreon-broker
-chmod 775 /etc/centreon-broker
-chmod -R 775 /etc/centreon-engine
-chmod 775 /var/lib/centreon-broker
-chown centreon: /etc/centreon-broker/*
+chmod 775 /var/lib/centreon-broker/
 
-####usermod -aG ${ENGINE_GROUP} www-data
+
+usermod -aG ${ENGINE_GROUP} www-data
 usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
 usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
 chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine/
-chmod g-w /var/lib/centreon
-
-
-#### change right to /usr/lib/centreon/plugins
-#### version 1.11
-#cd /usr/lib/centreon/plugins
-#chown ${CENTREON_USER}:${ENGINE_GROUP} centreon*
-#chown -R ${CENTREON_USER}:${ENGINE_GROUP} Centreon*
-#chown ${CENTREON_USER}:${ENGINE_GROUP} check_centreon*
-#chown ${CENTREON_USER}:${ENGINE_GROUP} check_snmp*
-#chown ${CENTREON_USER}:${ENGINE_GROUP} submit*
-#chown ${CENTREON_USER}:${ENGINE_GROUP} process*
-#chmod 664 centreon.conf
-#chmod +x centreon.pm
-#chmod +x Centreon/SNMP/Utils.pm
-#chmod +x check_centreon*
-#chmod +x check_snmp*
-#chmod +x submit*
-#chmod +x process*
 
 }
 
+##ADDONS
+
+function widget_install() {
+echo "
+=======================================================================
+                         Install WIDGETS
+=======================================================================
+"
+cd ${DL_DIR}
+  wget -qO- ${WIDGET_HOST} | tar -C ${INSTALL_DIR}/centreon/www/widgets --strip-components 1 -xzv
+  wget -qO- ${WIDGET_HOSTGROUP} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_SERVICE} | tar -C ${INSTALL_DIR}/centreon/www/widgets --strip-components 1 -xzv
+  wget -qO- ${WIDGET_GRID_MAP} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_TOP_CPU} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_TOP_MEMORY} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_TACTICAL_OVERVIEW} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_HTTP_LOADER} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_ENGINE_STATUS} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_SERVICEGROUP} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  wget -qO- ${WIDGET_GRAPH} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  chown -R ${CENTREON_USER}:${CENTREON_GROUP} ${INSTALL_DIR}/centreon/www/widgets
+}
+
+
+
 function main () {
 echo "
-================| Centreon Poller Install details $VERSION_BATCH |=============
+================| Centreon Central Install details $VERSION_BATCH |============
+                  MariaDB    : ${MARIADB_VER}
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
@@ -589,83 +765,107 @@ text_params
 nonfree_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step1${normal}  => repo non-free on Jessie Install                       ${STATUS_FAIL}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Stretch Install                       ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step1${normal}  => repo non-free on Jessie Install                       ${STATUS_OK}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Stretch Install                       ${STATUS_OK}"
+fi
+
+mariadb_install > ${INSTALL_LOG} 2>&1
+if [[ $? -ne 0 ]];
+  then
+    echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_FAIL}"
+  else
+    echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_OK}"
 fi
 
 clib_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step2${normal}  => Clib install                                          ${STATUS_FAIL}"
+    echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step2${normal}  => Clib install                                          ${STATUS_OK}"
+    echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_OK}"
 fi
 
 centreon_connectors_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step3${normal}  => Centreon Perl and SSH connectors install              ${STATUS_FAIL}"
+    echo -e "${bold}Step4${normal}  => Centreon Perl and SSH connectors install              ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step3${normal}  => Centreon Perl and SSH connectors install              ${STATUS_OK}"
+    echo -e "${bold}Step4${normal}  => Centreon Perl and SSH connectors install              ${STATUS_OK}"
 fi
 
 centreon_engine_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step4${normal}  => Centreon Engine install                               ${STATUS_FAIL}"
+    echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step4${normal}  => Centreon Engine install                               ${STATUS_OK}"
+    echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_OK}"
 fi
 
 monitoring_plugin_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step5${normal}  => Monitoring plugins install                            ${STATUS_FAIL}"
+    echo -e "${bold}Step6${normal}  => Monitoring plugins install                            ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step5${normal}  => Monitoring plugins install                            ${STATUS_OK}"
+    echo -e "${bold}Step6${normal}  => Monitoring plugins install                            ${STATUS_OK}"
 fi
 
 centreon_plugins_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step6${normal}  => Centreon plugins install                              ${STATUS_FAIL}"
+    echo -e "${bold}Step7${normal}  => Centreon plugins install                              ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step6${normal}  => Centreon plugins install                              ${STATUS_OK}"
+    echo -e "${bold}Step7${normal}  => Centreon plugins install                              ${STATUS_OK}"
 fi
 
 centreon_broker_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
+    echo -e "${bold}Step8${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step7${normal}  => Centreon Broker install                               ${STATUS_OK}"
+    echo -e "${bold}Step8${normal}  => Centreon Broker install                               ${STATUS_OK}"
 fi
+
+php_fpm_install >> ${INSTALL_LOG} 2>&1
+if [[ $? -ne 0 ]];
+  then
+    echo -e "${bold}Step9${normal}  => Php-fpm install                               ${STATUS_FAIL}"
+  else
+    echo -e "${bold}Step9${normal}  => Php-fpm install                               ${STATUS_OK}"
+fi
+
 
 create_centreon_tmpl >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step8${normal}  => Centreon template generation                          ${STATUS_FAIL}"
+    echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step8${normal}  => Centreon template generation                          ${STATUS_OK}"
+    echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_OK}"
 fi
 
 centreon_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step9${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
+    echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step9${normal}  => Centreon web interface install                        ${STATUS_OK}"
+    echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_OK}"
 fi
 
 post_install >> ${INSTALL_LOG} 2>&1
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step10${normal} => Post install                                          ${STATUS_FAIL}"
+    echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step10${normal} => Post install                                          ${STATUS_OK}"
+    echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_OK}"
 fi
 
+widget_install >> ${INSTALL_LOG} 2>&1
+if [[ $? -ne 0 ]];
+  then
+    echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_FAIL}"
+  else
+    echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_OK}"
+fi
 echo ""
 echo "##### Install completed #####" >> ${INSTALL_LOG} 2>&1
 }
@@ -673,5 +873,5 @@ echo "##### Install completed #####" >> ${INSTALL_LOG} 2>&1
 # Exec main function
 main
 echo -e ""
-echo -e "${bold}Go to Central Server for configuration "
+echo -e "${bold}Go to http://${ETH0_IP}/centreon to complete the setup${normal} "
 echo -e ""

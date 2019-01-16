@@ -1,29 +1,25 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.18
-# 12/09/2018
+# v 1.20
+# 15/01/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.18"
-CLIB_VER="1.4.2"
-CONNECTOR_VER="1.1.3"
-ENGINE_VER="1.8.1"
+VERSION_BATCH="v 1.20"
+CLIB_VER="18.10.0"
+CONNECTOR_VER="18.10.0"
+ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
-BROKER_VER="3.0.14"
-CENTREON_VER="2.8.26"
+BROKER_VER="18.10.1"
+CENTREON_VER="18.10.2"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
 BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
-if [[ "$CONNECTOR_VER" == "1.1.3" ]]; then
-    CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
-else
-    CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
-fi
+CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
@@ -200,15 +196,16 @@ cmake \
    -DWITH_LOGROTATE_SCRIPT=1 \
    -DWITH_VAR_DIR=/var/log/centreon-engine \
    -DWITH_RW_DIR=/var/lib/centreon-engine/rw \
-   -DWITH_STARTUP_DIR=/etc/init.d \
+   -DWITH_STARTUP_SCRIPT=systemd  \
+   -DWITH_STARTUP_DIR=/lib/systemd/system  \
    -DWITH_PKGCONFIG_SCRIPT=1 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
    -DWITH_TESTING=0 .
 make
 make install
 
-chmod +x /etc/init.d/centengine
-update-rc.d centengine defaults
+systemctl enable centengine.service
+systemctl daemon-reload
 }
 
 function monitoring_plugin_install () {
@@ -252,7 +249,7 @@ echo "
 "
 cd ${DL_DIR}
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl \
-            libxml-simple-perl libdatetime-perl \
+            libxml-simple-perl libdatetime-perl libdate-manip-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core
 git clone https://github.com/centreon/centreon-plugins.git
 cd centreon-plugins
@@ -273,7 +270,28 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install -y librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev
+apt-get install -y libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev lsb-release
+
+# package for rrdtools
+apt-get install -y install libpango1.0-dev libxml2-dev
+
+# compile rrdtools
+cd ${DL_DIR}
+wget http://oss.oetiker.ch/rrdtool/pub/rrdtool-1.4.7.tar.gz
+tar xzf rrdtool-1.4.7.tar.gz
+cd ${DL_DIR}/rrdtool-1.4.7
+./configure --prefix=/opt/rddtool-broker
+make
+make install
+
+cp /opt/rddtool-broker/lib/pkgconfig/librrd.pc /usr/lib/pkgconfig/
+
+#create ldconfig file
+cat >  /etc/ld.so.conf.d/rrdtool-broker.conf << EOF
+# lib rrdtools for Centreon
+/opt/rddtool-broker/lib
+EOF
+
 
 # Cleanup to prevent space full on /var
 apt-get clean
@@ -301,8 +319,8 @@ cmake \
     -DWITH_PREFIX_LIB=/usr/lib/centreon-broker \
     -DWITH_PREFIX_VAR=/var/lib/centreon-broker \
     -DWITH_PREFIX_MODULES=/usr/share/centreon/lib/centreon-broker \
-    -DWITH_STARTUP_DIR=/etc/init.d \
-    -DWITH_STARTUP_SCRIPT=auto \
+    -DWITH_STARTUP_SCRIPT=systemd  \
+    -DWITH_STARTUP_DIR=/lib/systemd/system  \
     -DWITH_TESTING=0 \
     -DWITH_USER=${BROKER_USER} .
 make
