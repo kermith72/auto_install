@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.19
-# 14/01/2019
+# v 1.20
+# 23/01/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -396,7 +396,7 @@ apt-get install php7.1 php7.1-opcache libapache2-mod-php7.1 php7.1-mysql \
 
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php7.1-sqlite3 \
 	php-pear sudo tofrodos bsd-mailx lsb-release mariadb-server \
-	libconfig-inifiles-perl libcrypt-des-perl \
+	libconfig-inifiles-perl libcrypt-des-perl php-db php-date \
 	libdigest-hmac-perl libdigest-sha-perl libgd-perl php7.1-ldap php7.1-snmp \
 	snmp snmpd snmptrapd libnet-snmp-perl libsnmp-perl snmp-mibs-downloader
 
