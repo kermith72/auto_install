@@ -1,11 +1,17 @@
 # auto_install
 Automated installation of Centreon on Debian with sources
+
 See [the explanation page](http://sugarbug.fr/atelier/installations/debian/centreon-install/centreon-install_1810/)
 
 ## tags
 git clone https://github.com/kermith72/auto_install.git
+
 cd auto_install
+
 git checkout v1.x
+
+### version 1.20
+add versionning in README - add package for Pear site down
 
 ### version 1.19
 centreon engine 18.10.0, broker 18.10.1, web 18.10.2
