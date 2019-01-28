@@ -122,10 +122,10 @@ if [[ -e centreon-connectors-${CONNECTOR_VER}.tar.gz ]]
 fi
 
 tar xzf centreon-connectors-${CONNECTOR_VER}.tar.gz
-cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/perl/build
+cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
 
 # add directive compilation
-sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/perl/build/CMakeLists.txt
+sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build/CMakeLists.txt
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -141,7 +141,7 @@ apt-get install -y libssh2-1-dev libgcrypt11-dev
 # Cleanup to prevent space full on /var
 apt-get clean
 
-cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/ssh/build
+cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/ssh/build
 
 # add directive compilation
 sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/ssh/build/CMakeLists.txt

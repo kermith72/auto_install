@@ -154,7 +154,7 @@ if [[ -e centreon-connectors-${CONNECTOR_VER}.tar.gz ]]
 fi
 
 tar xzf centreon-connectors-${CONNECTOR_VER}.tar.gz
-cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/perl/build
+cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -170,7 +170,7 @@ apt-get install -y libssh2-1-dev libgcrypt11-dev
 # Cleanup to prevent space full on /var
 apt-get clean
 
-cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/ssh/build
+cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/ssh/build
 
 cmake \
  -DWITH_PREFIX=/usr  \
