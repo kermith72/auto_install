@@ -19,7 +19,7 @@ MARIADB_VER='10.0'
 ## Sources URL
 BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
-CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
+CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
@@ -146,15 +146,15 @@ echo "
 apt-get install -y libperl-dev
 
 cd ${DL_DIR}
-if [[ -e centreon-connector-${CONNECTOR_VER}.tar.gz ]]
+if [[ -e centreon-connectors-${CONNECTOR_VER}.tar.gz ]]
   then
     echo 'File already exist !'
   else
-    wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connector-${CONNECTOR_VER}.tar.gz
+    wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}.tar.gz
 fi
 
-tar xzf centreon-connector-${CONNECTOR_VER}.tar.gz
-cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
+tar xzf centreon-connectors-${CONNECTOR_VER}.tar.gz
+cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/perl/build
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -170,7 +170,7 @@ apt-get install -y libssh2-1-dev libgcrypt11-dev
 # Cleanup to prevent space full on /var
 apt-get clean
 
-cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/ssh/build
+cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/ssh/build
 
 cmake \
  -DWITH_PREFIX=/usr  \
