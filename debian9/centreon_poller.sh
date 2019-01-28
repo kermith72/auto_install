@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.19
+# v 1.20
 # 15/01/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.19"
+VERSION_BATCH="v 1.20"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
