@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.20
-# 23/01/2019
+# v 1.21
+# 31/01/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.20"
+VERSION_BATCH="v 1.21"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
@@ -290,6 +290,9 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl
 git clone https://github.com/centreon/centreon-plugins.git
 cd centreon-plugins
 chmod +x centreon_plugins.pl
+# retrieve last tag
+latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+sed -i -e "s/(dev)/$latestTag/g" ${DL_DIR}/centreon-plugins/centreon/plugins/script.pm
 chown -R ${ENGINE_USER}:${ENGINE_GROUP} ${DL_DIR}/centreon-plugins
 mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
