@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.21
+add versionning in centreon-plugins
+
 ### version 1.20
 add versionning in README - add package for Pear site down
 
