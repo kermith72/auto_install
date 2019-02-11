@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.22
+bug-fix _CENTREON_PATH_PLACEHOLDER_ in index.html
+
 ### version 1.21
 add versionning in centreon-plugins
 

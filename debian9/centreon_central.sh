@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.21
-# 31/01/2019
+# v 1.22
+# 11/02/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.21"
+VERSION_BATCH="v 1.22"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
@@ -620,8 +620,6 @@ sed -i -e 's/@CENTREON_ETC@/\/etc\/centreon/g' ${INSTALL_DIR}/centreon/config/ce
 sed -i -e 's/@CENTREON_LOG@/\/var\/log\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
 sed -i -e 's/@CENTREON_VARLIB@/\/var\/lib\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
 
-sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www/index.html
-
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
@@ -673,6 +671,9 @@ cd ${INSTALL_DIR}/centreon
 npm install
 npm run build
 npm prune --production
+
+#remove _CENTREON_PATH_PLACEHOLDER_
+sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www/index.html
 
 #create htaccess file
 cat >  ${INSTALL_DIR}/centreon/www/.htaccess << EOF
