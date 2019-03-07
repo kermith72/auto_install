@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.21
-# 31/01/2019
+# v 1.22
+# 07/03/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.21"
+VERSION_BATCH="v 1.22"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
@@ -276,7 +276,7 @@ usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 apt-get install -y libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev lsb-release
 
 # package for rrdtools
-apt-get install -y install libpango1.0-dev libxml2-dev
+apt-get install -y libpango1.0-dev libxml2-dev
 
 # compile rrdtools
 cd ${DL_DIR}
