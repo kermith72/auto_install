@@ -1,5 +1,9 @@
 #!/bin/bash
 # create_config_initial.sh
+# version 2.01
+# date 05/03/2019
+# debug by hugues
+# stpl_app_db_mysl-databases-size
 # version 2.00
 # date 27/06/2018
 # use API Clapi
@@ -314,7 +318,7 @@ $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-threads-connected;critical;20"
 
 ###MySQLdatabases
 ## stpl_app_db_mysl-databases-size
-$CLAPI -o STPL -a add -v "stpl_app_db_mysl-databases-size;MySQL_connection-time;stpl_app_db_mysl"
+$CLAPI -o STPL -a add -v "stpl_app_db_mysl-databases-size;MySQL_connection-size;stpl_app_db_mysl"
 $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;mode;databases-size"
 $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;warning;200"
 $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;critical;600"
