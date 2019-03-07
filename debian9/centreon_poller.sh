@@ -564,23 +564,6 @@ usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
 chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine/
 chmod g-w /var/lib/centreon
 
-#### change right to /usr/lib/centreon/plugins
-#### version 1.11
-cd /usr/lib/centreon/plugins
-chown ${CENTREON_USER}:${ENGINE_GROUP} centreon*
-chown -R ${CENTREON_USER}:${ENGINE_GROUP} Centreon*
-chown ${CENTREON_USER}:${ENGINE_GROUP} check_centreon*
-chown ${CENTREON_USER}:${ENGINE_GROUP} check_snmp*
-chown ${CENTREON_USER}:${ENGINE_GROUP} submit*
-chown ${CENTREON_USER}:${ENGINE_GROUP} process*
-chmod 664 centreon.conf
-chmod +x centreon.pm
-chmod +x Centreon/SNMP/Utils.pm
-chmod +x check_centreon*
-chmod +x check_snmp*
-chmod +x submit*
-chmod +x process*
-
 }
 
 
