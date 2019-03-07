@@ -12,6 +12,8 @@ git checkout v1.x
 
 ### version 1.22
 bug-fix _CENTREON_PATH_PLACEHOLDER_ in index.html
+bug-fix install poller for Debian 9
+bug-fix script create_config_initialV2.sh
 
 ### version 1.21
 add versionning in centreon-plugins
