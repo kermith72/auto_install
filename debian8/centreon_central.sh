@@ -151,7 +151,7 @@ if [[ -e centreon-connectors-${CONNECTOR_VER}.tar.gz ]]
     echo 'File already exist !'
   else
     wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}.tar.gz
-fimy $global_version
+fi
 
 tar xzf centreon-connectors-${CONNECTOR_VER}.tar.gz
 cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
