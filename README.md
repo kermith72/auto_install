@@ -10,9 +10,14 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.23
+centreon web 18.10.3
+
 ### version 1.22
 bug-fix _CENTREON_PATH_PLACEHOLDER_ in index.html
+
 bug-fix install poller for Debian 9
+
 bug-fix script create_config_initialV2.sh
 
 ### version 1.21
@@ -47,6 +52,7 @@ centreon engine 1.8.1, broker 3.0.14, web 2.8.21
 
 ### Version 1.11
 centreon engine 1.8.1, broker 3.0.13, web 2.8.19
+
 fix poller installation
 
 ### Version 1.10
@@ -63,6 +69,7 @@ centreon engine 1.8.1, broker 3.0.11, web 2.8.16
 
 ### Version 1.06
 centreon engine 1.8.0, broker 3.0.10, web 2.8.15
+
 add poller debian strech
 
 ### Version 1.05

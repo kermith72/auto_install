@@ -1,19 +1,19 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.22
-# 11/02/2019
+# v 1.23
+# 09/03/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.22"
+VERSION_BATCH="v 1.23"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
 BROKER_VER="18.10.1"
-CENTREON_VER="18.10.2"
+CENTREON_VER="18.10.3"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
