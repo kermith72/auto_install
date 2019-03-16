@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.24
+centreon-widget-service-monitoring 18.10.2
+
+centreon-widget-host-monitoring 18.10.1
+
 ### version 1.23
 centreon web 18.10.3
 

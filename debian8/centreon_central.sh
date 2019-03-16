@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.23
-# 09/03/2019
+# v 1.24
+# 16/03/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.23"
+VERSION_BATCH="v 1.24"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
@@ -26,9 +26,9 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
-WIDGET_HOST_VER="18.10.0"
+WIDGET_HOST_VER="18.10.1"
 WIDGET_HOSTGROUP_VER="18.10.0"
-WIDGET_SERVICE_VER="18.10.0"
+WIDGET_SERVICE_VER="18.10.2"
 WIDGET_SERVICEGROUP_VER="18.10.0"
 WIDGET_GRID_MAP_VER="18.10.0"
 WIDGET_TOP_CPU_VER="1.1.1"
