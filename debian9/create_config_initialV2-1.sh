@@ -1,5 +1,10 @@
 #!/bin/bash
 # create_config_initial.sh
+# version 2.1
+# date 21/03/2019
+# add template cpu based on Hugues's script
+# debug template mysql queries
+# debug service traffic add name interface
 # version 2.01
 # date 07/03/2019
 # debug by hugues
@@ -145,6 +150,34 @@ $CLAPI -o CMD -a ADD -v 'check_ping;check;$USER1$/check_icmp -H $HOSTADDRESS$ -n
 # cmd_os_linux_local_cpu
 $CLAPI -o CMD -a ADD -v 'cmd_os_linux_local_cpu;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::local::plugin --mode=cpu --warning=$_SERVICEWARNING$ --critical=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
 
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Modes Available:
+#   cpu  
+#		 --warning-average
+#		 --critical-average
+#        --warning-core
+#        --critical-core         
+#   cpu-detailed
+#		 --warning-*  ->'user', 'nice', 'system','idle', 'wait', 'kernel', 'interrupt', 'softirq', 'steal','guest', 'guestnice'
+#        --critical-* ->'user', 'nice', 'system','idle', 'wait', 'kernel', 'interrupt', 'softirq', 'steal','guest', 'guestnice'
+# Commandes CPU SNMP 
+#cmd_os_linux_snmp_cpu
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-average;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu --warning-average=$_SERVICEWARNING$ --critical-average=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-core;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu --warning-core=$_SERVICEWARNING$ --critical-core=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+# cmd_os_linux_snmp_cpu-detailed
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-user;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-user=$_SERVICEWARNING$ --critical-user=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-nice;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-nice=$_SERVICEWARNING$ --critical-nice=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-system;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-system=$_SERVICEWARNING$ --critical-system=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-idle;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-idle=$_SERVICEWARNING$ --critical-idle=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-wait;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-wait=$_SERVICEWARNING$ --critical-wait=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-kernel;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-kernel=$_SERVICEWARNING$ --critical-kernel=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-interrupt;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-interrupt=$_SERVICEWARNING$ --critical-interrupt=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-softirq;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-softirq=$_SERVICEWARNING$ --critical-softirq=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-steal;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-steal=$_SERVICEWARNING$ --critical-steal=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-guest;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-guest=$_SERVICEWARNING$ --critical-guest=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_os_linux_snmp_cpu-det-guestnice;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::snmp::plugin --mode=cpu-detailed --warning-guestnice=$_SERVICEWARNING$ --critical-guestnice=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+
+
 # cmd_os_linux_local_load
 $CLAPI -o CMD -a ADD -v 'cmd_os_linux_local_load;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::local::plugin --mode=load --warning=$_SERVICEWARNING$ --critical=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
 
@@ -162,8 +195,49 @@ $CLAPI -o CMD -a ADD -v 'cmd_os_linux_local_disk_name;check;$CENTREONPLUGINS$/ce
 $CLAPI -o CMD -a ADD -v 'cmd_os_linux_local_network_name;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=os::linux::local::plugin --mode=traffic --speed=$_SERVICESPEED$ --name=$_SERVICEINTERFACE$ --warning-out=$_SERVICEWARNING$ --critical-out=$_SERVICECRITICAL$ --warning-in=$_SERVICEWARNING$ --critical-in=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
  # WARNING IN ET OUT DE LA COMMANDE A REPRENDRE Dans le service template ... !!!!
 
-#cmd_app_db_mysl
+#-----------------------------------------------------------------------------------------------------------------------------------
+# Modes Available:
+#   connection-time
+#		 --warning
+#        --critical
+#   databases-size
+#		 --warning
+#        --critical
+#        --filter  
+#   innodb-bufferpool-hitrate
+#		 --warning
+#        --critical
+#        --lookback
+#   long-queries
+#		 --warning
+#        --critical
+#        --filter-user
+#        --filter-command
+#   myisam-keycache-hitrate
+#		 --warning
+#        --critical
+#        --lookback
+#   open-files
+#   qcache-hitrate
+#   queries
+#		 --warning-*  ->'total', 'update', 'insert','total', 'update', 'insert','delete', 'truncate', 'select', 'begin', 'commit'           
+#        --critical-* ->'total', 'update', 'insert','total', 'update', 'insert','delete', 'truncate', 'select', 'begin', 'commit' 
+#   replication-master-master
+#   replication-master-slave
+#   slow-queries
+#   sql
+#   sql-string
+#   tables-size
+#   threads-connected
+#   uptime
+#   cpu  
+#		 --warning-average
+#		 --critical-average
+#        --warning-core
+#        --critical-core         
+# Commandes CPU SNMP #cmd_app_db_mysl
 $CLAPI -o CMD -a ADD -v 'cmd_app_db_mysl;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=database::mysql::plugin --host=$HOSTADDRESS$ --mode=$_SERVICEMODE$ --username=$_HOSTMYSQLUSERNAME$ --password=$_HOSTMYSQLPASSWORD$  --port=$_HOSTMYSQLPORT$  --warning=$_SERVICEWARNING$ --critical=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+$CLAPI -o CMD -a ADD -v 'cmd_app_db_mysl_queries;check;$CENTREONPLUGINS$/centreon_plugins.pl --plugin=database::mysql::plugin --host=$HOSTADDRESS$ --mode=queries --username=$_HOSTMYSQLUSERNAME$ --password=$_HOSTMYSQLPASSWORD$  --port=$_HOSTMYSQLPORT$  --warning-total=$_SERVICEWARNING-TOTAL$ --critical-total=$_SERVICECRITICAL-TOTAL$ $_SERVICEOPTION$ '
 
 #*****************
 
@@ -204,6 +278,86 @@ $CLAPI -o STPL -a setparam -v "stpl_os_linux_local_cpu;check_command;cmd_os_linu
 $CLAPI -o STPL -a setmacro -v "stpl_os_linux_local_cpu;WARNING;70"
 $CLAPI -o STPL -a setmacro -v "stpl_os_linux_local_cpu;CRITICAL;90"
 $CLAPI -o STPL -a setparam -v "stpl_os_linux_local_cpu;graphtemplate;CPU"
+
+## Services MODELES CPU SNMP 
+#stpl_os_linux_snmp_cpu_snmp_cpu-average
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-average;Cpu-snmp-average;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-average;check_command;cmd_os_linux_snmp_cpu-average"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-average;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-average;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-average;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu_snmp_cpu-core
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-core;Cpu-snmp--core;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-core;check_command;cmd_os_linux_snmp_cpu-core"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-core;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-core;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-core;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-user
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-user;Cpu-snmp-det-user;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-user;check_command;cmd_os_linux_snmp_cpu-det-user"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-user;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-user;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-user;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-nice
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-nice;Cpu-snmp-nice;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-nice;check_command;cmd_os_linux_snmp_cpu-det-nice"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-nice;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-nice;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-nice;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-system
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-system;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-system;check_command;cmd_os_linux_snmp_cpu-det-system"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-system;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-system;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-system;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-idle
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-idle;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-idle;check_command;cmd_os_linux_snmp_cpu-det-idle"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-idle;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-idle;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-idle;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-wait
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-wait;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-wait;check_command;cmd_os_linux_snmp_cpu-det-wait"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-wait;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-wait;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-wait;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-kernel
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-kernel;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-kernel;check_command;cmd_os_linux_snmp_cpu-det-kernel"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-kernel;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-kernel;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-kernel;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-interrupt
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-interrupt;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-interrupt;check_command;cmd_os_linux_snmp_cpu-det-interrupt"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-interrupt;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-interrupt;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-interrupt;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-softirq
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-softirq;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-softirq;check_command;cmd_os_linux_snmp_cpu-det-softirq"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-softirq;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-softirq;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-softirq;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-steal
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-steal;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-steal;check_command;cmd_os_linux_snmp_cpu-det-steal"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-steal;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-steal;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-steal;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-guest
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-guest;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-guest;check_command;cmd_os_linux_snmp_cpu-det-guest"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-guest;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-guest;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-guest;graphtemplate;CPU"
+#stpl_os_linux_snmp_cpu-det-guestnice
+$CLAPI -o STPL -a add -v "stpl_os_linux_snmp_cpu-det-guestnice;Cpu-snmp;service-generique-actif"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-guestnice;check_command;cmd_os_linux_snmp_cpu-det-guestnice"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-guestnice;WARNING;70"
+$CLAPI -o STPL -a setmacro -v "stpl_os_linux_snmp_cpu-det-guestnice;CRITICAL;90"
+$CLAPI -o STPL -a setparam -v "stpl_os_linux_snmp_cpu-det-guestnice;graphtemplate;CPU"
 
 ## LOAD
 #stpl_os_linux_local_load
@@ -298,9 +452,9 @@ $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-qcache-hitrate;warning;30:"
 ###MySQL_queries
 ## stpl_app_db_mysl-queries
 $CLAPI -o STPL -a add -v "stpl_app_db_mysl-queries;MySQL_queries;stpl_app_db_mysl"
-$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-queries;warning;200"
-$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-queries;critical;300"
-$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-queries;mode;queries"
+$CLAPI -o STPL -a setparam -v "stpl_app_db_mysl-queries;check_command;cmd_app_db_mysl_queries"
+$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-queries;warning-total;200"
+$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-queries;critical-total;300"
 
 ###MySQL_slow
 ## stpl_app_db_mysl-slow-queries
@@ -320,8 +474,8 @@ $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-threads-connected;critical;20"
 ## stpl_app_db_mysl-databases-size
 $CLAPI -o STPL -a add -v "stpl_app_db_mysl-databases-size;MySQLdatabases-size;stpl_app_db_mysl"
 $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;mode;databases-size"
-$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;warning;200"
-$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;critical;600"
+#$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;warning;200"
+#$CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;critical;600"
 $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysl-databases-size;filter;centreon"
 
 ###MySQLdatabases
@@ -438,11 +592,16 @@ $CLAPI -o host -a addtemplate -v "Central;htpl_MySQL-Server"
 # application des modeles a l hote
 $CLAPI -o host -a applytpl -v "Central"
 
-$CLAPI -o service -a add -v "Central;Interface-eth0;stpl_os_linux_local_network_name"
+#retrieve name interface
+NAMEINTERFACE=`ip link | awk -F: '$0 !~ "lo|vir|^[^0-9]"{print $2a;getline}'`
 
-   ### application de la configation poller "central"
+$CLAPI -o service -a add -v "Central;Interface-$NAMEINTERFACE;stpl_os_linux_local_network_name"
+$CLAPI -o service -a setmacro -v "Central;Interface-$NAMEINTERFACE;INTERFACE;$NAMEINTERFACE"
 
-   #*****************
+
+### application de la configation poller "central"
+
+#*****************
 
 RESULT=`$CLAPI -a pollergenerate -v 1`
 if [ $? = 0 ];then

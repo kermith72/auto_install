@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.25
+new script create_config_initialV2-1.sh for debian 9
+
 ### version 1.24
 centreon-widget-service-monitoring 18.10.2
 
