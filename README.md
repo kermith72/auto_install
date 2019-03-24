@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.26
+bug-fix widgets top10 and scripts php 
+
 ### version 1.25
 new script create_config_initialV2-1.sh for debian 9
 

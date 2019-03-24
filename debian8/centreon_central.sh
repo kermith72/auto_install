@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Jessie
-# v 1.24
-# 16/03/2019
+# v 1.26
+# 24/03/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.24"
+VERSION_BATCH="v 1.26"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
@@ -583,7 +583,9 @@ sed -i -e 's/@CENTREON_LOG@/\/var\/log\/centreon/g' ${INSTALL_DIR}/centreon/conf
 sed -i -e 's/@CENTREON_VARLIB@/\/var\/lib\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
 
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
-
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
 
 #Modify default config

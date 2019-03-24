@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.24
-# 15/03/2019
+# v 1.26
+# 24/03/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.24"
+VERSION_BATCH="v 1.26"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
@@ -31,8 +31,8 @@ WIDGET_HOSTGROUP_VER="18.10.0"
 WIDGET_SERVICE_VER="18.10.2"
 WIDGET_SERVICEGROUP_VER="18.10.0"
 WIDGET_GRID_MAP_VER="18.10.0"
-WIDGET_TOP_CPU_VER="1.1.1"
-WIDGET_TOP_MEMORY_VER="1.1.1"
+WIDGET_TOP_CPU_VER="18.10.0"
+WIDGET_TOP_MEMORY_VER="18.10.0"
 WIDGET_TACTICAL_OVERVIEW_VER="18.10.0"
 WIDGET_HTTP_LOADER_VER="18.10.0"
 WIDGET_ENGINE_STATUS_VER="18.10.0"
@@ -43,8 +43,8 @@ WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-w
 WIDGET_SERVICE="${WIDGET_BASE}/centreon-widget-service-monitoring/centreon-widget-service-monitoring-${WIDGET_SERVICE_VER}.tar.gz"
 WIDGET_SERVICEGROUP="${WIDGET_BASE}/centreon-widget-servicegroup-monitoring/centreon-widget-servicegroup-monitoring-${WIDGET_SERVICEGROUP_VER}.tar.gz"
 WIDGET_GRID_MAP="${WIDGET_BASE}/centreon-widget-grid-map/centreon-widget-grid-map-${WIDGET_GRID_MAP_VER}.tar.gz"
-WIDGET_TOP_CPU="${WIDGET_BASE}/centreon-widget-live-top10-cpu/centreon-widget-live-top10-cpu-usage-${WIDGET_TOP_CPU_VER}.tar.gz"
-WIDGET_TOP_MEMORY="${WIDGET_BASE}/centreon-widget-live-top10-memory/centreon-widget-live-top10-memory-usage-${WIDGET_TOP_MEMORY_VER}.tar.gz"
+WIDGET_TOP_CPU="https://github.com/centreon/centreon-widget-live-top10-cpu-usage.git"
+WIDGET_TOP_MEMORY="https://github.com/centreon/centreon-widget-live-top10-memory-usage.git"
 WIDGET_TACTICAL_OVERVIEW="${WIDGET_BASE}/centreon-widget-tactical-overview/centreon-widget-tactical-overview-${WIDGET_TACTICAL_OVERVIEW_VER}.tar.gz"
 WIDGET_HTTP_LOADER="${WIDGET_BASE}/centreon-widget-httploader/centreon-widget-httploader-${WIDGET_HTTP_LOADER_VER}.tar.gz"
 WIDGET_ENGINE_STATUS="${WIDGET_BASE}/centreon-widget-engine-status/centreon-widget-engine-status-${WIDGET_ENGINE_STATUS_VER}.tar.gz"
@@ -621,7 +621,9 @@ sed -i -e 's/@CENTREON_LOG@/\/var\/log\/centreon/g' ${INSTALL_DIR}/centreon/conf
 sed -i -e 's/@CENTREON_VARLIB@/\/var\/lib\/centreon/g' ${INSTALL_DIR}/centreon/config/centreon.config.php
 
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
-
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
 
 #Modify default config
@@ -742,8 +744,12 @@ cd ${DL_DIR}
   wget -qO- ${WIDGET_HOSTGROUP} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
   wget -qO- ${WIDGET_SERVICE} | tar -C ${INSTALL_DIR}/centreon/www/widgets --strip-components 1 -xzv
   wget -qO- ${WIDGET_GRID_MAP} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
-  wget -qO- ${WIDGET_TOP_CPU} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
-  wget -qO- ${WIDGET_TOP_MEMORY} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  #wget -qO- ${WIDGET_TOP_CPU} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  #wget -qO- ${WIDGET_TOP_MEMORY} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
+  /usr/bin/git clone ${WIDGET_TOP_CPU}
+  mv centreon-widget-live-top10-cpu-usage/live-top10-cpu-usage ${INSTALL_DIR}/centreon/www/widgets/
+  /usr/bin/git clone ${WIDGET_TOP_MEMORY}
+  mv centreon-widget-live-top10-memory-usage/live-top10-memory-usage ${INSTALL_DIR}/centreon/www/widgets/
   wget -qO- ${WIDGET_TACTICAL_OVERVIEW} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
   wget -qO- ${WIDGET_HTTP_LOADER} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
   wget -qO- ${WIDGET_ENGINE_STATUS} | tar -C ${INSTALL_DIR}/centreon/www/widgets/ --strip-components 1 -xzv
