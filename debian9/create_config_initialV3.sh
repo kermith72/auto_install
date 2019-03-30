@@ -644,7 +644,7 @@ $CLAPI -o STPL -a addhost -v "stpl_os_linux_local_cpu;htpl_OS-Linux-local"
 $CLAPI -o STPL -a addhost -v "stpl_os_linux_local_load;htpl_OS-Linux-local"
 $CLAPI -o STPL -a addhost -v "stpl_os_linux_local_memory;htpl_OS-Linux-local"
 $CLAPI -o STPL -a addhost -v "stpl_os_linux_local_swap;htpl_OS-Linux-local"
-$CLAPI -o STPL -a addtemplate -v "Central;generic-host"
+$CLAPI -o HTPL -a addtemplate -v "htpl_OS-Linux-local;generic-host"
 #$CLAPI -o STPL -a addhost -v "Traffic-local-Model-Service;htpl_OS-Linux-local"
 
 ##OS-Linux-snmp
@@ -652,7 +652,7 @@ $CLAPI -o HTPL -a add -v "htpl_OS-Linux-SNMP;HTPL_OS-Linux-SNMP;;;;"
 $CLAPI -o STPL -a addhost -v "stpl_os_linux_snmp_cpu;htpl_OS-Linux-SNMP"
 $CLAPI -o STPL -a addhost -v "stpl_os_linux_snmp_load;htpl_OS-Linux-SNMP"
 $CLAPI -o STPL -a addhost -v "stpl_os_linux_snmp_memory;htpl_OS-Linux-SNMP"
-$CLAPI -o STPL -a addtemplate -v "Central;generic-host"
+$CLAPI -o HTPL -a addtemplate -v "htpl_OS-Linux-SNMP;generic-host"
 #$CLAPI -o STPL -a addhost -v "stpl_os_linux_local_swap;htpl_OS-Linux-local"
 #$CLAPI -o STPL -a addhost -v "Traffic-local-Model-Service;htpl_OS-Linux-local"
 
