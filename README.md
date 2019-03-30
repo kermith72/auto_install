@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.27
+new script for Debian Stretch, new script configuration create_config_initialV3.sh
+
+centreon web 18.10.4 for Stretch
+
 ### version 1.26
 bug-fix widgets top10 and scripts php 
 
