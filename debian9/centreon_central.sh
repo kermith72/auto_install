@@ -302,7 +302,7 @@ function centreon_plugins_install() {
 " | tee -a ${INSTALL_LOG}
 cd ${DL_DIR}
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl \
-            libxml-simple-perl libdatetime-perl libdate-manip-perl \
+            libxml-simple-perl libdatetime-perl libdate-manip-perl libnet-ldap-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core >> ${INSTALL_LOG}
 git clone https://github.com/centreon/centreon-plugins.git >> ${INSTALL_LOG}
 cd centreon-plugins
