@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.27
-# 28/03/2019
+# v 1.28
+# 22/04/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -49,6 +49,9 @@ WIDGET_TACTICAL_OVERVIEW="${WIDGET_BASE}/centreon-widget-tactical-overview/centr
 WIDGET_HTTP_LOADER="${WIDGET_BASE}/centreon-widget-httploader/centreon-widget-httploader-${WIDGET_HTTP_LOADER_VER}.tar.gz"
 WIDGET_ENGINE_STATUS="${WIDGET_BASE}/centreon-widget-engine-status/centreon-widget-engine-status-${WIDGET_ENGINE_STATUS_VER}.tar.gz"
 WIDGET_GRAPH="${WIDGET_BASE}/centreon-widget-graph-monitoring/centreon-widget-graph-monitoring-${WIDGET_GRAPH_VER}.tar.gz"
+## nrpe
+NRPE_VERSION="3.2.1"
+NRPE_URL="https://github.com/NagiosEnterprises/nrpe/archive/nrpe-3.2.1.tar.gz"
 ## source script
 DIR_SCRIPT=$(cd $( dirname ${BASH_SOURCE[0]}) && pwd )
 ## Temp install dir
@@ -73,6 +76,19 @@ ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $NF}'`
 VARTIMEZONE="Europe/Paris"
 ## verbose script
 SCRIPT_VERBOSE=false
+
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} -n=[yes|no] -v
+
+This program create Central Centreon
+
+    -n|--nrpe     : add check_nrpe
+    -v|--verbose  : add messages
+    -h|--help     : help
+EOF
+}
 
 function text_params () {
   ESC_SEQ="\x1b["
@@ -547,37 +563,21 @@ function centreon_install () {
 " | tee -a ${INSTALL_LOG}
 
 
-echo "# This file controls the activity of snmpd
 
-# Don\'t load any MIBs by default.
-# You might comment this lines once you have the MIBs downloaded.
-export MIBDIRS=/usr/share/mibs
-export MIBS=ALL
+# modify snmp parameter for systemd
+sed -i -e "s/-Lsd/-LS4d/g" /lib/systemd/system/snmpd.service
+sed -i -e "s/-Lsd/-On -Lf \/var\/log\/snmptrapd.log/g" /lib/systemd/system/snmptrapd.service
 
-# snmpd control (yes means start daemon).
-SNMPDRUN=yes
-
-# snmpd options (use syslog, close stdin/out/err).
-SNMPDOPTS='-LS4d -Lf /dev/null -u snmp -g snmp -I -smux,mteTrigger,mteTriggerConf -p /run/snmpd.pid'" > /etc/default/snmpd
-
-echo "# This file controls the activity of snmptrapd
-
-# snmptrapd control (yes means start daemon).  As of net-snmp version
-# 5.0, master agentx support must be enabled in snmpd before snmptrapd
-# can be run.  See snmpd.conf(5) for how to do this.
-TRAPDRUN=yes
-
-# snmptrapd options (use syslog).
-TRAPDOPTS='-On -Lsd -p /run/snmptrapd.pid'" > /etc/default/snmptrapd
-
-sed -i -e "s/view   systemonly/#view   systemonly/g" /etc/snmp/snmpd.conf;
-sed -i -e "s/#rocommunity public  localhost/rocommunity public  localhost/g" /etc/snmp/snmpd.conf;
-sed -i -e "s/rocommunity public  default    -V systemonly/# rocommunity public  default    -V systemonly/g" /etc/snmp/snmpd.conf;
-sed -i -e "s/defaultMonitors/#defaultMonitors/g" /etc/snmp/snmpd.conf;
-sed -i -e "s/linkUpDownNotifications/#linkUpDownNotifications/g" /etc/snmp/snmpd.conf;
+# modify snmp parameter
+sed -i -e "s/view   systemonly/#view   systemonly/g" /etc/snmp/snmpd.conf
+sed -i -e "s/#rocommunity public  localhost/rocommunity public  localhost/g" /etc/snmp/snmpd.conf
+sed -i -e "s/rocommunity public  default    -V systemonly/# rocommunity public  default    -V systemonly/g" /etc/snmp/snmpd.conf
+sed -i -e "s/defaultMonitors/#defaultMonitors/g" /etc/snmp/snmpd.conf
+sed -i -e "s/linkUpDownNotifications/#linkUpDownNotifications/g" /etc/snmp/snmpd.conf
 
 sed -i -e "s/mibs/#mibs/g" /etc/snmp/snmp.conf;
 
+systemctl daemon-reload >> ${INSTALL_LOG}
 systemctl restart snmpd snmptrapd >> ${INSTALL_LOG}
 
 # make lib perl rrd
@@ -722,9 +722,50 @@ cd ${DL_DIR}
   chown -R ${CENTREON_USER}:${CENTREON_GROUP} ${INSTALL_DIR}/centreon/www/widgets
 }
 
+function add_check_nrpe() {
+[ "$SCRIPT_VERBOSE" = true ] && echo "
+=======================================================================
+                         Install check_nrpe3
+=======================================================================
+" | tee -a ${INSTALL_LOG}
 
+apt-get install -y libssl-dev >> ${INSTALL_LOG}	
+cd ${DL_DIR}
+if [[ -e nrpe.tar.gz ]] ;
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    wget --no-check-certificate -O nrpe.tar.gz ${NRPE_URL} >> ${INSTALL_LOG}
+fi
+
+tar xzf nrpe.tar.gz
+cd ${DL_DIR}/nrpe-nrpe-${NRPE_VERSION}
+
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
+
+./configure --with-nagios-user=${ENGINE_USER} --with-nrpe-user=${ENGINE_USER} --with-nagios-group=${ENGINE_USER} --with-nrpe-group=${ENGINE_USER} --libexecdir=/usr/lib/nagios/plugins  >> ${INSTALL_LOG}
+make all  >> ${INSTALL_LOG}
+make install-plugin  >> ${INSTALL_LOG}
+}
 
 function main () {
+  if [ "$ADD_NRPE" == "yes" ]
+  then
+echo "
+================| Centreon Central Install details $VERSION_BATCH |============
+                  MariaDB    : ${MARIADB_VER}
+                  Clib       : ${CLIB_VER}
+                  Connector  : ${CONNECTOR_VER}
+                  Engine     : ${ENGINE_VER}
+                  Plugin     : ${PLUGIN_VER}
+                  Broker     : ${BROKER_VER}
+                  Centreon   : ${CENTREON_VER}
+                  NRPE       : ${NRPE_VERSION}
+                  Install dir: ${INSTALL_DIR}
+                  Source dir : ${DL_DIR}
+======================================================================
+"
+  else
 echo "
 ================| Centreon Central Install details $VERSION_BATCH |============
                   MariaDB    : ${MARIADB_VER}
@@ -738,6 +779,7 @@ echo "
                   Source dir : ${DL_DIR}
 ======================================================================
 "
+  fi
 text_params
 
 nonfree_install 2>> ${INSTALL_LOG} 
@@ -844,15 +886,37 @@ if [[ $? -ne 0 ]];
   else
     echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_OK}"
 fi
+if [ "$ADD_NRPE" == "yes" ]
+then
+  add_check_nrpe 2>>${INSTALL_LOG}
+  if [[ $? -ne 0 ]];
+  then
+    echo -e "${bold}Step14${normal} => Nrpe install                                          ${STATUS_FAIL}"
+  else
+    echo -e "${bold}Step14${normal} => Nrpe install                                          ${STATUS_OK}"
+  fi
+
+fi
 echo ""
 echo "##### Install completed #####" | tee -a ${INSTALL_LOG}
 }
 
+
+#check menu
 for i in "$@"
 do
   case $i in
+    -n=*|--nrpe=*)
+      ADD_NRPE="${i#*=}"
+      shift # past argument=value
+      ;;
     -v|--verbose)
       SCRIPT_VERBOSE=true
+      shift # past argument=value
+      ;;
+    -h|--help)
+      show_help
+      exit 2
       ;;
     *)
             # unknown option
@@ -860,6 +924,12 @@ do
   esac
 done
 
+# Check NRPE yes/no
+if [[ $ADD_NRPE =~ ^[yY][eE][sS]|[yY]$ ]]; then
+  ADD_NRPE="yes"
+else
+  ADD_NRPE="no"
+fi
 
 # Exec main function
 main

@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.28
+bux-fix snmp, add check_nrpe for central, new script 3.1 configuration create_config_initialV3.sh
+
 ### version 1.27
 new script for Debian Stretch, new script configuration create_config_initialV3.sh
 
