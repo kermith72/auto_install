@@ -1,5 +1,7 @@
 #!/bin/bash
 # create_config_initialV3.sh
+# version 3.02
+# Enhancements : fix notification for admin
 # version 3.01
 # date 14/04/2019
 # bugfix name ip for raspberry
@@ -259,6 +261,11 @@ then
   $CLAPI -o service -a add -v "Central;Interface-$NAMEINTERFACE;stpl_os_linux_local_network_name"
   $CLAPI -o service -a setmacro -v "Central;Interface-$NAMEINTERFACE;INTERFACE;$NAMEINTERFACE"
 fi
+
+### application des commandes de notification pour l'admin
+
+$CLAPI -o contact -a setparam -v "admin;hostnotifcmd;host-notify-by-email"
+$CLAPI -o contact -a setparam -v "admin;svcnotifcmd;service-notify-by-email"
 
 ### application de la configation poller "central"
 
