@@ -1,25 +1,25 @@
 #!/bin/bash
-# Centreon + engine install script for Debian Stretch
-# v 1.28
-# 22/04/2019
+# Centreon 19.04 + engine install script for Debian Stretch
+# v 1.29
+# 03/05/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.28"
-CLIB_VER="18.10.0"
-CONNECTOR_VER="18.10.0"
-ENGINE_VER="18.10.0"
+VERSION_BATCH="v 1.29"
+CLIB_VER="19.04.0"
+CONNECTOR_VER="19.04.0"
+ENGINE_VER="19.04.0"
 PLUGIN_VER="2.2"
-BROKER_VER="18.10.1"
-CENTREON_VER="18.10.4"
+BROKER_VER="19.04.0"
+CENTREON_VER="19.04.0"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
 BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
-CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
+CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
@@ -104,11 +104,11 @@ function text_params () {
 function nonfree_install () {
 [ "$SCRIPT_VERBOSE" = true ] && echo "
 ======================================================================
-           Add Jessie repo for non-free
+           Add Stretch repo for non-free
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-echo 'deb http://ftp.fr.debian.org/debian/ stretch non-free' > /etc/apt/sources.list.d/jessie-nonfree.list
+echo 'deb http://ftp.fr.debian.org/debian/ stretch non-free' > /etc/apt/sources.list.d/stretch-nonfree.list
 
 apt-get update  >> ${INSTALL_LOG}
 }
@@ -169,14 +169,15 @@ function centreon_connectors_install () {
 apt-get install -y libperl-dev >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
-if [[ -e centreon-connectors-${CONNECTOR_VER}.tar.gz ]]
+if [[ -e centreon-connector-${CONNECTOR_VER}.tar.gz ]]
   then
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
-    wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}.tar.gz >> ${INSTALL_LOG}
+    wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connector-${CONNECTOR_VER}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
-tar xzf centreon-connectors-${CONNECTOR_VER}.tar.gz
+tar xzf centreon-connector-${CONNECTOR_VER}.tar.gz
 cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
@@ -241,6 +242,7 @@ if [[ -e centreon-engine-${ENGINE_VER}.tar.gz ]]
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
     wget ${ENGINE_URL} -O ${DL_DIR}/centreon-engine-${ENGINE_VER}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
 tar xzf centreon-engine-${ENGINE_VER}.tar.gz
@@ -294,6 +296,7 @@ if [[ -e monitoring-plugins-${PLUGIN_VER}.tar.gz ]]
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
     wget --no-check-certificate ${PLUGIN_URL} -O ${DL_DIR}/monitoring-plugins-${PLUGIN_VER}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
 tar xzf monitoring-plugins-${PLUGIN_VER}.tar.gz
@@ -354,6 +357,7 @@ apt-get install -y libpango1.0-dev libxml2-dev >> ${INSTALL_LOG}
 # compile rrdtools
 cd ${DL_DIR}
 wget http://oss.oetiker.ch/rrdtool/pub/rrdtool-1.4.7.tar.gz >> ${INSTALL_LOG}
+[ $? != 0 ] && return 1
 tar xzf rrdtool-1.4.7.tar.gz
 cd ${DL_DIR}/rrdtool-1.4.7
 
@@ -380,6 +384,7 @@ if [[ -e centreon-broker-${BROKER_VER}.tar.gz ]]
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
     wget ${BROKER_URL} -O ${DL_DIR}/centreon-broker-${BROKER_VER}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
 tar xzf centreon-broker-${BROKER_VER}.tar.gz
@@ -563,7 +568,6 @@ function centreon_install () {
 " | tee -a ${INSTALL_LOG}
 
 
-
 # modify snmp parameter for systemd
 sed -i -e "s/-Lsd/-LS4d/g" /lib/systemd/system/snmpd.service
 sed -i -e "s/-Lsd/-On -Lf \/var\/log\/snmptrapd.log/g" /lib/systemd/system/snmptrapd.service
@@ -593,6 +597,7 @@ if [[ -e centreon-web-${CENTREON_VER}.tar.gz ]]
     echo 'File already exist!' | tee -a ${INSTALL_LOG}
   else
     wget ${CENTREON_URL} -O ${DL_DIR}/centreon-web-${CENTREON_VER}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
 groupadd -g 6000 ${CENTREON_GROUP}
@@ -621,8 +626,18 @@ function post_install () {
 =====================================================================
 " | tee -a ${INSTALL_LOG}
 
-#bug fix 
+# Install composer
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Composer" | tee -a ${INSTALL_LOG}
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${INSTALL_LOG}
+php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_LOG}
+cd ${INSTALL_DIR}/centreon 
+composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
 
+
+
+
+#bug fix 
+sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www/index.html
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
@@ -646,7 +661,8 @@ sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centre
 
 # Add mysql config for Centreon
 echo '[mysqld]
-innodb_file_per_table=1' > /etc/mysql/conf.d/centreon.cnf
+innodb_file_per_table=1
+open_files_limit=32000' > /etc/mysql/conf.d/centreon.cnf
 
 # Modifiy config systemd
 sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
@@ -669,7 +685,9 @@ sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.1/fp
 apt-get install curl  >> ${INSTALL_LOG}
 curl -sL https://deb.nodesource.com/setup_8.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
-
+cp ${DL_DIR}/centreon-web-${CENTREON_VER}/webpack.config.js ${INSTALL_DIR}/centreon
+cp ${DL_DIR}/centreon-web-${CENTREON_VER}/.babelrc ${INSTALL_DIR}/centreon
+sed -i -e 's/apache/www-data/g' ${INSTALL_DIR}/centreon/package.json
 
 #build javascript dependencies
 cd ${INSTALL_DIR}/centreon
@@ -679,7 +697,7 @@ npm prune --production >> ${INSTALL_LOG}
 
 
 #apply owner
-chown -R www-data: ${INSTALL_DIR}/centreon/www
+#chown -R www-data: ${INSTALL_DIR}/centreon/www
 
 
 # reload conf apache
@@ -736,6 +754,7 @@ if [[ -e nrpe.tar.gz ]] ;
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
     wget --no-check-certificate -O nrpe.tar.gz ${NRPE_URL} >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
 tar xzf nrpe.tar.gz
