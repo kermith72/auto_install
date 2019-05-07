@@ -579,6 +579,21 @@ mkdir /var/log/centreon-broker
 chown ${BROKER_USER}: /var/log/centreon-broker
 chmod 775 /var/log/centreon-broker
 
+#add cgroup centreon
+echo '[Unit]
+Description=Cgroup Centreon
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+ExecReload=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
+
+systemctl daemon-reload
+systemctl enable centreon
 }
 
 

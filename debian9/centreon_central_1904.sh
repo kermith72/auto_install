@@ -710,6 +710,21 @@ systemctl restart apache2 php7.1-fpm >> ${INSTALL_LOG}
 chmod 775 /var/lib/centreon/centplugins
 chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
 
+#add cgroup centreon
+echo '[Unit]
+Description=Cgroup Centreon
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+ExecReload=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
+
+systemctl daemon-reload
+systemctl enable centreon
 
 }
 
