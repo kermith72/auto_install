@@ -1,27 +1,29 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.27
-# 28/03/2019
+# v 1.30
+# 08/07/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.27"
+VERSION_BATCH="v 1.30"
 CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
+PLUGIN_CENTREON_VER="20190704"
 BROKER_VER="18.10.1"
-CENTREON_VER="18.10.4"
+CENTREON_VER="18.10.5"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
-BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
+BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
 CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
+PLUGIN_CENTREON_URL="${BASE_URL}/centreon-plugins/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
@@ -254,12 +256,20 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl
             libxml-simple-perl libdatetime-perl libdate-manip-perl libnet-ldap-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core >> ${INSTALL_LOG}
 git clone https://github.com/centreon/centreon-plugins.git >> ${INSTALL_LOG}
-cd centreon-plugins
-# retrieve last tag
-latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
-sed -i -e "s/(dev)/$latestTag/g" ${DL_DIR}/centreon-plugins/centreon/plugins/script.pm
-chmod +x centreon_plugins.pl
-chown -R ${ENGINE_USER}:${ENGINE_GROUP} ${DL_DIR}/centreon-plugins
+
+cd ${DL_DIR}
+if [[ -e centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz ]]
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    wget ${PLUGIN_CENTREON_URL} -O ${DL_DIR}/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz >> ${INSTALL_LOG}
+fi
+
+tar xzf centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz
+cd ${DL_DIR}/centreon-plugins-${PLUGIN_CENTREON_VER}
+
+chown -R ${ENGINE_USER}:${ENGINE_GROUP} *
+chmod +x *
 mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
 }
@@ -582,7 +592,7 @@ echo "
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
-                  Plugin     : ${PLUGIN_VER}
+                  Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}
                   Centreon   : ${CENTREON_VER}
                   Install dir: ${INSTALL_DIR}

@@ -1,43 +1,45 @@
 #!/bin/bash
 # Centreon 19.04 + engine install script for Debian Stretch
-# v 1.29
-# 03/05/2019
+# v 1.30
+# 09/07/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.29"
+VERSION_BATCH="v 1.30"
 CLIB_VER="19.04.0"
 CONNECTOR_VER="19.04.0"
 ENGINE_VER="19.04.0"
 PLUGIN_VER="2.2"
+PLUGIN_CENTREON_VER="20190704"
 BROKER_VER="19.04.0"
 CENTREON_VER="19.04.0"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
-BASE_URL="https://s3-eu-west-1.amazonaws.com/centreon-download/public"
+BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
 CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
+PLUGIN_CENTREON_URL="${BASE_URL}/centreon-plugins/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
-WIDGET_HOST_VER="18.10.1"
-WIDGET_HOSTGROUP_VER="18.10.0"
-WIDGET_SERVICE_VER="18.10.2"
-WIDGET_SERVICEGROUP_VER="18.10.0"
-WIDGET_GRID_MAP_VER="18.10.0"
-WIDGET_TOP_CPU_VER="18.10.0"
-WIDGET_TOP_MEMORY_VER="18.10.0"
-WIDGET_TACTICAL_OVERVIEW_VER="18.10.0"
-WIDGET_HTTP_LOADER_VER="18.10.0"
-WIDGET_ENGINE_STATUS_VER="18.10.0"
-WIDGET_GRAPH_VER="18.10.0"
-WIDGET_BASE="https://s3-eu-west-1.amazonaws.com/centreon-download/public/centreon-widgets"
+WIDGET_HOST_VER="19.04.0"
+WIDGET_HOSTGROUP_VER="19.04.0"
+WIDGET_SERVICE_VER="19.04.0"
+WIDGET_SERVICEGROUP_VER="19.04.0"
+WIDGET_GRID_MAP_VER="19.04.0"
+WIDGET_TOP_CPU_VER="19.04.0"
+WIDGET_TOP_MEMORY_VER="19.04.0"
+WIDGET_TACTICAL_OVERVIEW_VER="19.04.0"
+WIDGET_HTTP_LOADER_VER="19.04.0"
+WIDGET_ENGINE_STATUS_VER="19.04.0"
+WIDGET_GRAPH_VER="19.04.0"
+WIDGET_BASE="http://files.download.centreon.com/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
 WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"
 WIDGET_SERVICE="${WIDGET_BASE}/centreon-widget-service-monitoring/centreon-widget-service-monitoring-${WIDGET_SERVICE_VER}.tar.gz"
@@ -323,13 +325,20 @@ cd ${DL_DIR}
 DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl \
             libxml-simple-perl libdatetime-perl libdate-manip-perl libnet-ldap-perl \
             libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl git-core >> ${INSTALL_LOG}
-git clone https://github.com/centreon/centreon-plugins.git >> ${INSTALL_LOG}
-cd centreon-plugins
-chmod +x centreon_plugins.pl
-# retrieve last tag
-latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
-sed -i -e "s/(dev)/$latestTag/g" ${DL_DIR}/centreon-plugins/centreon/plugins/script.pm
-chown -R ${ENGINE_USER}:${ENGINE_GROUP} ${DL_DIR}/centreon-plugins
+
+cd ${DL_DIR}
+if [[ -e centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz ]]
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    wget ${PLUGIN_CENTREON_URL} -O ${DL_DIR}/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz >> ${INSTALL_LOG}
+fi
+
+tar xzf centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz
+cd ${DL_DIR}/centreon-plugins-${PLUGIN_CENTREON_VER}
+
+chown -R ${ENGINE_USER}:${ENGINE_GROUP} *
+chmod +x *
 mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
 }
@@ -791,7 +800,7 @@ echo "
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
-                  Plugin     : ${PLUGIN_VER}
+                  Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}
                   Centreon   : ${CENTREON_VER}
                   NRPE       : ${NRPE_VERSION}
@@ -806,7 +815,7 @@ echo "
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
-                  Plugin     : ${PLUGIN_VER}
+                  Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}
                   Centreon   : ${CENTREON_VER}
                   Install dir: ${INSTALL_DIR}

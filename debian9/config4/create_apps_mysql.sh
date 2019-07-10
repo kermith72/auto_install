@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_apps_mysql.sh
+# version 1.02
+# 09/07/2019
+# modify plugin sql mode threads-connected
 # version 1.01
 # 20/05/2019
 # use centreon-plugins fatpacked
@@ -14,6 +17,9 @@ create_cmd_mysql() {
   
   exist_object CMD cmd_app_db_mysl_queries
   [ $? -ne 0 ] &&   $CLAPI -o CMD -a ADD -v 'cmd_app_db_mysl_queries;check;$CENTREONPLUGINS$/centreon_mysql.pl --plugin=database::mysql::plugin --host=$HOSTADDRESS$ --mode=queries --username=$_HOSTMYSQLUSERNAME$ --password=$_HOSTMYSQLPASSWORD$  --port=$_HOSTMYSQLPORT$  --warning-total=$_SERVICEWARNING-TOTAL$ --critical-total=$_SERVICECRITICAL-TOTAL$ $_SERVICEOPTION$ '
+
+  exist_object CMD cmd_app_db_mysl_threads-connected
+  [ $? -ne 0 ] &&   $CLAPI -o CMD -a ADD -v 'cmd_app_db_mysl_threads-connected;check;$CENTREONPLUGINS$/centreon_mysql.pl --plugin=database::mysql::plugin --host=$HOSTADDRESS$ --mode=threads-connected --username=$_HOSTMYSQLUSERNAME$ --password=$_HOSTMYSQLPASSWORD$  --port=$_HOSTMYSQLPORT$  --warning-usage=$_SERVICEWARNING$ --critical-usage=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
 	
 }
 
@@ -91,7 +97,7 @@ create_stpl_mysql() {
   if [ $? -ne 0 ]
   then
     $CLAPI -o STPL -a add -v "stpl_app_db_mysql-threads-connected;MySQL_threads-connected;stpl_app_db_mysql"
-    $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysql-threads-connected;mode;threads-connected"
+    $CLAPI -o STPL -a setparam -v "stpl_app_db_mysql-threads-connected;check_command;cmd_app_db_mysl_threads-connected"
     $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysql-threads-connected;warning;10"
     $CLAPI -o STPL -a setmacro -v "stpl_app_db_mysql-threads-connected;critical;20"
   fi

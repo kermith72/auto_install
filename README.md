@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.30
+centreon web 18.10.5 for Stretch
+
+plugin Centreon fastpacked for Stretch, new script create_config_initialV4.sh
+
 ### version 1.29
 new script centreon_central_1810 and centreon_central_1904
 
