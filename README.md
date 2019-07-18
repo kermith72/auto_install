@@ -10,6 +10,12 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.31
+centreon engine 19.04.1, web 19.04.3 for Stretch
+
+centreon web 18.10.6 for Stretch
+
+
 ### version 1.30
 centreon web 18.10.5 for Stretch
 

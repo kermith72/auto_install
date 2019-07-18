@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 19.04 + engine install script for Debian Stretch
-# v 1.30
-# 09/07/2019
+# v 1.31
+# 17/07/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.30"
+VERSION_BATCH="v 1.31"
 CLIB_VER="19.04.0"
 CONNECTOR_VER="19.04.0"
-ENGINE_VER="19.04.0"
+ENGINE_VER="19.04.1"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20190704"
 BROKER_VER="19.04.0"
-CENTREON_VER="19.04.0"
+CENTREON_VER="19.04.3"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -28,9 +28,9 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
-WIDGET_HOST_VER="19.04.0"
+WIDGET_HOST_VER="19.04.1"
 WIDGET_HOSTGROUP_VER="19.04.0"
-WIDGET_SERVICE_VER="19.04.0"
+WIDGET_SERVICE_VER="19.04.1"
 WIDGET_SERVICEGROUP_VER="19.04.0"
 WIDGET_GRID_MAP_VER="19.04.0"
 WIDGET_TOP_CPU_VER="19.04.0"
@@ -620,12 +620,30 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 # clean /tmp
 rm -rf /tmp/*
 
-# add DEFAULT_PHP_FPM_SERVICE
-#sed -i '$aDEFAULT_PHP_FPM_SERVICE="fpm-php"' ${DL_DIR}/centreon-web-${CENTREON_VER}/varinstall/vars
+# Install composer
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Composer" | tee -a ${INSTALL_LOG}
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${INSTALL_LOG}
+php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_LOG}
 
-[ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
+#build php dependencies
+composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
 
-./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG} 
+# add node-js
+apt-get install curl  >> ${INSTALL_LOG}
+curl -sL https://deb.nodesource.com/setup_8.x | bash - >> ${INSTALL_LOG}
+apt-get install -y nodejs >> ${INSTALL_LOG}
+
+#build javascript dependencies
+npm install >> ${INSTALL_LOG}
+npm run build >> ${INSTALL_LOG}
+
+
+if [ "$INSTALL_WEB" == "yes" ]
+then
+  [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
+
+  ./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+fi 
 }
 
 function post_install () {
@@ -635,18 +653,7 @@ function post_install () {
 =====================================================================
 " | tee -a ${INSTALL_LOG}
 
-# Install composer
-[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Composer" | tee -a ${INSTALL_LOG}
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${INSTALL_LOG}
-php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_LOG}
-cd ${INSTALL_DIR}/centreon 
-composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
-
-
-
-
 #bug fix 
-sed -i -e 's/_CENTREON_PATH_PLACEHOLDER_/centreon/g' ${INSTALL_DIR}/centreon/www/index.html
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
@@ -688,25 +695,6 @@ EOF
 # add Timezone
 VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
 sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.1/fpm/php.ini
-
-
-# add node-js
-apt-get install curl  >> ${INSTALL_LOG}
-curl -sL https://deb.nodesource.com/setup_8.x | bash - >> ${INSTALL_LOG}
-apt-get install -y nodejs >> ${INSTALL_LOG}
-cp ${DL_DIR}/centreon-web-${CENTREON_VER}/webpack.config.js ${INSTALL_DIR}/centreon
-cp ${DL_DIR}/centreon-web-${CENTREON_VER}/.babelrc ${INSTALL_DIR}/centreon
-sed -i -e 's/apache/www-data/g' ${INSTALL_DIR}/centreon/package.json
-
-#build javascript dependencies
-cd ${INSTALL_DIR}/centreon
-npm install >> ${INSTALL_LOG}
-npm run build >> ${INSTALL_LOG}
-npm prune --production >> ${INSTALL_LOG}
-
-
-#apply owner
-#chown -R www-data: ${INSTALL_DIR}/centreon/www
 
 
 # reload conf apache
@@ -914,21 +902,28 @@ if [[ $? -ne 0 ]];
     echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_OK}"
 fi
 
-post_install 2>>${INSTALL_LOG}
-if [[ $? -ne 0 ]];
-  then
-    echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_FAIL}"
-  else
-    echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_OK}"
+if [ "$INSTALL_WEB" == "yes" ]
+then
+  post_install 2>>${INSTALL_LOG}
+  if [[ $? -ne 0 ]];
+    then
+      echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_FAIL}"
+    else
+      echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_OK}"
+  fi
 fi
 
-widget_install 2>>${INSTALL_LOG}
-if [[ $? -ne 0 ]];
-  then
-    echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_FAIL}"
-  else
-    echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_OK}"
-fi
+if [ "$INSTALL_WEB" == "yes" ]
+then
+  widget_install 2>>${INSTALL_LOG}
+  if [[ $? -ne 0 ]];
+    then
+      echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_FAIL}"
+    else
+      echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_OK}"
+  fi
+fi 
+
 if [ "$ADD_NRPE" == "yes" ]
 then
   add_check_nrpe 2>>${INSTALL_LOG}
@@ -953,6 +948,10 @@ do
       ADD_NRPE="${i#*=}"
       shift # past argument=value
       ;;
+    -w=*|--web=*)
+      INSTALL_WEB="${i#*=}"
+      shift # past argument=value
+      ;;
     -v|--verbose)
       SCRIPT_VERBOSE=true
       shift # past argument=value
@@ -967,8 +966,15 @@ do
   esac
 done
 
-# Check NRPE yes/no
+# Check NRPE yes/no default=yes
 if [[ $ADD_NRPE =~ ^[yY][eE][sS]|[yY]$ ]]; then
+  INSTALL_WEB="no"
+else
+  INSTALL_WEB="yes"
+fi
+
+# Check Install Web yes/no default no
+if [[ $ADD_NRPE =~ ^[nN][oO]$ ]]; then
   ADD_NRPE="yes"
 else
   ADD_NRPE="no"
