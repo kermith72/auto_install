@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.31
-# 18/07/2019
+# v 1.32
+# 23/09/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -14,7 +14,7 @@ ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20190704"
 BROKER_VER="18.10.1"
-CENTREON_VER="18.10.6"
+CENTREON_VER="18.10.7"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
