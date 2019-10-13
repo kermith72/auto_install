@@ -679,9 +679,9 @@ text_params
 nonfree_install 2>>${INSTALL_LOG}
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step1${normal}  => repo non-free on Stretch Install                       ${STATUS_FAIL}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                        ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step1${normal}  => repo non-free on Stretch Install                       ${STATUS_OK}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                        ${STATUS_OK}"
 fi
 
 verify_version "$CLIB_VER" "$CLIB_VER_OLD"
