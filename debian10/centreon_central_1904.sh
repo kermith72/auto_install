@@ -1234,16 +1234,16 @@ done
 
 # Check NRPE yes/no default=yes
 if [[ $ADD_NRPE =~ ^[yY][eE][sS]|[yY]$ ]]; then
-  ADD_NRPE="no"
-else
   ADD_NRPE="yes"
+else
+  ADD_NRPE="no"
 fi
 
 # Check Install Web yes/no default no
 if [[ $INSTALL_WEB =~ ^[nN][oO]$ ]]; then
-  INSTALL_WEB="yes"
-else
   INSTALL_WEB="no"
+else
+  INSTALL_WEB="yes"
 fi
 
 # Exec main function

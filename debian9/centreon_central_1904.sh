@@ -1224,9 +1224,9 @@ done
 
 # Check NRPE yes/no default=yes
 if [[ $ADD_NRPE =~ ^[yY][eE][sS]|[yY]$ ]]; then
-  ADD_NRPE="no"
-else
   ADD_NRPE="yes"
+else
+  ADD_NRPE="no"
 fi
 
 # Check Install Web yes/no default no
