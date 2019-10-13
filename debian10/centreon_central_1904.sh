@@ -786,7 +786,7 @@ systemctl enable centreon
 # Install pack icônes V2 Pixelabs
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Pack Icônes V2 Pixelabs" | tee -a ${INSTALL_LOG}
 tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
-cp -r ${DIR_SCRIPT}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
+cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
 chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
 }
 
