@@ -142,7 +142,7 @@ create_stpl_mysql() {
   ## stpl_app_db_mysl-long-queries
   exist_object STPL stpl_app_db_mysql-long-queries  
   if [ $? -ne 0 ]
-  then-v 
+  then
     exec_clapi STPL add "stpl_app_db_mysql-long-queries;MySQL_long-queries;stpl_app_db_mysql"
     exec_clapi STPL setmacro "stpl_app_db_mysql-long-queries;mode;long-queries"
     exec_clapi STPL setmacro "stpl_app_db_mysql-long-queries;warning;0.1"
