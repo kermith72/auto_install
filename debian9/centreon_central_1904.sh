@@ -1231,9 +1231,9 @@ fi
 
 # Check Install Web yes/no default no
 if [[ $INSTALL_WEB =~ ^[nN][oO]$ ]]; then
-  INSTALL_WEB="yes"
-else
   INSTALL_WEB="no"
+else
+  INSTALL_WEB="yes"
 fi
 
 # Exec main function
