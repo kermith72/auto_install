@@ -891,7 +891,7 @@ echo "
 ================| Centreon Central Install details $VERSION_BATCH |============
                   MariaDB    : ${MARIADB_VER}
                   Clib       : ${CLIB_VER}
-                  Connector  : ${/etc/mysql/conf.d/centreon.cnfCONNECTOR_VER}
+                  Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
                   Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}
