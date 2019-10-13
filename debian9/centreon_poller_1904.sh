@@ -1,18 +1,18 @@
 #!/bin/bash
 # Centreon poller install script for Debian Stretch
-# v 1.31
-# 23/09/2019
+# v 1.33
+# 13/10/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.31"
+VERSION_BATCH="v 1.33"
 CLIB_VER="19.04.0"
 CONNECTOR_VER="19.04.0"
 ENGINE_VER="19.04.1"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20190704"
+PLUGIN_CENTREON_VER="20191002"
 BROKER_VER="19.04.0"
 CENTREON_VER="19.04.4"
 # MariaDB Series
@@ -278,6 +278,24 @@ chown -R ${ENGINE_USER}:${ENGINE_GROUP} *
 chmod +x *
 mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
+
+#bug plugin 20191002
+if [[ ${PLUGIN_CENTREON_VER} == "20191002" ]]; then
+  cd ${DL_DIR}
+  if [[ -e centreon-plugins-20190704.tar.gz ]]
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    wget http://files.download.centreon.com/public/centreon-plugins/centreon-plugins-20190704.tar.gz -O ${DL_DIR}/centreon-plugins-20190704.tar.gz >> ${INSTALL_LOG}
+  fi
+
+  tar xzf centreon-plugins-20190704.tar.gz
+  cd ${DL_DIR}/centreon-plugins-20190704
+  chown -R ${ENGINE_USER}:${ENGINE_GROUP} *
+  chmod +x *
+  cp centreon_centreon_database.pl /usr/lib/centreon/plugins/
+  cp centreon_mysql.pl /usr/lib/centreon/plugins/
+fi
 }
 
 function centreon_broker_install() {

@@ -1,13 +1,13 @@
 #!/bin/bash
-# Centreon 19.04 + engine install script for Debian Stretch
+# Centreon 19.04 + engine install script for Debian Buster
 # v 1.33
 # 13/10/2019
-# Thanks to Remy
+# Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.31"
+VERSION_BATCH="v 1.33"
 CLIB_VER="19.04.0"
 CONNECTOR_VER="19.04.0"
 ENGINE_VER="19.04.1"
@@ -73,7 +73,7 @@ CENTREON_USER="centreon"
 CENTREON_GROUP="centreon"
 ## TMPL file (template install file for Centreon)
 CENTREON_TMPL="centreon_engine.tmpl"
-ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $NF}'`
+ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $7}'`
 ## TimeZone php
 VARTIMEZONE="Europe/Paris"
 ## verbose script
@@ -106,13 +106,13 @@ function text_params () {
 function nonfree_install () {
 [ "$SCRIPT_VERBOSE" = true ] && echo "
 ======================================================================
-           Add Stretch repo for non-free
+           Add Buster repo for non-free
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-if [ ! -f /etc/apt/sources.list.d/stretch-nonfree.list ] ;
+if [ ! -f /etc/apt/sources.list.d/buster-nonfree.list ] ;
 then
-  echo 'deb http://ftp.fr.debian.org/debian/ stretch non-free' > /etc/apt/sources.list.d/stretch-nonfree.list
+  echo 'deb http://ftp.fr.debian.org/debian/ buster non-free' > /etc/apt/sources.list.d/buster-nonfree.list
 fi
 
 apt-get update  >> ${INSTALL_LOG}
@@ -204,7 +204,7 @@ make install >> ${INSTALL_LOG}
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 # install Centreon SSH Connector
-apt-get install -y libssh2-1-dev libgcrypt11-dev >> ${INSTALL_LOG}
+apt-get install -y libssh2-1-dev libgcrypt-dev >> ${INSTALL_LOG}
 
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
@@ -362,6 +362,7 @@ if [[ ${PLUGIN_CENTREON_VER} == "20191002" ]]; then
   cp centreon_centreon_database.pl /usr/lib/centreon/plugins/
   cp centreon_mysql.pl /usr/lib/centreon/plugins/
 fi
+
 }
 
 function centreon_broker_install() {
@@ -467,21 +468,16 @@ function php_fpm_install() {
                      Install Php-fpm
 ======================================================================
 " | tee -a ${INSTALL_LOG}
-apt-get install apt-transport-https lsb-release ca-certificates -y >> ${INSTALL_LOG}
 
-wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg >> ${INSTALL_LOG}
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/php.list
-apt-get update >> ${INSTALL_LOG}
-
-apt-get install php7.1 php7.1-opcache libapache2-mod-php7.1 php7.1-mysql \
-	php7.1-curl php7.1-json php7.1-gd php7.1-mcrypt php7.1-intl php7.1-mbstring \
-	php7.1-xml php7.1-zip php7.1-fpm php7.1-readline -y >> ${INSTALL_LOG}
+apt-get install php php7.3-opcache libapache2-mod-php php-mysql \
+	php-curl php-json php-gd php-intl php-mbstring \
+	php-xml php-zip php-fpm php-readline -y >> ${INSTALL_LOG}
 	
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php7.1-sqlite3 \
+DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php-sqlite3 \
 	php-pear sudo tofrodos bsd-mailx lsb-release mariadb-server \
-	libconfig-inifiles-perl libcrypt-des-perl php-db php-date \
-	libdigest-hmac-perl libdigest-sha-perl libgd-perl php7.1-ldap php7.1-snmp \
+	libconfig-inifiles-perl libcrypt-des-perl php7.3-db  \
+	libdigest-hmac-perl libdigest-sha-perl libgd-perl php-ldap php-snmp \
 	snmp snmpd snmptrapd libnet-snmp-perl libsnmp-perl snmp-mibs-downloader ntp >> ${INSTALL_LOG}
 
 
@@ -489,9 +485,9 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php7.1-sqlite3 \
 apt-get clean >> ${INSTALL_LOG}
 
 a2enmod proxy_fcgi setenvif proxy rewrite >> ${INSTALL_LOG}
-a2enconf php7.1-fpm >> ${INSTALL_LOG}
-a2dismod php7.1 >> ${INSTALL_LOG}
-systemctl restart apache2 php7.1-fpm >> ${INSTALL_LOG}
+a2enconf php7.3-fpm >> ${INSTALL_LOG}
+a2dismod php7.3 >> ${INSTALL_LOG}
+systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
 
 }
 
@@ -584,8 +580,9 @@ FORCE_SUDO_CONF=1
 INIT_D="/etc/init.d"
 CRON_D="/etc/cron.d"
 PEAR_PATH="/usr/share/php/"
-PHP_FPM_SERVICE="php7.1-fpm"
+PHP_FPM_SERVICE="php7.3-fpm"
 PHP_FPM_RELOAD=1
+DIR_PHP_FPM_CONF="/etc/php/7.3/fpm/pool.d/"
 EOF
 }
 
@@ -675,6 +672,11 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 # clean /tmp
 rm -rf /tmp/*
 
+# maj pear
+/usr/bin/pear install pear >> ${INSTALL_LOG}
+/usr/bin/pear install date >> ${INSTALL_LOG}
+/usr/bin/pear install db >> ${INSTALL_LOG}
+
 # Install composer
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Composer" | tee -a ${INSTALL_LOG}
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${INSTALL_LOG}
@@ -685,7 +687,7 @@ composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
 
 # add node-js
 apt-get install curl  >> ${INSTALL_LOG}
-curl -sL https://deb.nodesource.com/setup_8.x | bash - >> ${INSTALL_LOG}
+curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
 #build javascript dependencies
@@ -731,9 +733,12 @@ sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centre
 /usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
 
 # Add mysql config for Centreon
-echo '[mysqld]
+cat >  /etc/mysql/conf.d/centreon.cnf << EOF
+[mysqld]
 innodb_file_per_table=1
-open_files_limit=32000' > /etc/mysql/conf.d/centreon.cnf
+open_files_limit=32000
+sql_mode='ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+EOF
 
 # Modifiy config systemd
 sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
@@ -749,12 +754,12 @@ EOF
 
 # add Timezone
 VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
-sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.1/fpm/php.ini
+sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.3/fpm/php.ini
 
 
 # reload conf apache
 a2enconf centreon.conf >> ${INSTALL_LOG}
-systemctl restart apache2 php7.1-fpm >> ${INSTALL_LOG}
+systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
 
 ## Workarounds
 ## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
@@ -778,6 +783,11 @@ WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
 systemctl daemon-reload
 systemctl enable centreon
 
+# Install pack icônes V2 Pixelabs
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Pack Icônes V2 Pixelabs" | tee -a ${INSTALL_LOG}
+tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
+cp -r ${DIR_SCRIPT}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
+chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
 }
 
 ##ADDONS
@@ -881,7 +891,7 @@ echo "
 ================| Centreon Central Install details $VERSION_BATCH |============
                   MariaDB    : ${MARIADB_VER}
                   Clib       : ${CLIB_VER}
-                  Connector  : ${CONNECTOR_VER}
+                  Connector  : ${/etc/mysql/conf.d/centreon.cnfCONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
                   Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}

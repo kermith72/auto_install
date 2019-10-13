@@ -10,6 +10,15 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.33
+update script create_config_initialV4.sh, add debug function
+
+Add scripts for Debian Buster
+
+Add Pack Icônes of Pixelabs (https://pixelabs.fr)
+
+plugin Centreon fastpacked 20191002 for 19.04 and bugfix plugin mysql
+
 ### version 1.32
 centreon web 19.04.4 for Stretch
 
