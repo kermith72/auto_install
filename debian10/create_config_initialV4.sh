@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_config_initialV4.sh
+# version 4.02
+# 14/10/2019
+# add parameter icone
 # version 4.01
 # 12/10/2019
 # use debug
@@ -77,14 +80,15 @@ show_help() {
 cat << EOF
 Usage: ${0##*/} -u=<user centreon> -p=<passwd centreon> -d=<user database centreon> -w=<passwd database> -s=[yes|no] -m=[restart|reload] -db=[yes|no]
 This program create initial configuration
-    -u|--user User Centreon.
-    -p|--password Password Centreon.
-    -d|--userdatabase User Database Centreon
-    -w|--passworddatabase Password Database Centreon.
-    -s|--storage Create Storage service (yes/no)
-    -m|--method Method start engine
-    -db|--debug print command
-    -h|--help     help
+    -u|--user                 User Centreon.
+    -p|--password             Password Centreon.
+    -d|--userdatabase         User Database Centreon
+    -w|--passworddatabase     Password Database Centreon.
+    -s|--storage              Create Storage service (yes/no)
+    -m|--method               Method start engine
+    -i|--icone                Add icones
+    -db|--debug               print command
+    -h|--help                 help
 EOF
 }
 
@@ -115,6 +119,10 @@ do
       MODE_START="${i#*=}"
       shift # past argument=value
       ;;
+    -i=*|--icone=*)
+      ADD_ICONE="${i#*=}"
+      shift # past argument=value
+      ;;
     -db=*|--debug=*)
       DEBUG="${i#*=}"
       shift # past argument=value
@@ -137,18 +145,25 @@ if [[ -z "$USER_CENTREON" ]] || [[ -z "$PWD_CENTREON" ]] || [[ -z "$USER_BDD" ]]
     exit 2
 fi
 
-# Check yes/no
+# Check yes/no Storage
 if [[ $ADD_STORAGE =~ ^[yY][eE][sS]|[yY]$ ]]; then
   ADD_STORAGE="yes"
 else
   ADD_STORAGE="no"
 fi
 
-# Check yes/no
-if [[ $DEBUG =~ ^[yY][eE][sS]|[yY]$ ]]; then
-  DEBUG=1
+# Check yes/no Icone
+if [[ $ADD_ICONE =~ ^[yY][eE][sS]|[yY]$ ]]; then
+  ADD_ICONE="yes"
 else
-  DEBUG=0
+  ADD_ICONE="no"
+fi
+
+# Check yes/no Install Web
+if [[ $DEBUG =~ ^[yY][eE][sS]|[yY]$ ]]; then
+  DEBUG="yes"
+else
+  DEBUG="no"
 fi
 
 

@@ -1,13 +1,17 @@
 #!/bin/bash
 # create_template_snmp.sh
+# version 1.03
+# 14/10/2019
+# add icone
+# version 1.01
+# 12/10/2019
+# use debug
 # version 1.01
 # 20/05/2019
 # use centreon-plugins fatpacked
 # version 1.00
 # 09/04/2019
-# use debug
-# version 1.01
-# 12/10/2019
+
 
 create_cmd_snmp() {
   #-----------------------------------------------------------------------------------------------------------------------------------
@@ -93,6 +97,7 @@ create_stpl_snmp() {
     exec_clapi STPL setmacro "stpl_os_linux_snmp_cpu;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_snmp_cpu;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_snmp_cpu;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_snmp_cpu;icon_image;Hardware/cpu2.png"
   fi
 
 
@@ -106,6 +111,7 @@ create_stpl_snmp() {
     exec_clapi STPL setmacro "stpl_os_linux_snmp_load;WARNING;4,3,2"
     exec_clapi STPL setmacro "stpl_os_linux_snmp_load;CRITICAL;6,5,4"
     exec_clapi STPL setparam "stpl_os_linux_snmp_load;graphtemplate;LOAD_Average"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_snmp_load;icon_image;Hardware/load2.png"
   fi
 
   ## MEMORY SNMP
@@ -118,6 +124,7 @@ create_stpl_snmp() {
     exec_clapi STPL setmacro "stpl_os_linux_snmp_memory;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_snmp_memory;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_snmp_memory;graphtemplate;Memory"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_snmp_memory;icon_image;Hardware/memory2.png"
   fi
 }
 
@@ -132,5 +139,6 @@ create_linux_snmp () {
     exec_clapi STPL addhost "stpl_os_linux_snmp_load;htpl_OS-Linux-SNMP"
     exec_clapi STPL addhost "stpl_os_linux_snmp_memory;htpl_OS-Linux-SNMP"
     exec_clapi HTPL addtemplate "htpl_OS-Linux-SNMP;generic-host"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_OS-Linux-SNMP;icon_image;OS/linux.png"
   fi
 }

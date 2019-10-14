@@ -2,9 +2,12 @@
 # create_apps_centreon.sh
 # version 1.00
 # 09/04/2019
-# use debug
 # version 1.01
 # 12/10/2019
+# use debug
+# version 1.02
+# 14/10/2019
+# add icone
 
 create_stpl_poller () {
 
@@ -17,6 +20,7 @@ create_stpl_poller () {
     exec_clapi STPL setparam "stpl_app_centreon_process-engine;check_command;cmd_os_linux_snmp_process"
     exec_clapi STPL setmacro "stpl_app_centreon_process-engine;PROCESSNAME;centengine"
     exec_clapi STPL setmacro "stpl_app_centreon_process-engine;CRITICAL;1:1"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-engine;icon_image;Hardware/process2.png"
   fi
   
   ###SNMP Process ntpd
@@ -28,6 +32,7 @@ create_stpl_poller () {
     exec_clapi STPL setparam "stpl_app_centreon_process-ntpd;check_command;cmd_os_linux_snmp_process"
     exec_clapi STPL setmacro "stpl_app_centreon_process-ntpd;PROCESSNAME;ntpd"
     exec_clapi STPL setmacro "stpl_app_centreon_process-ntpd;CRITICAL;1:1"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-ntpd;icon_image;Hardware/process2.png"
   fi
   
   ###SNMP Process sshd
@@ -39,6 +44,7 @@ create_stpl_poller () {
     exec_clapi STPL setparam "stpl_app_centreon_process-sshd;check_command;cmd_os_linux_snmp_process"
     exec_clapi STPL setmacro "stpl_app_centreon_process-sshd;PROCESSNAME;ssh"
     exec_clapi STPL setmacro "stpl_app_centreon_process-sshd;CRITICAL;1:"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-sshd;icon_image;Hardware/process2.png"
   fi
 }
 
@@ -53,6 +59,7 @@ create_stpl_central () {
     exec_clapi STPL setparam "stpl_app_centreon_process-cron;check_command;cmd_os_linux_snmp_process"
     exec_clapi STPL setmacro "stpl_app_centreon_process-cron;PROCESSNAME;cron"
     exec_clapi STPL setmacro "stpl_app_centreon_process-cron;CRITICAL;1:"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-cron;icon_image;Hardware/process2.png"
   fi
   
   ###SNMP Process centcore
@@ -64,6 +71,7 @@ create_stpl_central () {
     exec_clapi STPL setparam "stpl_app_centreon_process-centcore;check_command;cmd_os_linux_snmp_process"
     exec_clapi STPL setmacro "stpl_app_centreon_process-centcore;PROCESSNAME;centcore"
     exec_clapi STPL setmacro "stpl_app_centreon_process-centcore;CRITICAL;1:1"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-centcore;icon_image;Hardware/process2.png"
   fi
   
   ###SNMP Process broker-sql
@@ -76,6 +84,7 @@ create_stpl_central () {
     exec_clapi STPL setmacro "stpl_app_centreon_process-broker-sql;PROCESSNAME;cbd"
     exec_clapi STPL setmacro "stpl_app_centreon_process-broker-sql;PROCESSARGS;'/etc/centreon-broker/central-broker.xml'"
     exec_clapi STPL setmacro "stpl_app_centreon_process-broker-sql;CRITICAL;1:1"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-broker-sql;icon_image;Hardware/process2.png"
   fi
 
   ###SNMP Process broker-rrd
@@ -88,6 +97,7 @@ create_stpl_central () {
     exec_clapi STPL setmacro "stpl_app_centreon_process-broker-rrd;PROCESSNAME;cbd"
     exec_clapi STPL setmacro "stpl_app_centreon_process-broker-rrd;PROCESSARGS;'/etc/centreon-broker/central-rrd.xml'"
     exec_clapi STPL setmacro "stpl_app_centreon_process-broker-rrd;CRITICAL;1:1"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-broker-rrd;icon_image;Hardware/process2.png"
   fi
 }
 
@@ -101,6 +111,7 @@ create_centreon_poller() {
     exec_clapi STPL addhost "stpl_app_centreon_process-engine;htpl_App-centreon-poller"
     exec_clapi STPL addhost "stpl_app_centreon_process-ntpd;htpl_App-centreon-poller"
     exec_clapi STPL addhost "stpl_app_centreon_process-sshd;htpl_App-centreon-poller"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-poller;icon_image;Hardware/processing.png"
   fi
 }
 
@@ -115,5 +126,6 @@ create_centreon_central() {
     exec_clapi STPL addhost "stpl_app_centreon_process-centcore;htpl_App-centreon-central"
     exec_clapi STPL addhost "stpl_app_centreon_process-broker-sql;htpl_App-centreon-central"
     exec_clapi STPL addhost "stpl_app_centreon_process-broker-rrd;htpl_App-centreon-central"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-central;icon_image;Hardware/processing.png"
   fi
 }

@@ -1,10 +1,14 @@
 #!/bin/bash
 # create_base.sh
-# version 1.00
-# 09/04/2019
-# use debug
+# version 1.02
+# 14/10/2019
+# add icone
 # version 1.01
 # 12/10/2019
+# use debug
+# version 1.00
+# 09/04/2019
+
 
 create_cmd_base () {
 
@@ -35,6 +39,7 @@ create_stpl_base () {
     exec_clapi STPL setparam "service-generique-actif;notification_period;24x7"
     exec_clapi STPL setparam "service-generique-actif;notification_options;w,c,r,f,s"
     exec_clapi STPL setparam "service-generique-actif;first_notification_delay;0"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "service-generique-actif;icon_image;Hardware/services.png"
   fi
   
   ## Ping Lan
@@ -48,6 +53,7 @@ create_stpl_base () {
     exec_clapi STPL setmacro "Ping-Lan-service;WARNING;220,20%"
     exec_clapi STPL setmacro "Ping-Lan-service;CRITICAL;400,50%"
     exec_clapi STPL setparam "Ping-Lan-service;graphtemplate;Latency"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "Ping-Lan-service;icon_image;Hardware/ping.png"
   fi
 }
 
@@ -80,6 +86,7 @@ create_htpl_base () {
     exec_clapi HTPL setparam "generic-host;host_snmp_community;public"
     exec_clapi HTPL setparam "generic-host;host_snmp_version;2c"
     exec_clapi STPL addhost "Ping-Lan-service;generic-host"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "generic-host;icon_image;Hardware/setting.png"
   fi	
 }
 

@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_apps_mysql.sh
+# version 1.04
+# 14/10/2019
+# add icone
 # version 1.03
 # 12/10/2019
 # use debug
@@ -47,6 +50,7 @@ create_stpl_mysql() {
     exec_clapi STPL setparam "stpl_app_db_mysql;service_retain_status_information;2"
     exec_clapi STPL setparam "stpl_app_db_mysql;service_retain_nonstatus_information;2"
     exec_clapi STPL setparam "stpl_app_db_mysql;service_notifications_enabled;2"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_db_mysql;icon_image;BDD/database.png"
   fi
 
   ##MySQL_connection-time
@@ -181,5 +185,6 @@ create_apps_mysql () {
     exec_clapi HTPL setmacro "htpl_App-MySQL;MYSQLUSERNAME;"
     exec_clapi HTPL setmacro "htpl_App-MySQL;MYSQLPASSWORD;"
     exec_clapi HTPL setmacro "htpl_App-MySQL;MYSQLPORT;3306"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-MySQL;icon_image;BDD/database.png"
   fi
 }

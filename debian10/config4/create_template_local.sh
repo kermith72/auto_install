@@ -1,13 +1,17 @@
 #!/bin/bash
 # create_template_local.sh
+# version 1.03
+# 14/10/2019
+# add icone
+# version 1.02
+# 12/10/2019
+# use debug
 # version 1.01
 # 20/05/2019
 # use centreon-plugins fatpacked
 # version 1.00
 # 09/04/2019
-# use debug
-# version 1.01
-# 12/10/2019
+
 
 create_cmd_local() {
 	
@@ -102,6 +106,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu;icon_image;Hardware/cpu2.png"
   fi
 
   ## Services MODELES CPU local
@@ -114,6 +119,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-average;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-average;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-average;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-average;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-core
@@ -125,6 +131,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-core;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-core;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-core;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-core;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-user
@@ -136,6 +143,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-user;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-user;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-user;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-user;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-nice
@@ -147,6 +155,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-nice;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-nice;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-nice;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-nice;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-system
@@ -158,6 +167,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-system;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-system;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-system;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-system;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-idle
@@ -169,6 +179,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-idle;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-idle;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-idle;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-idle;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-wait
@@ -180,6 +191,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-wait;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-wait;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-wait;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-wait;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-kernel
@@ -191,6 +203,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-kernel;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-kernel;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-kernel;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-kernel;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-interrupt
@@ -202,6 +215,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-interrupt;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-interrupt;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-interrupt;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-interrupt;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-softirq
@@ -213,6 +227,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-softirq;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-softirq;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-softirq;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-softirq;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-steal
@@ -224,6 +239,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-steal;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-steal;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-steal;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-steal;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-guest
@@ -235,6 +251,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-guest;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-guest;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-guest;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-guest;icon_image;Hardware/cpu2.png"
   fi
   
   #stpl_os_linux_local_cpu-det-guestnice
@@ -246,6 +263,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-guestnice;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu-det-guestnice;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-guestnice;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu-det-guestnice;icon_image;Hardware/cpu2.png"
   fi
   
   ## LOAD
@@ -258,6 +276,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_load;WARNING;4,3,2"
     exec_clapi STPL setmacro "stpl_os_linux_local_load;CRITICAL;6,5,4"
     exec_clapi STPL setparam "stpl_os_linux_local_load;graphtemplate;LOAD_Average"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_load;icon_image;Hardware/load2.png"
   fi
   
   ## SWAP
@@ -270,6 +289,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_swap;WARNING;80"
     exec_clapi STPL setmacro "stpl_os_linux_local_swap;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_swap;graphtemplate;Memory"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_swap;icon_image;Hardware/memory.png"
   fi
   
   ## MEMORY
@@ -282,6 +302,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_memory;WARNING;70"
     exec_clapi STPL setmacro "stpl_os_linux_local_memory;CRITICAL;90"     
     exec_clapi STPL setparam "stpl_os_linux_local_memory;graphtemplate;Memory"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_memory;icon_image;Hardware/memory2.png"
   fi
 
   ## DISK
@@ -295,6 +316,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_disk_name;WARNING;80"
     exec_clapi STPL setmacro "stpl_os_linux_local_disk_name;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_disk_name;graphtemplate;Storage"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_disk_name;icon_image;Hardware/disque.png"
   fi
 
   ## TRAFFIC
@@ -312,6 +334,7 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_network_name;OPTION;--units=%"
     exec_clapi STPL setmacro "stpl_os_linux_local_network_name;INTERFACE;eth0"
     exec_clapi STPL setparam "stpl_os_linux_local_network_name;graphtemplate;Traffic"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_network_name;icon_image;Other/traffic2.png"
   fi
 }
 
@@ -327,6 +350,7 @@ create_linux_local () {
     exec_clapi STPL addhost "stpl_os_linux_local_memory;htpl_OS-Linux-local"
     exec_clapi STPL addhost "stpl_os_linux_local_swap;htpl_OS-Linux-local"
     exec_clapi HTPL addtemplate "htpl_OS-Linux-local;generic-host"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_OS-Linux-local;icon_image;OS/linux.png"
   fi
 
 }
