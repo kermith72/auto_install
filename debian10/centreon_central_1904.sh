@@ -1232,14 +1232,14 @@ do
   esac
 done
 
-# Check NRPE yes/no default=yes
+# Check NRPE yes/no default no
 if [[ $ADD_NRPE =~ ^[yY][eE][sS]|[yY]$ ]]; then
   ADD_NRPE="yes"
 else
   ADD_NRPE="no"
 fi
 
-# Check Install Web yes/no default no
+# Check Install Web yes/no default yes
 if [[ $INSTALL_WEB =~ ^[nN][oO]$ ]]; then
   INSTALL_WEB="no"
 else
