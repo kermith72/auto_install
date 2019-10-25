@@ -1,7 +1,7 @@
 # auto_install
 Automated installation of Centreon on Debian with sources
 
-See [the explanation page](http://sugarbug.fr/atelier/installations/debian/centreon-install/centreon-install_1810/)
+See [the explanation page](http://sugarbug.fr/atelier/installations/debian/centreon-install/centreon-install_1910-Buster/)
 
 ## tags
 git clone https://github.com/kermith72/auto_install.git
@@ -9,6 +9,11 @@ git clone https://github.com/kermith72/auto_install.git
 cd auto_install
 
 git checkout v1.x
+
+### version 1.34
+centreon 19.10 for Buster
+
+plugin Centreon fastpacked 20191016 for 19.04 and bugfix plugin mysql
 
 ### version 1.33
 update script create_config_initialV4.sh, add debug function

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Centreon 19.04 + engine install script for Debian Buster
+# Centreon 19.10 + engine install script for Debian Buster
 # v 1.34
 # 25/10/2019
 # Thanks to Remy and Pixelabs
@@ -8,13 +8,13 @@ export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
 VERSION_BATCH="v 1.34"
-CLIB_VER="19.04.0"
-CONNECTOR_VER="19.04.0"
-ENGINE_VER="19.04.1"
+CLIB_VER="19.10.0"
+CONNECTOR_VER="19.10.0"
+ENGINE_VER="19.10.0"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
-BROKER_VER="19.04.0"
-CENTREON_VER="19.04.4"
+BROKER_VER="19.10.0"
+CENTREON_VER="19.10.1"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -28,17 +28,17 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
-WIDGET_HOST_VER="19.04.1"
-WIDGET_HOSTGROUP_VER="19.04.0"
-WIDGET_SERVICE_VER="19.04.2"
-WIDGET_SERVICEGROUP_VER="19.04.0"
-WIDGET_GRID_MAP_VER="19.04.0"
-WIDGET_TOP_CPU_VER="19.04.0"
-WIDGET_TOP_MEMORY_VER="19.04.0"
-WIDGET_TACTICAL_OVERVIEW_VER="19.04.0"
-WIDGET_HTTP_LOADER_VER="19.04.0"
-WIDGET_ENGINE_STATUS_VER="19.04.0"
-WIDGET_GRAPH_VER="19.04.0"
+WIDGET_HOST_VER="19.10.0"
+WIDGET_HOSTGROUP_VER="19.10.0"
+WIDGET_SERVICE_VER="19.10.0"
+WIDGET_SERVICEGROUP_VER="19.10.0"
+WIDGET_GRID_MAP_VER="19.10.0"
+WIDGET_TOP_CPU_VER="19.10.0"
+WIDGET_TOP_MEMORY_VER="19.10.0"
+WIDGET_TACTICAL_OVERVIEW_VER="19.10.0"
+WIDGET_HTTP_LOADER_VER="19.10.0"
+WIDGET_ENGINE_STATUS_VER="19.10.0"
+WIDGET_GRAPH_VER="19.10.0"
 WIDGET_BASE="http://files.download.centreon.com/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
 WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"
@@ -147,7 +147,7 @@ if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
 fi
 
 tar xzf centreon-clib-${CLIB_VER}.tar.gz
-cd centreon-clib-${CLIB_VER}/build
+cd centreon-clib-${CLIB_VER}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
@@ -251,7 +251,7 @@ if [[ -e centreon-engine-${ENGINE_VER}.tar.gz ]]
 fi
 
 tar xzf centreon-engine-${ENGINE_VER}.tar.gz
-cd ${DL_DIR}/centreon-engine-${ENGINE_VER}/build
+cd ${DL_DIR}/centreon-engine-${ENGINE_VER}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
@@ -376,35 +376,7 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install -y libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev lsb-release >> ${INSTALL_LOG}
-
-[ "$SCRIPT_VERBOSE" = true ] && echo "
-==================   Install rrdtools 1.4.7     =====================
-" | tee -a ${INSTALL_LOG}
-
-# package for rrdtools
-apt-get install -y libpango1.0-dev libxml2-dev >> ${INSTALL_LOG}
-
-# compile rrdtools
-cd ${DL_DIR}
-wget http://oss.oetiker.ch/rrdtool/pub/rrdtool-1.4.7.tar.gz >> ${INSTALL_LOG}
-[ $? != 0 ] && return 1
-tar xzf rrdtool-1.4.7.tar.gz
-cd ${DL_DIR}/rrdtool-1.4.7
-
-[ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation rrdtool" | tee -a ${INSTALL_LOG}
-
-./configure --prefix=/opt/rddtool-broker >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
-make install >> ${INSTALL_LOG}
-
-cp /opt/rddtool-broker/lib/pkgconfig/librrd.pc /usr/lib/pkgconfig/
-
-#create ldconfig file
-cat >  /etc/ld.so.conf.d/rrdtool-broker.conf << EOF
-# lib rrdtools for Centreon
-/opt/rddtool-broker/lib
-EOF
+apt-get install git librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev -y >> ${INSTALL_LOG}
 
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
@@ -419,12 +391,9 @@ if [[ -e centreon-broker-${BROKER_VER}.tar.gz ]]
 fi
 
 tar xzf centreon-broker-${BROKER_VER}.tar.gz
-cd ${DL_DIR}/centreon-broker-${BROKER_VER}/build/
+cd ${DL_DIR}/centreon-broker-${BROKER_VER}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation broker" | tee -a ${INSTALL_LOG}
-
-# add directive compilation
-sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-broker-${BROKER_VER}/build/CMakeLists.txt
 
 cmake \
     -DWITH_DAEMONS='central-broker;central-rrd' \
@@ -470,15 +439,16 @@ function php_fpm_install() {
 " | tee -a ${INSTALL_LOG}
 
 apt-get install php php7.3-opcache libapache2-mod-php php-mysql \
-	php-curl php-json php-gd php-intl php-mbstring \
-	php-xml php-zip php-fpm php-readline -y >> ${INSTALL_LOG}
+	php-curl php-json php-gd php-intl php-mbstring php-xml \
+	php-zip php-fpm php-readline -y >> ${INSTALL_LOG}
 	
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php-sqlite3 \
-	php-pear sudo tofrodos bsd-mailx lsb-release mariadb-server \
-	libconfig-inifiles-perl libcrypt-des-perl php7.3-db  \
-	libdigest-hmac-perl libdigest-sha-perl libgd-perl php-ldap php-snmp \
-	snmp snmpd snmptrapd libnet-snmp-perl libsnmp-perl snmp-mibs-downloader ntp >> ${INSTALL_LOG}
+DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes ntp \
+	rrdtool php-sqlite3 php-pear sudo tofrodos bsd-mailx lsb-release \
+	mariadb-server libconfig-inifiles-perl libcrypt-des-perl \
+	librrds-perl libdigest-hmac-perl libdigest-sha-perl libgd-perl \
+	php-ldap php-snmp php7.3-db snmp snmpd snmptrapd libnet-snmp-perl \
+	libsnmp-perl snmp-mibs-downloader >> ${INSTALL_LOG}
 
 
 # Cleanup to prevent space full on /var
@@ -523,6 +493,7 @@ CENTREON_ETC="/etc/centreon"
 CENTREON_RUNDIR="/var/run/centreon"
 CENTREON_GENDIR="/var/cache/centreon"
 CENTSTORAGE_RRD="/var/lib/centreon"
+CENTREON_CACHEDIR="/var/cache/centreon"
 CENTSTORAGE_BINDIR="${INSTALL_DIR}/centreon/bin"
 CENTCORE_BINDIR="${INSTALL_DIR}/centreon/bin"
 CENTREON_VARLIB="/var/lib/centreon"
@@ -645,11 +616,6 @@ sed -i -e "s/mibs/#mibs/g" /etc/snmp/snmp.conf;
 systemctl daemon-reload >> ${INSTALL_LOG}
 systemctl restart snmpd snmptrapd >> ${INSTALL_LOG}
 
-# make lib perl rrd
-cd ${DL_DIR}/rrdtool-1.4.7/bindings/perl-shared
-perl Makefile.PL >> ${INSTALL_LOG}
-make test >> ${INSTALL_LOG}
-make install >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 
@@ -690,6 +656,9 @@ apt-get install curl  >> ${INSTALL_LOG}
 curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
+#modify file package.json
+sed -i -e "s/19.10.0/19.10.1/g" package.json
+
 #build javascript dependencies
 npm install >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
@@ -699,7 +668,7 @@ if [ "$INSTALL_WEB" == "yes" ]
 then
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  ./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 fi 
 }
 
@@ -731,6 +700,33 @@ sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centre
 /usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
 /usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
 /usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+
+cd ${DL_DIR}/centreon-web-${CENTREON_VER}
+# Add API key for Centreon
+# https://gist.github.com/earthgecko/3089509
+# bash generate random 64 character alphanumeric string (upper and lowercase) and 
+APIKEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+#modify file .env
+sed -i -e "s/%APP_SECRET%/${APIKEY}/g" .env
+#generate .env.local.php
+composer dump-env prod
+
+#Modify right cache
+chown -R ${CENTREON_USER}:${CENTREON_GROUP} /var/cache/centreon
+chmod -R 775 /var/cache/centreon
+
+#copy files
+cp .env ${INSTALL_DIR}/centreon
+cp .env.local.php ${INSTALL_DIR}/centreon
+cp container.php ${INSTALL_DIR}/centreon/
+mv api ${INSTALL_DIR}/centreon/
+cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
+cp config/bundles.php ${INSTALL_DIR}/centreon/config/
+cp config/services.yaml ${INSTALL_DIR}/centreon/config/
+mv config/Modules ${INSTALL_DIR}/centreon/config/
+mv config/packages ${INSTALL_DIR}/centreon/config/
+mv config/routes ${INSTALL_DIR}/centreon/config/
+chown -R root: ${INSTALL_DIR}/centreon/config/*
 
 # Add mysql config for Centreon
 cat >  /etc/mysql/conf.d/centreon.cnf << EOF

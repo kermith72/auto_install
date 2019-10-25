@@ -1,18 +1,18 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.33
-# 13/10/2019
+# v 1.34
+# 25/10/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.33"
+VERSION_BATCH="v 1.34"
 CLIB_VER="19.04.0"
 CONNECTOR_VER="19.04.0"
 ENGINE_VER="19.04.1"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20191002"
+PLUGIN_CENTREON_VER="20191016"
 BROKER_VER="19.04.0"
 CENTREON_VER="19.04.4"
 # MariaDB Series
@@ -279,8 +279,8 @@ chmod +x *
 mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
 
-#bug plugin 20191002
-if [[ ${PLUGIN_CENTREON_VER} == "20191002" ]]; then
+#bug plugin 20191016
+if [[ ${PLUGIN_CENTREON_VER} == "20191016" ]]; then
   cd ${DL_DIR}
   if [[ -e centreon-plugins-20190704.tar.gz ]]
   then

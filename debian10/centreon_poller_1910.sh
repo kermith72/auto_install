@@ -1,5 +1,5 @@
 #!/bin/bash
-# Centreon poller install script for Debian Stretch
+# Centreon poller install script for Debian Buster
 # v 1.34
 # 25/10/2019
 # Thanks to Remy
@@ -8,13 +8,13 @@ export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
 VERSION_BATCH="v 1.34"
-CLIB_VER="19.04.0"
-CONNECTOR_VER="19.04.0"
-ENGINE_VER="19.04.1"
+CLIB_VER="19.10.0"
+CONNECTOR_VER="19.10.0"
+ENGINE_VER="19.10.0"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
-BROKER_VER="19.04.0"
-CENTREON_VER="19.04.4"
+BROKER_VER="19.10.0"
+CENTREON_VER="19.10.1"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -63,13 +63,13 @@ function text_params () {
 function nonfree_install () {
 [ "$SCRIPT_VERBOSE" = true ] && echo "
 ======================================================================
-           Add Stretch repo for non-free
+           Add Buster repo for non-free
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-if [ ! -f /etc/apt/sources.list.d/stretch-nonfree.list ] ;
+if [ ! -f /etc/apt/sources.list.d/buster-nonfree.list ] ;
 then
-  echo 'deb http://ftp.fr.debian.org/debian/ stretch non-free' > /etc/apt/sources.list.d/stretch-nonfree.list
+  echo 'deb http://ftp.fr.debian.org/debian/ buster non-free' > /etc/apt/sources.list.d/stretch-nonfree.list
 fi
 
 apt-get update >> ${INSTALL_LOG}
@@ -95,7 +95,7 @@ if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
 fi
 
 tar xzf centreon-clib-${CLIB_VER}.tar.gz
-cd centreon-clib-${CLIB_VER}/build
+cd centreon-clib-${CLIB_VER}
 
 # add directive compilation
 sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-clib-${CLIB_VER}/build/CMakeLists.txt
@@ -144,7 +144,7 @@ make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 # install Centreon SSH Connector
-apt-get install -y libssh2-1-dev libgcrypt11-dev >> ${INSTALL_LOG}
+apt-get install -y libssh2-1-dev libgcrypt-dev >> ${INSTALL_LOG}
 
 # Cleanup to prevent space full on /var
 apt-get clean
@@ -188,7 +188,7 @@ if [[ -e centreon-engine-${ENGINE_VER}.tar.gz ]]
 fi
 
 tar xzf centreon-engine-${ENGINE_VER}.tar.gz
-cd ${DL_DIR}/centreon-engine-${ENGINE_VER}/build
+cd ${DL_DIR}/centreon-engine-${ENGINE_VER}
 
 # add directive compilation
 sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-engine-${ENGINE_VER}/build/CMakeLists.txt
@@ -309,28 +309,7 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install -y libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev lsb-release >> ${INSTALL_LOG}
-
-# package for rrdtools
-apt-get install -y libpango1.0-dev libxml2-dev >> ${INSTALL_LOG}
-
-# compile rrdtools
-cd ${DL_DIR}
-wget http://oss.oetiker.ch/rrdtool/pub/rrdtool-1.4.7.tar.gz >> ${INSTALL_LOG}
-[ $? != 0 ] && return 1
-tar xzf rrdtool-1.4.7.tar.gz
-cd ${DL_DIR}/rrdtool-1.4.7
-./configure --prefix=/opt/rddtool-broker >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
-make install >> ${INSTALL_LOG}
-
-cp /opt/rddtool-broker/lib/pkgconfig/librrd.pc /usr/lib/pkgconfig/
-
-#create ldconfig file
-cat >  /etc/ld.so.conf.d/rrdtool-broker.conf << EOF
-# lib rrdtools for Centreon
-/opt/rddtool-broker/lib
-EOF
+apt-get install git librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev -y >> ${INSTALL_LOG}
 
 
 # Cleanup to prevent space full on /var
@@ -346,10 +325,8 @@ if [[ -e centreon-broker-${BROKER_VER}.tar.gz ]]
 fi
 
 tar xzf centreon-broker-${BROKER_VER}.tar.gz
-cd ${DL_DIR}/centreon-broker-${BROKER_VER}/build/
+cd ${DL_DIR}/centreon-broker-${BROKER_VER}
 
-# add directive compilation
-sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-broker-${BROKER_VER}/build/CMakeLists.txt
 
 cmake \
     -DWITH_DAEMONS='central-broker;central-rrd' \
@@ -410,6 +387,7 @@ CENTREON_ETC="/etc/centreon"
 CENTREON_RUNDIR="/var/run/centreon"
 CENTREON_GENDIR="/var/cache/centreon"
 CENTSTORAGE_RRD="/var/lib/centreon"
+CENTREON_CACHEDIR="/var/cache/centreon"
 CENTSTORAGE_BINDIR="${INSTALL_DIR}/centreon/bin"
 CENTCORE_BINDIR="${INSTALL_DIR}/centreon/bin"
 CENTREON_VARLIB="/var/lib/centreon"
@@ -583,7 +561,7 @@ rm -rf /tmp/*
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
-./install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+/usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 }
 
 function post_install () {
@@ -679,9 +657,9 @@ text_params
 nonfree_install 2>>${INSTALL_LOG}
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step1${normal}  => repo non-free on Stretch Install                       ${STATUS_FAIL}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                       ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step1${normal}  => repo non-free on Stretch Install                       ${STATUS_OK}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                       ${STATUS_OK}"
 fi
 
 verify_version "$CLIB_VER" "$CLIB_VER_OLD"
@@ -916,5 +894,5 @@ done
 exist_conf
 main
 echo -e ""
-echo -e "${bold}Go to Central Server for configuration "
+echo -e "${bold}Go to Central Server for configuration${normal} "
 echo -e ""
