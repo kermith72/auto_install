@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.35
+centreon-engine 19.10.1 for Buster
+
 ### version 1.34
 centreon 19.10 for Buster
 

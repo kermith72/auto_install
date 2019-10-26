@@ -1,16 +1,16 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.34
-# 25/10/2019
+# v 1.35
+# 26/10/2019
 # Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.34"
+VERSION_BATCH="v 1.35"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.0"
+ENGINE_VER="19.10.1"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
 BROKER_VER="19.10.0"
