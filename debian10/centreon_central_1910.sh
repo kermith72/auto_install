@@ -7,7 +7,7 @@
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.35"
+VERSION_BATCH="v 1.36"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
 ENGINE_VER="19.10.3"
