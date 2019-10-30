@@ -256,7 +256,7 @@ cd ${DL_DIR}/centreon-engine-${ENGINE_VER}
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
 # add directive compilation
-sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-engine-${ENGINE_VER}/build/CMakeLists.txt
+sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-engine-${ENGINE_VER}/CMakeLists.txt
 
 cmake \
    -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
