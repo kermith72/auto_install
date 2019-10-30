@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.35
-# 26/10/2019
+# v 1.36
+# 30/10/2019
 # Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -10,7 +10,7 @@ export DEBIAN_FRONTEND=noninteractive
 VERSION_BATCH="v 1.35"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.1"
+ENGINE_VER="19.10.3"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
 BROKER_VER="19.10.0"
@@ -30,7 +30,7 @@ CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
 WIDGET_HOST_VER="19.10.0"
 WIDGET_HOSTGROUP_VER="19.10.0"
-WIDGET_SERVICE_VER="19.10.0"
+WIDGET_SERVICE_VER="19.10.1"
 WIDGET_SERVICEGROUP_VER="19.10.0"
 WIDGET_GRID_MAP_VER="19.10.0"
 WIDGET_TOP_CPU_VER="19.10.0"
