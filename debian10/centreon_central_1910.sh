@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.36
-# 30/10/2019
+# v 1.37
+# 04/11/2019
 # Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.36"
+VERSION_BATCH="v 1.37"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
 ENGINE_VER="19.10.3"
@@ -698,6 +698,9 @@ sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centre
 /usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
 /usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
 /usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+
+#bug statistic centengine issue #8084
+sed -i -e 's/"-s $self->{interval}"/"-s", $self->{interval}/g' /usr/share/perl5/centreon/script/nagiosPerfTrace.pm
 
 cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 # Add API key for Centreon

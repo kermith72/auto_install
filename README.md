@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.37
+bug fix statistic engine for centreon 19.10
+
 ### version 1.36
 centreon-engine 19.10.3, widget service-monitoring 19.10.1 for Buster
 
