@@ -1,16 +1,16 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.36
-# 30/10/2019
+# v 1.38
+# 08/11/2019
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.36"
+VERSION_BATCH="v 1.38"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.3"
+ENGINE_VER="19.10.5"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
 BROKER_VER="19.10.0"
@@ -27,6 +27,9 @@ PLUGIN_CENTREON_URL="${BASE_URL}/centreon-plugins/centreon-plugins-${PLUGIN_CENT
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
+## nrpe
+NRPE_VERSION="3.2.1"
+NRPE_URL="https://github.com/NagiosEnterprises/nrpe/archive/nrpe-3.2.1.tar.gz"
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
@@ -48,6 +51,19 @@ CENTREON_TMPL="centreon_engine.tmpl"
 VARTIMEZONE="Europe/Paris"
 ## verbose script
 SCRIPT_VERBOSE=false
+
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} -n=[yes|no] -v
+
+This program create Central Centreon
+
+    -n|--nrpe     : add check_nrpe
+    -v|--verbose  : add messages
+    -h|--help     : help
+EOF
+}
 
 function text_params () {
   ESC_SEQ="\x1b["
@@ -634,11 +650,52 @@ systemctl daemon-reload
 systemctl enable centreon
 }
 
+function add_check_nrpe() {
+[ "$SCRIPT_VERBOSE" = true ] && echo "
+=======================================================================
+                         Install check_nrpe3
+=======================================================================
+" | tee -a ${INSTALL_LOG}
 
+apt-get install -y libssl-dev >> ${INSTALL_LOG}	
+cd ${DL_DIR}
+if [[ -e nrpe.tar.gz ]] ;
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    wget --no-check-certificate -O nrpe.tar.gz ${NRPE_URL} >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
+fi
+
+tar xzf nrpe.tar.gz
+cd ${DL_DIR}/nrpe-nrpe-${NRPE_VERSION}
+
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
+
+./configure --with-nagios-user=${ENGINE_USER} --with-nrpe-user=${ENGINE_USER} --with-nagios-group=${ENGINE_USER} --with-nrpe-group=${ENGINE_USER} --libexecdir=/usr/lib/nagios/plugins  >> ${INSTALL_LOG}
+make all  >> ${INSTALL_LOG}
+make install-plugin  >> ${INSTALL_LOG}
+}
 
 function main () {
+  if [ "$ADD_NRPE" == "yes" ]
+  then
 echo "
-================| Centreon Poller Install details $VERSION_BATCH |=============
+================| Centreon Central Install details $VERSION_BATCH |============
+                  Clib       : ${CLIB_VER}
+                  Connector  : ${CONNECTOR_VER}
+                  Engine     : ${ENGINE_VER}
+                  Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
+                  Broker     : ${BROKER_VER}
+                  Centreon   : ${CENTREON_VER}
+                  NRPE       : ${NRPE_VERSION}
+                  Install dir: ${INSTALL_DIR}
+                  Source dir : ${DL_DIR}
+======================================================================
+"
+  else
+echo "
+================| Centreon Central Install details $VERSION_BATCH |============
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
@@ -649,6 +706,8 @@ echo "
                   Source dir : ${DL_DIR}
 ======================================================================
 "
+  fi
+
 text_params
 
 nonfree_install 2>>${INSTALL_LOG}
@@ -804,6 +863,17 @@ if [[ $? -ne 0 ]];
     echo -e "${bold}Step10${normal} => Post install                                          ${STATUS_OK}"
 fi
 
+if [ "$ADD_NRPE" == "yes" ]
+then
+  add_check_nrpe 2>>${INSTALL_LOG}
+  if [[ $? -ne 0 ]];
+  then
+    echo -e "${bold}Step11${normal} => Nrpe install                                          ${STATUS_FAIL}"
+  else
+    echo -e "${bold}Step11${normal} => Nrpe install                                          ${STATUS_OK}"
+  fi
+
+fi
 echo ""
 echo "##### Install completed #####" >> ${INSTALL_LOG} 2>&1
 }
@@ -878,8 +948,16 @@ function exist_conf () {
 for i in "$@"
 do
   case $i in
+    -n=*|--nrpe=*)
+      ADD_NRPE="${i#*=}"
+      shift # past argument=value
+      ;;
     -v|--verbose)
       SCRIPT_VERBOSE=true
+      ;;
+    -h|--help)
+      show_help
+      exit 2
       ;;
     *)
             # unknown option

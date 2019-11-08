@@ -1,16 +1,16 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.37
-# 04/11/2019
+# v 1.38
+# 08/11/2019
 # Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.37"
+VERSION_BATCH="v 1.38"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.3"
+ENGINE_VER="19.10.5"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
 BROKER_VER="19.10.0"
@@ -852,6 +852,9 @@ if [[ $? -eq 1 ]]; then
   maj_conf "WIDGET_GRAPH" "$WIDGET_GRAPH_VER_OLD" "$WIDGET_GRAPH_VER"
 fi
   chown -R ${CENTREON_USER}:${CENTREON_GROUP} ${INSTALL_DIR}/centreon/www/widgets
+  
+  #bug fix tactical-overview
+  sed -i -e "s/\$res = \$db->query(\$queryPEND);/#\$res = \$db->query(\$queryPEND);/g" ${INSTALL_DIR}/centreon/www/widgets/tactical-overview/src/hosts_status.php
 }
 
 function add_check_nrpe() {
