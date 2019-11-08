@@ -11,7 +11,7 @@ cd auto_install
 git checkout v1.x
 
 ### version 1.38
-centreon-engine 19.10.3, bugfix widget Tactical-overview for centreon 19.10
+centreon-engine 19.10.5, bugfix widget Tactical-overview for centreon 19.10
 
 add check_nrpe for poller for Centreon 19.10
 
