@@ -107,7 +107,7 @@ cmake \
    -DWITH_SHARED_LIB=1 \
    -DWITH_STATIC_LIB=0 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig . >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j 5 >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 }
@@ -141,7 +141,7 @@ cmake \
  -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
  -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
  -DWITH_TESTING=0 . >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j 5 >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 # install Centreon SSH Connector
@@ -160,7 +160,7 @@ cmake \
  -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
  -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
  -DWITH_TESTING=0 . >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j 5 >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 }
 
@@ -208,7 +208,7 @@ cmake \
    -DWITH_PKGCONFIG_SCRIPT=1 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
    -DWITH_TESTING=0 . >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j 5 >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 systemctl enable centengine.service >> ${INSTALL_LOG}
@@ -245,7 +245,7 @@ cd ${DL_DIR}/monitoring-plugins-${PLUGIN_VER}
 --prefix=/usr/lib/nagios/plugins --libexecdir=/usr/lib/nagios/plugins --enable-perl-modules --with-openssl=/usr/bin/openssl \
 --enable-extra-opts >> ${INSTALL_LOG}
 
-make >> ${INSTALL_LOG}
+make -j 5 >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 }
 
@@ -339,7 +339,7 @@ cmake \
     -DWITH_STARTUP_DIR=/lib/systemd/system  \
     -DWITH_TESTING=0 \
     -DWITH_USER=${BROKER_USER} . >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j 5 >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 if [[ -d /var/lib/centreon-broker ]]
@@ -559,7 +559,7 @@ rm -rf /tmp/*
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
-/usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 }
 
 function post_install () {
