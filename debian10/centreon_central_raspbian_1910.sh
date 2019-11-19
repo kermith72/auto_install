@@ -217,7 +217,7 @@ function centreon_engine_install () {
                     Install Centreon Engine
 ======================================================================
 " | tee -a ${INSTALL_LOG}
-
+git clone https://github.com/kermith72/auto_install.git
 groupadd -g 6001 ${ENGINE_GROUP}
 useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
 
@@ -609,7 +609,7 @@ cd ${DL_DIR}
 
 if [[ -e centreon-web-${CENTREON_VER}.tar.gz ]]
   then
-    echo 'File already exist!' | tee -a ${INSTALL_LOG}
+    echo 'File already exist!' git clone https://github.com/kermith72/auto_install.git| tee -a ${INSTALL_LOG}
   else
     wget ${CENTREON_URL} -O ${DL_DIR}/centreon-web-${CENTREON_VER}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
@@ -640,7 +640,6 @@ php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_
 composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
 
 # add node-js
-apt-get install curl  >> ${INSTALL_LOG}
 curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
