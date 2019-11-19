@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.39
+centreon-engine 19.10.6, centreon-broker 19.10.1
+
+add scripts for Raspbian
+
 ### version 1.38
 centreon-engine 19.10.5, bugfix widget Tactical-overview for centreon 19.10
 
