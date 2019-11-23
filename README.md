@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.40
+bugfix create centcore for send external command to Poller issue #5
+
 ### version 1.39
 centreon-engine 19.10.6, centreon-broker 19.10.1
 

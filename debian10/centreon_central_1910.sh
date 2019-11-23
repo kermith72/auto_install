@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.39
-# 19/11/2019
-# Thanks to Remy and Pixelabs
+# v 1.40
+# 23/11/2019
+# Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.39"
+VERSION_BATCH="v 1.40"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
 ENGINE_VER="19.10.6"
@@ -763,6 +763,11 @@ systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
 ## (mode w+): Permission denied)
 chmod 775 /var/lib/centreon/centplugins
 chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
+
+##bugfix create centcore for send external command to Poller
+mkdir /var/lib/centreon/centcore
+chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
+chmod 775 /var/lib/centreon/centcore
 
 #add cgroup centreon
 echo '[Unit]
