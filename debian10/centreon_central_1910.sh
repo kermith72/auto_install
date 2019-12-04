@@ -661,6 +661,11 @@ sed -i -e "s/19.10.0/19.10.1/g" package.json
 npm install >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
+# remplace script functions for RestAPIV2
+rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
