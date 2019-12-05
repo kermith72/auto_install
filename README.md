@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.41
+centreon-web 19.10.3 & 19.04.6, centreon-engine 19.10.7 
+
+modify script functions for api Rest V2
+
 ### version 1.40
 bugfix create centcore for send external command to Poller issue #5
 
