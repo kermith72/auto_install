@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Raspian Buster
-# v 1.40
-# 23/11/2019
+# v 1.41
+# 05/12/2019
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.40"
+VERSION_BATCH="v 1.41"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.6"
+ENGINE_VER="19.10.7"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20191016"
 BROKER_VER="19.10.1"
-CENTREON_VER="19.10.1"
+CENTREON_VER="19.10.3"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -650,6 +650,10 @@ sed -i -e "s/19.10.0/19.10.1/g" package.json
 npm install >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
+# remplace script functions for RestAPIV2
+rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
