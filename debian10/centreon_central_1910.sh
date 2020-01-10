@@ -606,7 +606,7 @@ if [[ -e ${PREFIX}${CENTREON_VER[0]}.tar.gz ]]
     [ $? != 0 ] && return 1
 fi
 
-tar xzf ${PREFIX}${CENTREON_VER[0]}.tar.gz
+tar xzf ${PREFIXTAR}${CENTREON_VER[0]}.tar.gz
 cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 
 
@@ -671,7 +671,7 @@ groupadd -g 6000 ${CENTREON_GROUP}
 useradd -u 6000 -g ${CENTREON_GROUP} -m -r -d /var/lib/centreon -c "Centreon Web user" -s /bin/bash ${CENTREON_USER}
 usermod -aG ${CENTREON_GROUP} ${ENGINE_USER}
 
-tar xzf ${PREFIX}${CENTREON_VER[0]}.tar.gz
+tar xzf ${PREFIXTAR}${CENTREON_VER[0]}.tar.gz
 cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 
 
