@@ -589,16 +589,22 @@ function centreon_maj () {
 
 cd ${DL_DIR}
 
-if [[ -e centreon-web-${CENTREON_VER[0]}.tar.gz ]]
+if [[ ${CENTREON_VER[1]} == "1" ]]; then
+  $PREFIX=""
+else
+  $PREFIX="centreon-web-"
+fi
+
+if [[ -e ${PREFIX}${CENTREON_VER[0]}.tar.gz ]]
   then
     echo 'File already exist!' | tee -a ${INSTALL_LOG}
   else
-    wget ${CENTREON_URL} -O ${DL_DIR}/centreon-web-${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    wget ${CENTREON_URL} -O ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
 fi
 
-tar xzf centreon-web-${CENTREON_VER[0]}.tar.gz
-cd ${DL_DIR}/centreon-web-${CENTREON_VER[0]}
+tar xzf ${PREFIX}${CENTREON_VER[0]}.tar.gz
+cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 
 
 # clean /tmp
@@ -642,11 +648,17 @@ systemctl restart snmpd snmptrapd >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 
-if [[ -e centreon-web-${CENTREON_VER[0]}.tar.gz ]]
+if [[ ${CENTREON_VER[1]} == "1" ]]; then
+  $PREFIX=""
+else
+  $PREFIX="centreon-web-"
+fi
+
+if [[ -e ${PREFIX}${CENTREON_VER[0]}.tar.gz ]]
   then
     echo 'File already exist!' | tee -a ${INSTALL_LOG}
   else
-    wget ${CENTREON_URL} -O ${DL_DIR}/centreon-web-${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    wget ${CENTREON_URL} -O ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
 fi
 
@@ -654,8 +666,8 @@ groupadd -g 6000 ${CENTREON_GROUP}
 useradd -u 6000 -g ${CENTREON_GROUP} -m -r -d /var/lib/centreon -c "Centreon Web user" -s /bin/bash ${CENTREON_USER}
 usermod -aG ${CENTREON_GROUP} ${ENGINE_USER}
 
-tar xzf centreon-web-${CENTREON_VER[0]}.tar.gz
-cd ${DL_DIR}/centreon-web-${CENTREON_VER[0]}
+tar xzf ${PREFIX}${CENTREON_VER[0]}.tar.gz
+cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 
 
 # clean /tmp
@@ -687,16 +699,16 @@ npm install >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
 # remplace script functions for RestAPIV2
-rm ${DL_DIR}/centreon-web-${CENTREON_VER[0]}/libinstall/functions
-cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/centreon-web-${CENTREON_VER[0]}/libinstall/functions
-chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER[0]}/libinstall/functions
+rm ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
+cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
+chmod +x ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
 
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  /usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER[0]}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 fi 
 }
 
@@ -732,7 +744,7 @@ sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centre
 #bug statistic centengine issue #8084
 sed -i -e 's/"-s $self->{interval}"/"-s", $self->{interval}/g' /usr/share/perl5/centreon/script/nagiosPerfTrace.pm
 
-cd ${DL_DIR}/centreon-web-${CENTREON_VER[0]}
+cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 # Add API key for Centreon
 # https://gist.github.com/earthgecko/3089509
 # bash generate random 64 character alphanumeric string (upper and lowercase) and 
