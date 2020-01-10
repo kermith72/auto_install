@@ -590,16 +590,19 @@ function centreon_maj () {
 cd ${DL_DIR}
 
 if [[ ${CENTREON_VER[1]} == "1" ]]; then
-  $PREFIX=""
+  PREFIXTAR=""
+  PREFIX="centreon-"
 else
-  $PREFIX="centreon-web-"
+  PREFIXTAR="centreon-web-"
+  PREFIX="centreon-web-"
 fi
+
 
 if [[ -e ${PREFIX}${CENTREON_VER[0]}.tar.gz ]]
   then
     echo 'File already exist!' | tee -a ${INSTALL_LOG}
   else
-    wget ${CENTREON_URL} -O ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    wget ${CENTREON_URL} -O ${DL_DIR}/${PREFIXTAR}${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
 fi
 
@@ -649,16 +652,18 @@ systemctl restart snmpd snmptrapd >> ${INSTALL_LOG}
 cd ${DL_DIR}
 
 if [[ ${CENTREON_VER[1]} == "1" ]]; then
-  $PREFIX=""
+  PREFIXTAR=""
+  PREFIX="centreon-"
 else
-  $PREFIX="centreon-web-"
+  PREFIXTAR="centreon-web-"
+  PREFIX="centreon-web-"
 fi
 
 if [[ -e ${PREFIX}${CENTREON_VER[0]}.tar.gz ]]
   then
     echo 'File already exist!' | tee -a ${INSTALL_LOG}
   else
-    wget ${CENTREON_URL} -O ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    wget ${CENTREON_URL} -O ${DL_DIR}/${PREFIXTAR}${CENTREON_VER[0]}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
 fi
 
