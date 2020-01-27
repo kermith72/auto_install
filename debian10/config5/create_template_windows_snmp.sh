@@ -54,7 +54,7 @@ create_stpl_windows_snmp() {
     exec_clapi STPL setmacro "stpl_os_windows_snmp_swap;WARNING;80"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_swap;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_windows_snmp_swap;graphtemplate;Memory"
-    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_windows_snmp_swap;icon_image;Hardware/memory2.png"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_windows_snmp_swap;icon_image;Hardware/memory.png"
   fi
 
   ## MEMORY SNMP
@@ -75,13 +75,13 @@ create_stpl_windows_snmp() {
   exist_object STPL stpl_os_windows_snmp_disk_global
   if [ $? -ne 0 ]
   then
-    exec_clapi STPL add "stpl_os_windows_snmp_disk_global;Memory;service-generique-actif"
+    exec_clapi STPL add "stpl_os_windows_snmp_disk_global;Disk-global;service-generique-actif"
     exec_clapi STPL setparam "stpl_os_windows_snmp_disk_global;check_command;cmd_os_windows_snmp_disk_global"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;FILTER;'.*'"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;WARNING;80"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_windows_snmp_disk_global;graphtemplate;Storage"
-    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_windows_snmp_disk_global;icon_image;Hardware/memory2.png"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_windows_snmp_disk_global;icon_image;Hardware/disque.png"
   fi
 
 }
