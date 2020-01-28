@@ -49,7 +49,7 @@ create_stpl_windows_snmp() {
   exist_object STPL stpl_os_windows_snmp_swap
   if [ $? -ne 0 ]
   then
-    exec_clapi STPL add "stpl_os_windows_snmp_swap;Load;service-generique-actif"
+    exec_clapi STPL add "stpl_os_windows_snmp_swap;swap;service-generique-actif"
     exec_clapi STPL setparam "stpl_os_windows_snmp_swap;check_command;cmd_os_windows_snmp_swap"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_swap;WARNING;80"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_swap;CRITICAL;90"
