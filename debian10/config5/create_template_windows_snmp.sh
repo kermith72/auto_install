@@ -23,7 +23,7 @@ create_cmd_windows_snmp() {
 
   # cmd_os_windows_snmp_disk_global
   exist_object CMD cmd_os_windows_snmp_disk_global
-  [ $? -ne 0 ] && exec_clapi CMD ADD 'cmd_os_windows_snmp_disk_global;check;$CENTREONPLUGINS$/centreon_windows_snmp.pl --plugin=os::windows::snmp::plugin --mode=storage --hostname=$HOSTADDRESS$ --snmp-version=$_HOSTSNMPVERSION$ --snmp-community=$_HOSTSNMPCOMMUNITY$ --storage=$_SERVICEFILTER$ --name --regexp --warning-usage=$_SERVICEWARNING$ --critical-usage=$_SERVICECRITICAL$ $_HOSTOPTION$ $_SERVICEOPTION$'
+  [ $? -ne 0 ] && exec_clapi CMD ADD 'cmd_os_windows_snmp_disk_global;check;$CENTREONPLUGINS$/centreon_windows_snmp.pl --plugin=os::windows::snmp::plugin --mode=storage --hostname=$HOSTADDRESS$ --snmp-version=$_HOSTSNMPVERSION$ --snmp-community=$_HOSTSNMPCOMMUNITY$ --storage=$_SERVICEFILTER$ --name --regexp --display-transform-src=$_SERVICETRANSFORMSRC$  --display-transform-dst=$_SERVICETRANSFORMDST$ --warning-usage=$_SERVICEWARNING$ --critical-usage=$_SERVICECRITICAL$ $_HOSTOPTION$ $_SERVICEOPTION$'
 
 
 }
@@ -80,6 +80,9 @@ create_stpl_windows_snmp() {
     exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;FILTER;'.*'"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;WARNING;80"
     exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;CRITICAL;90"
+    exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;TRANSFORMSRC;'^(..).*'"
+    exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;TRANSFORMDST;'$1'"
+    exec_clapi STPL setmacro "stpl_os_windows_snmp_disk_global;OPTION;--filter-perfdata='^(?!count)'"
     exec_clapi STPL setparam "stpl_os_windows_snmp_disk_global;graphtemplate;Storage"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_windows_snmp_disk_global;icon_image;Hardware/disque.png"
   fi
