@@ -30,7 +30,7 @@ create_stpl_cisco_snmp() {
 
   ## CPU snmp
   #stpl_net_cisco_snmp_cpu
-  exist_object STPL stpl_os_windows_snmp_cpu
+  exist_object STPL stpl_net_cisco_snmp_cpu
   if [ $? -ne 0 ]
   then
     exec_clapi STPL add "stpl_net_cisco_snmp_cpu;cpu;service-generique-actif"
