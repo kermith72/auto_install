@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_config_initialV5.sh
+# version 5.02
+# 25/01/2020
+# add template cisco
 # version 5.01
 # 25/01/2020
 # add template windows
@@ -79,6 +82,7 @@ BASE_DIR=$(dirname $0)
 . $BASE_DIR/config5/create_template_local.sh
 . $BASE_DIR/config5/create_template_snmp.sh
 . $BASE_DIR/config5/create_template_windows_snmp.sh
+. $BASE_DIR/config5/create_template_cisco_snmp.sh
 . $BASE_DIR/config5/create_apps_mysql.sh
 . $BASE_DIR/config5/create_apps_centreon.sh
 
@@ -211,6 +215,10 @@ echo "Create Command Windows snmp"
 
 create_cmd_windows_snmp
 
+echo "Create Command Cisco snmp"
+
+create_cmd_cisco_snmp
+
 echo "Create Command mysql"
 
 create_cmd_mysql
@@ -236,6 +244,10 @@ create_stpl_snmp
 echo "Create template service Windows snmp"
 
 create_stpl_windows_snmp
+
+echo "Create template service Cisco snmp"
+
+create_stpl_cisco_snmp
 
 #*****************
 
@@ -269,6 +281,8 @@ create_centreon_central
 create_apps_mysql
 
 create_windows_snmp
+
+create_cisco_snmp
 
 
 
