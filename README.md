@@ -10,6 +10,10 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.43
+centreon-web 19.10.5 & 19.04.8, centreon-engine 19.10.9, clib 19.04.1
+
+new script create_config_initialV5.sh for plugins 20191219 (windows and cisco)
 
 ### version 1.42
 centreon-web 19.10.4 & 19.04.7, centreon-engine 19.10.8 & 19.04.2, broker 19.10.2, plugins 20191219 
