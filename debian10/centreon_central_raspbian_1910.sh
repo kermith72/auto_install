@@ -647,7 +647,7 @@ apt-get install -y nodejs >> ${INSTALL_LOG}
 sed -i -e "s/19.10.0/19.10.1/g" package.json
 
 #build javascript dependencies
-npm install >> ${INSTALL_LOG}
+npm install --unsafe-perm -g node-sass >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
 # remplace script functions for RestAPIV2
@@ -721,9 +721,9 @@ mv api ${INSTALL_DIR}/centreon/
 cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
 cp config/bundles.php ${INSTALL_DIR}/centreon/config/
 cp config/services.yaml ${INSTALL_DIR}/centreon/config/
-mv config/Modules ${INSTALL_DIR}/centreon/config/
-mv config/packages ${INSTALL_DIR}/centreon/config/
-mv config/routes ${INSTALL_DIR}/centreon/config/
+#mv config/Modules ${INSTALL_DIR}/centreon/config/
+#mv config/packages ${INSTALL_DIR}/centreon/config/
+#mv config/routes ${INSTALL_DIR}/centreon/config/
 chown -R root: ${INSTALL_DIR}/centreon/config/*
 
 # Add mysql config for Centreon
