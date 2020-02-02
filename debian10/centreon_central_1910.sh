@@ -696,17 +696,19 @@ apt-get install curl  >> ${INSTALL_LOG}
 curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
-#modify file package.json
-sed -i -e "s/19.10.0/19.10.1/g" package.json
+if [[ ${CENTREON_VER[0]} == "19.10.1" ]]; then
+  #modify file package.json
+  sed -i -e "s/19.10.0/19.10.1/g" package.json
+fi
 
 #build javascript dependencies
 npm install >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
-# remplace script functions for RestAPIV2
-rm ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
-cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
-chmod +x ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
+# remplace script functions for RestAPIV2 version < 19.1.0.5
+#rm ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
+#cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
+#chmod +x ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
 
 
 if [ "$INSTALL_WEB" == "yes" ]
@@ -729,8 +731,8 @@ sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
-sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
 
 #Modify default config
@@ -769,15 +771,16 @@ chmod -R 775 /var/cache/centreon
 #copy files
 cp .env ${INSTALL_DIR}/centreon
 cp .env.local.php ${INSTALL_DIR}/centreon
-cp container.php ${INSTALL_DIR}/centreon/
-mv api ${INSTALL_DIR}/centreon/
-cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
-cp config/bundles.php ${INSTALL_DIR}/centreon/config/
-cp config/services.yaml ${INSTALL_DIR}/centreon/config/
-mv config/Modules ${INSTALL_DIR}/centreon/config/
-mv config/packages ${INSTALL_DIR}/centreon/config/
-mv config/routes ${INSTALL_DIR}/centreon/config/
-chown -R root: ${INSTALL_DIR}/centreon/config/*
+#copy files version < 19.10.5
+#cp container.php ${INSTALL_DIR}/centreon/
+#mv api ${INSTALL_DIR}/centreon/
+#cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
+#cp config/bundles.php ${INSTALL_DIR}/centreon/config/
+#cp config/services.yaml ${INSTALL_DIR}/centreon/config/
+#mv config/Modules ${INSTALL_DIR}/centreon/config/
+#mv config/packages ${INSTALL_DIR}/centreon/config/
+#mv config/routes ${INSTALL_DIR}/centreon/config/
+#chown -R www-data: ${INSTALL_DIR}/centreon/config/*
 
 # Add mysql config for Centreon
 cat >  /etc/mysql/conf.d/centreon.cnf << EOF
