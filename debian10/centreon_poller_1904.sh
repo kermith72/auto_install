@@ -95,10 +95,10 @@ if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
 fi
 
 tar xzf centreon-clib-${CLIB_VER}.tar.gz
-cd centreon-clib-${CLIB_VER}/build
+cd centreon-clib-${CLIB_VER}
 
 # add directive compilation
-sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-clib-${CLIB_VER}/build/CMakeLists.txt
+sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-clib-${CLIB_VER}/CMakeLists.txt
 
 cmake \
    -DWITH_TESTING=0 \
