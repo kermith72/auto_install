@@ -647,13 +647,13 @@ apt-get install -y nodejs >> ${INSTALL_LOG}
 sed -i -e "s/19.10.0/19.10.1/g" package.json
 
 #build javascript dependencies
-npm install --unsafe-perm -g node-sass >> ${INSTALL_LOG}
+npm install --unsafe-perm  >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
-# remplace script functions for RestAPIV2
-rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
-cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
-chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+# remplace script functions for RestAPIV2 version < 19.1.0.5
+#rm ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+#cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
+#chmod +x ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
