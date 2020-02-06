@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.44
+centreon-web 19.10.6 & 19.04.9, centreon-engine 19.10.10
+
 ### version 1.43
 centreon-web 19.10.5 & 19.04.8, centreon-engine 19.10.9, clib 19.04.1
 
