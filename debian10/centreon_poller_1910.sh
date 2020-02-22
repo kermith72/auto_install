@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.44
-# 06/02/2020
+# v 1.45
+# 19/02/2020
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.44"
+VERSION_BATCH="v 1.45"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.10"
+ENGINE_VER="19.10.11"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200204"
-BROKER_VER="19.10.2"
-CENTREON_VER="19.10.6"
+BROKER_VER="19.10.3"
+CENTREON_VER="19.10.7"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL

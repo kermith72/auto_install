@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 19.04 + engine install script for Debian Buster
-# v 1.44
-# 06/02/2020
+# v 1.45
+# 19/02/2020
 # Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.44"
+VERSION_BATCH="v 1.45"
 CLIB_VER="19.04.1"
 CONNECTOR_VER="19.04.0"
 ENGINE_VER="19.04.2"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200204"
 BROKER_VER="19.04.0"
-CENTREON_VER="19.04.9"
+CENTREON_VER="19.04.10"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -28,16 +28,16 @@ BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
-WIDGET_HOST_VER="19.04.2"
+WIDGET_HOST_VER="19.04.3"
 WIDGET_HOSTGROUP_VER="19.04.0"
-WIDGET_SERVICE_VER="19.04.2"
+WIDGET_SERVICE_VER="19.04.3"
 WIDGET_SERVICEGROUP_VER="19.04.0"
 WIDGET_GRID_MAP_VER="19.04.0"
 WIDGET_TOP_CPU_VER="19.04.0"
 WIDGET_TOP_MEMORY_VER="19.04.0"
-WIDGET_TACTICAL_OVERVIEW_VER="19.04.0"
+WIDGET_TACTICAL_OVERVIEW_VER="19.04.1"
 WIDGET_HTTP_LOADER_VER="19.04.0"
-WIDGET_ENGINE_STATUS_VER="19.04.1"
+WIDGET_ENGINE_STATUS_VER="19.04.2"
 WIDGET_GRAPH_VER="19.04.0"
 WIDGET_BASE="http://files.download.centreon.com/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
