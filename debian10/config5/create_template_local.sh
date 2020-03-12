@@ -100,27 +100,27 @@ create_cmd_local() {
 
   # cmd_os_linux_remote_cpu
   exist_object CMD cmd_os_linux_remote_cpu
-  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_cpu;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=cpu --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_cpu;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=cpu --hostname=$\HOSTADDRESS\$ --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
 
   # cmd_os_linux_remote_load
   exist_object CMD cmd_os_linux_remote_load
-  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_load;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=load --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_load;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=load --hostname=$\HOSTADDRESS\$ --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
 
   # cmd_os_linux_remote_swap
   exist_object CMD cmd_os_linux_remote_swap
-  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_swap;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=swap --warning-usage-prct=\$_SERVICEWARNING\$ --critical-usage-prct=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_swap;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=swap --hostname=$\HOSTADDRESS\$ --warning-usage-prct=\$_SERVICEWARNING\$ --critical-usage-prct=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
 
   # cmd_os_linux_remote_memory
   exist_object CMD cmd_os_linux_remote_memory
-  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_memory;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=memory --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_memory;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=memory --hostname=$\HOSTADDRESS\$ --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
 
   # cmd_os_linux_remote_disk_name
   exist_object CMD cmd_os_linux_remote_disk_name
-  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_disk_name;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=storage --name=\$_SERVICEDISKNAME\$ --warning-usage=\$_SERVICEWARNING\$ --critical-usage=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_disk_name;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=storage --hostname=$\HOSTADDRESS\$ --name=\$_SERVICEDISKNAME\$ --warning-usage=\$_SERVICEWARNING\$ --critical-usage=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
 
   # cmd_os_linux_remote_network_name
   exist_object CMD cmd_os_linux_remote_network_name
-  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_network_name;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=traffic --speed=\$_SERVICESPEED\$ --name=\$_SERVICEINTERFACE\$ --warning-out=\$_SERVICEWARNING\$ --critical-out=\$_SERVICECRITICAL\$ --warning-in=\$_SERVICEWARNING\$ --critical-in=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_network_name;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=traffic --hostname=$\HOSTADDRESS\$ --speed=\$_SERVICESPEED\$ --name=\$_SERVICEINTERFACE\$ --warning-out=\$_SERVICEWARNING\$ --critical-out=\$_SERVICECRITICAL\$ --warning-in=\$_SERVICEWARNING\$ --critical-in=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
  
 }
 
@@ -472,7 +472,7 @@ create_linux_local () {
   if [ $? -ne 0 ]
   then
     exec_clapi HTPL add "htpl_OS-Linux-remote;HTPL_OS-Linux-remote;;;;"
-    exec_clapi HTPL setmacro "htpl_OS-Linux-remote;REMOTEUSER;"
+    exec_clapi HTPL setmacro "htpl_OS-Linux-remote;USERREMOTE;"
     exec_clapi STPL addhost "stpl_os_linux_remote_cpu;htpl_OS-Linux-remote"
     exec_clapi STPL addhost "stpl_os_linux_remote_load;htpl_OS-Linux-remote"
     exec_clapi STPL addhost "stpl_os_linux_remote_memory;htpl_OS-Linux-remote"
