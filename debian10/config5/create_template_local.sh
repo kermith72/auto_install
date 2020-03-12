@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_template_local.sh
+# version 1.05
+# 12/03/2020
+# add remote linux
 # version 1.04
 # 13/01/2020
 # update cmd swap
@@ -94,6 +97,27 @@ create_cmd_local() {
   # cmd_os_linux_local_network_name
   exist_object CMD cmd_os_linux_local_network_name
   [ $? -ne 0 ] && exec_clapi CMD ADD 'cmd_os_linux_local_network_name;check;$CENTREONPLUGINS$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=traffic --speed=$_SERVICESPEED$ --name=$_SERVICEINTERFACE$ --warning-out=$_SERVICEWARNING$ --critical-out=$_SERVICECRITICAL$ --warning-in=$_SERVICEWARNING$ --critical-in=$_SERVICECRITICAL$ $_SERVICEOPTION$ '
+
+
+  # cmd_os_linux_remote_load
+  exist_object CMD cmd_os_linux_remote_load
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_load;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=load --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+
+  # cmd_os_linux_remote_swap
+  exist_object CMD cmd_os_linux_remote_swap
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_swap;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=swap --warning-usage-prct=\$_SERVICEWARNING\$ --critical-usage-prct=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+
+  # cmd_os_linux_remote_memory
+  exist_object CMD cmd_os_linux_remote_memory
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_memory;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=memory --warning=\$_SERVICEWARNING\$ --critical=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+
+  # cmd_os_linux_remote_disk_name
+  exist_object CMD cmd_os_linux_remote_disk_name
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_disk_name;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=storage --name=\$_SERVICEDISKNAME\$ --warning-usage=\$_SERVICEWARNING\$ --critical-usage=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
+
+  # cmd_os_linux_remote_network_name
+  exist_object CMD cmd_os_linux_remote_network_name
+  [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_os_linux_remote_network_name;check;\$CENTREONPLUGINS\$/centreon_linux_local.pl --plugin=os::linux::local::plugin --mode=traffic --speed=\$_SERVICESPEED\$ --name=\$_SERVICEINTERFACE\$ --warning-out=\$_SERVICEWARNING\$ --critical-out=\$_SERVICECRITICAL\$ --warning-in=\$_SERVICEWARNING\$ --critical-in=\$_SERVICECRITICAL\$ \$_SERVICEOPTION\$ --remote --ssh-option='-l=\$_HOSTUSERREMOTE\$' "
  
 }
 
@@ -110,6 +134,19 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_cpu;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_cpu;graphtemplate;CPU"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_cpu;icon_image;Hardware/cpu2.png"
+  fi
+  
+  ## CPU remote
+  #stpl_os_linux_remote_cpu
+  exist_object STPL stpl_os_linux_remote_cpu
+  if [ $? -ne 0 ]
+  then
+    exec_clapi STPL add "stpl_os_linux_remote_cpu;cpu;service-generique-actif"
+    exec_clapi STPL setparam "stpl_os_linux_remote_cpu;check_command;cmd_os_linux_remote_cpu"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_cpu;WARNING;70"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_cpu;CRITICAL;90"
+    exec_clapi STPL setparam "stpl_os_linux_remote_cpu;graphtemplate;CPU"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_remote_cpu;icon_image;Hardware/cpu2.png"
   fi
 
   ## Services MODELES CPU local
@@ -282,6 +319,19 @@ create_stpl_local () {
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_load;icon_image;Hardware/load2.png"
   fi
   
+  ## LOAD Remote
+  #stpl_os_linux_remote_load
+  exist_object STPL stpl_os_linux_remote_load
+  if [ $? -ne 0 ]
+  then
+    exec_clapi STPL add "stpl_os_linux_remote_load;Load;service-generique-actif"
+    exec_clapi STPL setparam "stpl_os_linux_remote_load;check_command;cmd_os_linux_remote_load"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_load;WARNING;4,3,2"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_load;CRITICAL;6,5,4"
+    exec_clapi STPL setparam "stpl_os_linux_remote_load;graphtemplate;LOAD_Average"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_remote_load;icon_image;Hardware/load2.png"
+  fi
+  
   ## SWAP
   #stpl_os_linux_local_swap
   exist_object STPL stpl_os_linux_local_swap
@@ -294,7 +344,20 @@ create_stpl_local () {
     exec_clapi STPL setparam "stpl_os_linux_local_swap;graphtemplate;Memory"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_swap;icon_image;Hardware/memory.png"
   fi
-  
+ 
+  ## SWAP remote
+  #stpl_os_linux_remote_swap
+  exist_object STPL stpl_os_linux_remote_swap
+  if [ $? -ne 0 ]
+  then
+    exec_clapi STPL add "stpl_os_linux_remote_swap;Swap;service-generique-actif"
+    exec_clapi STPL setparam "stpl_os_linux_remote_swap;check_command;cmd_os_linux_remote_swap"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_swap;WARNING;80"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_swap;CRITICAL;90"
+    exec_clapi STPL setparam "stpl_os_linux_remote_swap;graphtemplate;Memory"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_remote_swap;icon_image;Hardware/memory.png"
+  fi
+   
   ## MEMORY
   #stpl_os_linux_local_memory
   exist_object STPL stpl_os_linux_local_memory
@@ -306,6 +369,19 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_memory;CRITICAL;90"     
     exec_clapi STPL setparam "stpl_os_linux_local_memory;graphtemplate;Memory"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_memory;icon_image;Hardware/memory2.png"
+  fi
+
+  ## MEMORY remote
+  #stpl_os_linux_remote_memory
+  exist_object STPL stpl_os_linux_remote_memory
+  if [ $? -ne 0 ]
+  then
+    exec_clapi STPL add "stpl_os_linux_remote_memory;Memory;service-generique-actif"
+    exec_clapi STPL setparam "stpl_os_linux_remote_memory;check_command;cmd_os_linux_remote_memory"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_memory;WARNING;70"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_memory;CRITICAL;90"     
+    exec_clapi STPL setparam "stpl_os_linux_remote_memory;graphtemplate;Memory"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_remote_memory;icon_image;Hardware/memory2.png"
   fi
 
   ## DISK
@@ -320,6 +396,20 @@ create_stpl_local () {
     exec_clapi STPL setmacro "stpl_os_linux_local_disk_name;CRITICAL;90"
     exec_clapi STPL setparam "stpl_os_linux_local_disk_name;graphtemplate;Storage"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_disk_name;icon_image;Hardware/disque.png"
+  fi
+
+  ## DISK remote
+  ## Modele Disk
+  ###stpl_os_linux_remote_disk_name
+  exist_object STPL stpl_os_linux_remote_disk_name
+  if [ $? -ne 0 ]
+  then
+    exec_clapi STPL add "stpl_os_linux_remote_disk_name;disk;service-generique-actif"
+    exec_clapi STPL setparam "stpl_os_linux_remote_disk_name;check_command;cmd_os_linux_remote_disk_name"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_disk_name;WARNING;80"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_disk_name;CRITICAL;90"
+    exec_clapi STPL setparam "stpl_os_linux_remote_disk_name;graphtemplate;Storage"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_remote_disk_name;icon_image;Hardware/disque.png"
   fi
 
   ## TRAFFIC
@@ -339,6 +429,24 @@ create_stpl_local () {
     exec_clapi STPL setparam "stpl_os_linux_local_network_name;graphtemplate;Traffic"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_local_network_name;icon_image;Other/traffic2.png"
   fi
+  
+  ## TRAFFIC remote
+  # stpl_os_linux_remote_network_name
+  exist_object STPL stpl_os_linux_remote_network_name
+  if [ $? -ne 0 ]
+  then
+    exec_clapi STPL add "stpl_os_linux_remote_network_name;Traffic;service-generique-actif"
+    exec_clapi STPL setparam "stpl_os_linux_remote_network_name;check_command;cmd_os_linux_remote_network_name"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;WARNINGOUT;70"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;CRITICALOUT;80"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;WARNINGIN;70"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;CRITICALIN;80"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;SPEED;1000"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;OPTION;--units=%"
+    exec_clapi STPL setmacro "stpl_os_linux_remote_network_name;INTERFACE;eth0"
+    exec_clapi STPL setparam "stpl_os_linux_remote_network_name;graphtemplate;Traffic"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_os_linux_remote_network_name;icon_image;Other/traffic2.png"
+  fi
 }
 
 create_linux_local () {
@@ -354,6 +462,20 @@ create_linux_local () {
     exec_clapi STPL addhost "stpl_os_linux_local_swap;htpl_OS-Linux-local"
     exec_clapi HTPL addtemplate "htpl_OS-Linux-local;generic-host"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_OS-Linux-local;icon_image;OS/linux.png"
+  fi
+  
+  ##OS-Linux-Remote
+  exist_object HTPL htpl_OS-Linux-Remote
+  if [ $? -ne 0 ]
+  then
+    exec_clapi HTPL add "htpl_OS-Linux-Remote;HTPL_OS-Linux-Remote;;;;"
+    exec_clapi HTPL setmacro "htpl_OS-Linux-Remote;REMOTEUSER;"
+    exec_clapi STPL addhost "stpl_os_linux_Remote_cpu;htpl_OS-Linux-Remote"
+    exec_clapi STPL addhost "stpl_os_linux_Remote_load;htpl_OS-Linux-Remote"
+    exec_clapi STPL addhost "stpl_os_linux_Remote_memory;htpl_OS-Linux-Remote"
+    exec_clapi STPL addhost "stpl_os_linux_Remote_swap;htpl_OS-Linux-Remote"
+    exec_clapi HTPL addtemplate "htpl_OS-Linux-Remote;generic-host"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_OS-Linux-Remote;icon_image;OS/linux.png"
   fi
 
 }
