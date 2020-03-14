@@ -618,6 +618,7 @@ usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
 usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
 chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine/
 chmod g-w /var/lib/centreon
+chmod ${CENTREON_USER}:${CENTREON_GROUP} /var/lib/centreon/centplugins
 
 mkdir /var/log/centreon-broker
 chown ${BROKER_USER}: /var/log/centreon-broker
