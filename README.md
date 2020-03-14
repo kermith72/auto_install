@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.46
+centreon-web 19.10.08, centreon-engine 19.10.12, add template linux-remote
+
 ### version 1.45
 centreon-web 19.10.07 & 19.04.10, centreon-broker 19.10.3, centreon-engine 19.10.11
 
