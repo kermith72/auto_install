@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon + engine install script for Debian Stretch
-# v 1.32
-# 23/09/2019
+# v 1.46
+# 24/03/2020
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -12,9 +12,9 @@ CLIB_VER="18.10.0"
 CONNECTOR_VER="18.10.0"
 ENGINE_VER="18.10.0"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20190704"
-BROKER_VER="18.10.1"
-CENTREON_VER="18.10.7"
+PLUGIN_CENTREON_VER="20200204"
+BROKER_VER="18.10.2"
+CENTREON_VER="18.10.12"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -235,7 +235,7 @@ useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreo
 apt-get install -y libcgsi-gsoap-dev zlib1g-dev libssl-dev libxerces-c-dev >> ${INSTALL_LOG}
 
 # Cleanup to prevent space full on /var
-apt-get clean >> ${INSTALL_LOG}
+apt-get clean >> $/etc/nrpe/centreon-nrpe3.cfg{INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-engine-${ENGINE_VER}.tar.gz ]]
@@ -636,6 +636,9 @@ sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
 
 #Modify default config
 # Monitoring engine information
@@ -677,7 +680,7 @@ sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.1/fp
 
 # add node-js
 apt-get install curl  >> ${INSTALL_LOG}
-curl -sL https://deb.nodesource.com/setup_8.x | bash - >> ${INSTALL_LOG}
+curl -sL https://deb.nodesource.com/setup_10.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
 
