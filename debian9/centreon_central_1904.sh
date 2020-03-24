@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 19.04 + engine install script for Debian Stretch
-# v 1.42
-# 13/01/2020
+# v 1.46
+# 24/03/2020
 # Thanks to Remy
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.42"
-CLIB_VER="19.04.0"
-CONNECTOR_VER="19.04.0"
-ENGINE_VER="19.04.2"
+VERSION_BATCH="v 1.46"
+CLIB_VER="19.04.1"
+CONNECTOR_VER="19.04.1"
+ENGINE_VER="19.04.3"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20191219"
+PLUGIN_CENTREON_VER="20200204"
 BROKER_VER="19.04.0"
-CENTREON_VER="19.04.7"
+CENTREON_VER="19.04.11"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -147,7 +147,7 @@ if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
 fi
 
 tar xzf centreon-clib-${CLIB_VER}.tar.gz
-cd centreon-clib-${CLIB_VER}/build
+cd centreon-clib-${CLIB_VER}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
@@ -685,7 +685,7 @@ composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
 
 # add node-js
 apt-get install curl  >> ${INSTALL_LOG}
-curl -sL https://deb.nodesource.com/setup_8.x | bash - >> ${INSTALL_LOG}
+curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
 #build javascript dependencies
@@ -713,6 +713,9 @@ sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
 
 #Modify default config
 # Monitoring engine information

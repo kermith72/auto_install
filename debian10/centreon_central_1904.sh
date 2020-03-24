@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 19.04 + engine install script for Debian Buster
-# v 1.45
-# 19/02/2020
+# v 1.46
+# 24/03/2020
 # Thanks to Remy and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.45"
+VERSION_BATCH="v 1.46"
 CLIB_VER="19.04.1"
-CONNECTOR_VER="19.04.0"
-ENGINE_VER="19.04.2"
+CONNECTOR_VER="19.04.1"
+ENGINE_VER="19.04.3"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200204"
 BROKER_VER="19.04.0"
-CENTREON_VER="19.04.10"
+CENTREON_VER="19.04.11"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -715,6 +715,9 @@ sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
 sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
+sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
 
 #Modify default config
 # Monitoring engine information
