@@ -13,6 +13,8 @@ git checkout v1.x
 ### version 1.46
 centreon-web 19.10.08, centreon-engine 19.10.12, add template linux-remote
 
+update scripts 19.04 and 18.10 for Debian Stretch, update widget
+
 ### version 1.45
 centreon-web 19.10.07 & 19.04.10, centreon-broker 19.10.3, centreon-engine 19.10.11
 
