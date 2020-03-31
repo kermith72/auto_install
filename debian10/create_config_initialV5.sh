@@ -1,6 +1,9 @@
 #!/bin/bash
 # create_config_initialV5.sh
 # version 5.02
+# 31/03/2020
+# add template windows nrpe
+# version 5.02
 # 25/01/2020
 # add template cisco
 # version 5.01
@@ -82,6 +85,7 @@ BASE_DIR=$(dirname $0)
 . $BASE_DIR/config5/create_template_local.sh
 . $BASE_DIR/config5/create_template_snmp.sh
 . $BASE_DIR/config5/create_template_windows_snmp.sh
+. $BASE_DIR/config5/create_template_windows_nrpe.sh
 . $BASE_DIR/config5/create_template_cisco_snmp.sh
 . $BASE_DIR/config5/create_apps_mysql.sh
 . $BASE_DIR/config5/create_apps_centreon.sh
@@ -215,6 +219,10 @@ echo "Create Command Windows snmp"
 
 create_cmd_windows_snmp
 
+echo "Create Command Windows nrpe"
+
+create_cmd_windows_nrpe
+
 echo "Create Command Cisco snmp"
 
 create_cmd_cisco_snmp
@@ -245,6 +253,10 @@ echo "Create template service Windows snmp"
 
 create_stpl_windows_snmp
 
+echo "Create template service Windows nrpe"
+
+create_stpl_windows_nrpe
+
 echo "Create template service Cisco snmp"
 
 create_stpl_cisco_snmp
@@ -266,24 +278,25 @@ create_stpl_central
 ################################
 #*******HOTES MODELES **********
 ################################
-echo "Create template host"
-
+echo "Create templates host"
+echo "- base"
 create_htpl_base
-
+echo "- linux local"
 create_linux_local
-
+echo "- linux snmp"
 create_linux_snmp
-
+echo "- poller"
 create_centreon_poller
-
+echo "- central"
 create_centreon_central
-
+echo "- mysql"
 create_apps_mysql
-
+echo "- windows snmp"
 create_windows_snmp
-
+echo "- windows nrpe"
+create_windows_nrpe
+echo "- cisco"
 create_cisco_snmp
-
 
 
 

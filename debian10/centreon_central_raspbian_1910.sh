@@ -1,26 +1,26 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Raspian Buster
-# v 1.46
-# 14/03/2020
+# v 1.47
+# 31/03/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.46"
+VERSION_BATCH="v 1.47"
 CLIB_VER="19.10.0"
-CONNECTOR_VER="19.10.0"
-ENGINE_VER="19.10.12"
+CONNECTOR_VER="19.10.1"
+ENGINE_VER="19.10.13"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200204"
 BROKER_VER="19.10.3"
-CENTREON_VER="19.10.8"
+CENTREON_VER="19.10.10"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
 BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
-CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connector-${CONNECTOR_VER}.tar.gz"
+CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
 PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 PLUGIN_CENTREON_URL="${BASE_URL}/centreon-plugins/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz"
@@ -159,21 +159,21 @@ function centreon_connectors_install () {
 apt-get install -y libperl-dev >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
-if [[ -e centreon-connector-${CONNECTOR_VER}.tar.gz ]]
+if [[ -e centreon-connectors-${CONNECTOR_VER}.tar.gz ]]
   then
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
-    wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connector-${CONNECTOR_VER}.tar.gz >> ${INSTALL_LOG}
+    wget ${CONNECTOR_URL} -O ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
 fi
 
-tar xzf centreon-connector-${CONNECTOR_VER}.tar.gz
-cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build
+tar xzf centreon-connectors-${CONNECTOR_VER}.tar.gz
+cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/perl/build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
 # add directive compilation
-sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/perl/build/CMakeLists.txt
+sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/perl/build/CMakeLists.txt
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -194,12 +194,12 @@ apt-get install -y libssh2-1-dev libgcrypt-dev >> ${INSTALL_LOG}
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
 
-cd ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/ssh/build
+cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/ssh/build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
 # add directive compilation
-sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connector-${CONNECTOR_VER}/ssh/build/CMakeLists.txt
+sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connectors-${CONNECTOR_VER}/ssh/build/CMakeLists.txt
 
 
 cmake \
