@@ -1,13 +1,13 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.47
-# 31/03/2020
+# v 1.48
+# 04/04/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.47"
+VERSION_BATCH="v 1.48"
 CLIB_VER=("19.10.0" "0")
 CONNECTOR_VER=("19.10.1" "0")
 ENGINE_VER=("19.10.13" "0")
@@ -54,16 +54,16 @@ fi
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
 WIDGET_HOST_VER="19.10.1"
-WIDGET_HOSTGROUP_VER="19.10.0"
+WIDGET_HOSTGROUP_VER="19.10.1"
 WIDGET_SERVICE_VER="19.10.2"
-WIDGET_SERVICEGROUP_VER="19.10.0"
-WIDGET_GRID_MAP_VER="19.10.0"
-WIDGET_TOP_CPU_VER="19.10.0"
-WIDGET_TOP_MEMORY_VER="19.10.0"
+WIDGET_SERVICEGROUP_VER="19.10.1"
+WIDGET_GRID_MAP_VER="19.10.1"
+WIDGET_TOP_CPU_VER="19.10.1"
+WIDGET_TOP_MEMORY_VER="19.10.1"
 WIDGET_TACTICAL_OVERVIEW_VER="19.10.1"
-WIDGET_HTTP_LOADER_VER="19.10.0"
-WIDGET_ENGINE_STATUS_VER="19.10.0"
-WIDGET_GRAPH_VER="19.10.0"
+WIDGET_HTTP_LOADER_VER="19.10.1"
+WIDGET_ENGINE_STATUS_VER="19.10.1"
+WIDGET_GRAPH_VER="19.10.1"
 WIDGET_BASE="http://files.download.centreon.com/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
 WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"

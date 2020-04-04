@@ -10,6 +10,10 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.48
+update widget for 19.04 and 19.10
+
+
 ### version 1.47
 centreon-web 19.10.10 and 19.04.13, centreon-engine 19.10.13, connector 19.10.1
 
