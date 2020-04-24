@@ -64,7 +64,8 @@ create_stpl_central () {
   then
     exec_clapi STPL add "stpl_app_centreon_process-gorgoned;process-gorgoned;service-generique-actif"
     exec_clapi STPL setparam "stpl_app_centreon_process-gorgoned;check_command;cmd_os_linux_snmp_process"
-    exec_clapi STPL setmacro "stpl_app_centreon_process-gorgoned;PROCESSNAME;gorgoned"
+    exec_clapi STPL setmacro "stpl_app_centreon_process-gorgoned;PROCESSNAME;'perl'"
+    exec_clapi STPL setmacro "stpl_app_centreon_process-gorgoned;PROCESSARGS;'/usr/bin/gorgoned'"
     exec_clapi STPL setmacro "stpl_app_centreon_process-gorgoned;CRITICAL;1:1"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi STPL setparam "stpl_app_centreon_process-gorgoned;icon_image;Hardware/process2.png"
   fi
