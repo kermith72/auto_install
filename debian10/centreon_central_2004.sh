@@ -207,7 +207,7 @@ function clib_install () {
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-apt-get install -y build-essential cmake >> ${INSTALL_LOG}
+apt-get install -y cmake python3-pip >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
@@ -219,18 +219,18 @@ fi
 
 tar xzf centreon-clib-${CLIB_VER[0]}.tar.gz
 cd centreon-clib-${CLIB_VER[0]}
+mkdir build
+cd build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
-# add directive compilation
-sed -i '32i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-clib-${CLIB_VER[0]}/build/CMakeLists.txt
 
 cmake \
    -DWITH_TESTING=0 \
    -DWITH_PREFIX=/usr \
    -DWITH_SHARED_LIB=1 \
    -DWITH_STATIC_LIB=0 \
-   -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig . >> ${INSTALL_LOG}
+   -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig .. >> ${INSTALL_LOG}
 make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
@@ -239,10 +239,12 @@ make install >> ${INSTALL_LOG}
 function centreon_connectors_install () {
 [ "$SCRIPT_VERBOSE" = true ] && echo "
 ======================================================================
-               Install Centreon Perl connectors
+               Install Centreon Connectors
 ======================================================================
 " | tee -a ${INSTALL_LOG}
-apt-get install -y libperl-dev >> ${INSTALL_LOG}
+apt-get install -y libperl-dev libssh2-1-dev libgcrypt-dev >> ${INSTALL_LOG}
+/usr/bin/pip3 install conan >> ${INSTALL_LOG}
+/usr/local/bin/conan remote add centreon https://api.bintray.com/conan/centreon/centreon >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-connectors-${CONNECTOR_VER[0]}.tar.gz ]]
@@ -254,47 +256,23 @@ if [[ -e centreon-connectors-${CONNECTOR_VER[0]}.tar.gz ]]
 fi
 
 tar xzf centreon-connectors-${CONNECTOR_VER[0]}.tar.gz
-cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER[0]}/perl/build
+cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER[0]}
+mkdir build
+cd build
+
+/usr/local/bin/conan install .. >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
-
-# add directive compilation
-sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connectors-${CONNECTOR_VER[0]}/perl/build/CMakeLists.txt
-
-cmake \
- -DWITH_PREFIX=/usr  \
- -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
- -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
- -DWITH_TESTING=0 . >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
-make install >> ${INSTALL_LOG}
-
-[ "$SCRIPT_VERBOSE" = true ] && echo "
-======================================================================
-               Install Centreon SSH connectors
-======================================================================
-" | tee -a ${INSTALL_LOG}
-# install Centreon SSH Connector
-apt-get install -y libssh2-1-dev libgcrypt-dev >> ${INSTALL_LOG}
-
-# Cleanup to prevent space full on /var
-apt-get clean >> ${INSTALL_LOG}
-
-cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER[0]}/ssh/build
-
-[ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
-
-# add directive compilation
-sed -i '27i\set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -fpermissive")' ${DL_DIR}/centreon-connectors-${CONNECTOR_VER[0]}/ssh/build/CMakeLists.txt
 
 
 cmake \
  -DWITH_PREFIX=/usr  \
  -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
  -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
- -DWITH_TESTING=0 . >> ${INSTALL_LOG}
+ -DWITH_TESTING=0 .. >> ${INSTALL_LOG}
 make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
+
 }
 
 function centreon_engine_install () {
@@ -323,9 +301,12 @@ fi
 
 tar xzf centreon-engine-${ENGINE_VER[0]}.tar.gz
 cd ${DL_DIR}/centreon-engine-${ENGINE_VER[0]}
+mkdir build
+cd build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
+/usr/local/bin/conan install .. >> ${INSTALL_LOG}
 
 cmake \
    -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
@@ -342,7 +323,7 @@ cmake \
    -DWITH_STARTUP_DIR=/lib/systemd/system  \
    -DWITH_PKGCONFIG_SCRIPT=1 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
-   -DWITH_TESTING=0 . >> ${INSTALL_LOG}
+   -DWITH_TESTING=0 .. >> ${INSTALL_LOG}
 make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
@@ -445,7 +426,7 @@ groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
 usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
 
-apt-get install git librrd-dev libqt4-dev libqt4-sql-mysql libgnutls28-dev lsb-release liblua5.2-dev -y >> ${INSTALL_LOG}
+apt-get install git librrd-dev libmariadb-dev libgnutls28-dev lsb-release liblua5.2-dev -y >> ${INSTALL_LOG}
 
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
@@ -461,8 +442,12 @@ fi
 
 tar xzf centreon-broker-${BROKER_VER[0]}.tar.gz
 cd ${DL_DIR}/centreon-broker-${BROKER_VER[0]}
+mkdir build
+cd build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation broker" | tee -a ${INSTALL_LOG}
+
+/usr/local/bin/conan install .. >> ${INSTALL_LOG}
 
 cmake \
     -DWITH_DAEMONS='central-broker;central-rrd' \
@@ -476,7 +461,7 @@ cmake \
     -DWITH_STARTUP_SCRIPT=systemd  \
     -DWITH_STARTUP_DIR=/lib/systemd/system  \
     -DWITH_TESTING=0 \
-    -DWITH_USER=${BROKER_USER} . >> ${INSTALL_LOG}
+    -DWITH_USER=${BROKER_USER} .. >> ${INSTALL_LOG}
 make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 systemctl enable cbd.service >> ${INSTALL_LOG}
