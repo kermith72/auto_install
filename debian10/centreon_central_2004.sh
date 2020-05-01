@@ -50,7 +50,7 @@ fi
 if [[ ${GORGONE_VER[1]} == "1" ]]; then
   GORGONE_URL="${BASE_GITHUB}/centreon-gorgone/archive/${GORGONE_VER[0]}.tar.gz"
 else
-  GORGONE_URL="${BASE_URL}/centreon-gorgone/centreon-broker-${GORGONE_VER[0]}.tar.gz"
+  GORGONE_URL="${BASE_URL}/centreon-gorgone/centreon-gorgone-${GORGONE_VER[0]}.tar.gz"
 fi
 if [[ ${CENTREON_VER[1]} == "1" ]]; then
   CENTREON_URL="${BASE_GITHUB}/centreon/archive/${CENTREON_VER[0]}.tar.gz"
@@ -551,7 +551,7 @@ make install >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install lib-ssh" | tee -a ${INSTALL_LOG}
 cd ${DL_DIR}
-/usr/bin/gitgit clone https://github.com/garnier-quentin/perl-libssh.git >> ${INSTALL_LOG}
+/usr/bin/git clone https://github.com/garnier-quentin/perl-libssh.git >> ${INSTALL_LOG}
 cd perl-libssh
 perl Makefile.PL >> ${INSTALL_LOG}
 make >> ${INSTALL_LOG}
@@ -566,7 +566,7 @@ apt install libcryptx-perl libschedule-cron-perl libcrypt-cbc-perl \
            libapache-dbi-perl libdata-uuid-perl libhttp-daemon-perl \
            libhttp-message-perl libmime-base64-urlsafe-perl \
            libdigest-md5-file-perl libwww-curl-perl libio-socket-ssl-perl \
-           libnetaddr-ip-perl libhash-merge-perl -y
+           libnetaddr-ip-perl libhash-merge-perl -y >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-gorgone-${GORGONE_VER[0]}.tar.gz ]]
