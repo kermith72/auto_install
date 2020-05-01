@@ -837,7 +837,7 @@ npm ci >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
 
 
 if [ "$INSTALL_WEB" == "yes" ]
@@ -890,7 +890,7 @@ chmod 775 /var/lib/centreon/centcore
 
 # configure gorgone
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Configure gorgone" | tee -a ${INSTALL_LOG}
-cat /etc/centreon/config.yaml <<EOF
+cat > /etc/centreon/config.yaml <<EOF
 name: config.yaml
 description: Configuration for Central server
 configuration: !include config.d/*.yaml
@@ -901,7 +901,7 @@ chown centreon: /etc/centreon/config.yaml
 chmod 775 /etc/centreon/config.d
 chown centreon: /etc/centreon/config.d
 
-cat /etc/centreon/config.d/10-database.yaml <<EOF
+cat > /etc/centreon/config.d/10-database.yaml <<EOF
 database:
   db_configuration:
     dsn: "mysql:host=localhost:3306;dbname=centreon"
@@ -915,7 +915,7 @@ EOF
 
 chown www-data: /etc/centreon/config.d/10-database.yaml
 
-cat /etc/centreon-gorgone/config.d/30-centreon.yaml <<EOF
+cat > /etc/centreon-gorgone/config.d/30-centreon.yaml <<EOF
 name: centreon.yaml
 description: Configure Centreon Gorgone to work with Centreon Web.
 centreon: !include /etc/centreon/config.d/*.yaml
