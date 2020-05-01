@@ -14,6 +14,7 @@ ENGINE_VER=("20.04.0" "0")
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER=("20200204" "0")
 BROKER_VER=("20.04.0" "0")
+GORGONE_VER=("20.04.1" "0")
 CENTREON_VER=("20.04.0" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
@@ -45,6 +46,11 @@ if [[ ${BROKER_VER[1]} == "1" ]]; then
   BROKER_URL="${BASE_GITHUB}/centreon-broker/archive/${BROKER_VER[0]}.tar.gz"
 else
   BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER[0]}.tar.gz"
+fi
+if [[ ${GORGONE_VER[1]} == "1" ]]; then
+  GORGONE_URL="${BASE_GITHUB}/centreon-gorgone/archive/${GORGONE_VER[0]}.tar.gz"
+else
+  GORGONE_URL="${BASE_URL}/centreon-gorgone/centreon-broker-${GORGONE_VER[0]}.tar.gz"
 fi
 if [[ ${CENTREON_VER[1]} == "1" ]]; then
   CENTREON_URL="${BASE_GITHUB}/centreon/archive/${CENTREON_VER[0]}.tar.gz"
@@ -98,6 +104,7 @@ CENTREON_USER="centreon"
 CENTREON_GROUP="centreon"
 ## TMPL file (template install file for Centreon)
 CENTREON_TMPL="centreon_engine.tmpl"
+CENTREON_TMPL="gorgone.tmpl"
 ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $7}'`
 ## TimeZone php
 VARTIMEZONE="Europe/Paris"
@@ -493,26 +500,117 @@ function php_fpm_install() {
 " | tee -a ${INSTALL_LOG}
 
 apt-get install php php7.3-opcache libapache2-mod-php php-mysql \
-	php-curl php-json php-gd php-intl php-mbstring php-xml \
-	php-zip php-fpm php-readline -y >> ${INSTALL_LOG}
-	
-
-DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes ntp \
-	rrdtool php-sqlite3 php-pear sudo tofrodos bsd-mailx lsb-release \
-	mariadb-server libconfig-inifiles-perl libcrypt-des-perl \
-	librrds-perl libdigest-hmac-perl libdigest-sha-perl libgd-perl \
-	php-ldap php-snmp php7.3-db snmp snmpd snmptrapd libnet-snmp-perl \
-	libsnmp-perl snmp-mibs-downloader >> ${INSTALL_LOG}
+        php-curl php-json php-gd php-intl php-mbstring php-xml \
+        php-zip php-fpm php-readline ntp rrdtool php-sqlite3 \
+        php-pear sudo tofrodos bsd-mailx lsb-release \
+        libconfig-inifiles-perl libcrypt-des-perl librrds-perl \
+        libdigest-hmac-perl libdigest-sha-perl libgd-perl php-ldap \
+        php-snmp php7.3-db php-date -y >> ${INSTALL_LOG}
 
 
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
+
+# add Timezone
+VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
+sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.3/fpm/php.ini
 
 a2enmod proxy_fcgi setenvif proxy rewrite >> ${INSTALL_LOG}
 a2enconf php7.3-fpm >> ${INSTALL_LOG}
 a2dismod php7.3 >> ${INSTALL_LOG}
 systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
 
+}
+
+function centreon_gorgone_install() {
+[ "$SCRIPT_VERBOSE" = true ] && echo "
+======================================================================
+                     Install Centreon Gorgone
+======================================================================
+" | tee -a ${INSTALL_LOG}
+	
+apt install libzmq3-dev libssh-dev libextutils-makemaker-cpanfile-perl \
+            libmodule-build-perl libmodule-install-perl -y >> ${INSTALL_LOG}
+	
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install ZMQ-LibZMQ4" | tee -a ${INSTALL_LOG}
+cd ${DL_DIR}
+wget http://search.cpan.org/CPAN/authors/id/M/MO/MOSCONI/ZMQ-LibZMQ4-0.01.tar.gz >> ${INSTALL_LOG}
+tar zxf ZMQ-LibZMQ4-0.01.tar.gz 
+cd ZMQ-LibZMQ4-0.01
+sed -i -e "s/tools/.\/tools/g" Makefile.PL
+perl Makefile.PL >> ${INSTALL_LOG}
+make >> ${INSTALL_LOG}
+make install >> ${INSTALL_LOG}
+cd ..
+wget https://cpan.metacpan.org/authors/id/D/DM/DMAKI/ZMQ-Constants-1.04.tar.gz >> ${INSTALL_LOG}
+tar zxf ZMQ-Constants-1.04.tar.gz
+cd ZMQ-Constants-1.04
+perl Makefile.PL >> ${INSTALL_LOG}
+make >> ${INSTALL_LOG}
+make install >> ${INSTALL_LOG}
+
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install lib-ssh" | tee -a ${INSTALL_LOG}
+cd ${DL_DIR}
+/usr/bin/gitgit clone https://github.com/garnier-quentin/perl-libssh.git >> ${INSTALL_LOG}
+cd perl-libssh
+perl Makefile.PL >> ${INSTALL_LOG}
+make >> ${INSTALL_LOG}
+make install >> ${INSTALL_LOG}
+
+[ "$SCRIPT_VERBOSE" = true ] && echo "
+==================   Install Gorgone     =====================
+" | tee -a ${INSTALL_LOG}
+apt install libcryptx-perl libschedule-cron-perl libcrypt-cbc-perl \
+           libcpanel-json-xs-perl libjson-pp-perl libyaml-perl \
+           libyaml-libyaml-perl libdbd-sqlite3-perl libdbd-mysql-perl \
+           libapache-dbi-perl libdata-uuid-perl libhttp-daemon-perl \
+           libhttp-message-perl libmime-base64-urlsafe-perl \
+           libdigest-md5-file-perl libwww-curl-perl libio-socket-ssl-perl \
+           libnetaddr-ip-perl libhash-merge-perl -y
+
+cd ${DL_DIR}
+if [[ -e centreon-gorgone-${GORGONE_VER[0]}.tar.gz ]]
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    wget ${GORGONE_URL} -O ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
+fi
+
+tar xzf centreon-gorgone-${GORGONE_VER[0]}.tar.gz
+cd ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}
+
+# remplace script install.sh
+cp ${DIR_SCRIPT}/libinstall/install_gorgone.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}/install.sh
+
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Create template Gorgone" | tee -a ${INSTALL_LOG}
+cat > ${DL_DIR}/${GORGONE_TMPL} << EOF
+# gorgone template
+# deployment paths
+GORGONE_LOG="/var/log/centreon-gorgone"
+GORGONE_VARLIB="/var/lib/centreon-gorgone"
+GORGONE_ETC="/etc/centreon-gorgone"
+GORGONE_CONF_FILE="/config.yaml"
+GORGONE_BINDIR="/usr/bin/"
+
+# perl related paths
+GORGONE_PERL="/usr/bin/perl5"
+
+# system tools paths
+INIT_D="/etc/init.d"
+CRON_D="/etc/cron.d"
+LOGROTATE_D="/etc/logrotate.d"
+SYSTEM_D="/etc/systemd/system"
+SYSCONFIG="/etc/default"
+
+# user and group
+GORGONE_USER="centreon-gorgone"
+GORGONE_GROUP="centreon-gorgone"
+EOF
+
+./install.sh -i -f ${DL_DIR}/${GORGONE_TMPL}
+
+	
 }
 
 function create_centreon_tmpl() {
@@ -815,9 +913,6 @@ cp .env.local.php ${INSTALL_DIR}/centreon
 
 
 
-# add Timezone
-VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
-sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.3/fpm/php.ini
 
 
 # reload conf apache
@@ -966,6 +1061,7 @@ echo "
                   Engine     : ${ENGINE_VER[0]}
                   Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER[0]}
                   Broker     : ${BROKER_VER[0]}
+                  Gorgone    : ${GORGONE_VER[0]}
                   Centreon   : ${CENTREON_VER[0]}
                   NRPE       : ${NRPE_VERSION}
                   Install dir: ${INSTALL_DIR}
@@ -981,6 +1077,7 @@ echo "
                   Engine     : ${ENGINE_VER[0]}
                   Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER[0]}
                   Broker     : ${BROKER_VER[0]}
+                  Gorgone    : ${GORGONE_VER[0]}
                   Centreon   : ${CENTREON_VER[0]}
                   Install dir: ${INSTALL_DIR}
                   Source dir : ${DL_DIR}
@@ -1104,7 +1201,6 @@ if [[ $? -eq 1 ]];
     echo -e     "${bold}Step8${normal}  => Centreon Broker already installed                     ${STATUS_OK}"
 fi
 
-
 verify_version "$CENTREON_VER[0]" "$CENTREON_VER_OLD"
 if [[ $? -eq 1 ]];
   then
@@ -1119,6 +1215,22 @@ if [[ $? -eq 1 ]];
     echo -e   "${bold}Step9${normal}  => Php-fpm already installed                             ${STATUS_OK}"
 fi
 
+verify_version "$GORGONE_VER[0]" "$GORGONE_VER_OLD"
+if [[ $? -eq 1 ]];
+  then
+    centreon_gorgone_install 2>>${INSTALL_LOG}
+    if [[ $? -ne 0 ]];
+      then
+        echo -e "${bold}Step10${normal}  => Centreon Gorgone install                              ${STATUS_FAIL}"
+      else
+        echo -e "${bold}Step10${normal}  => Centreon Gorgone install                              ${STATUS_OK}"
+        maj_conf "GORGONE_VER[0]" "$GORGONE_VER_OLD" "$GORGONE_VER[0]"    
+    fi
+  else
+    echo -e     "${bold}Step10${normal}  => Centreon Gorgone already installed                     ${STATUS_OK}"
+fi
+
+
 
 verify_version "$CENTREON_VER[0]" "$CENTREON_VER_OLD"
 if [[ $? -eq 1 ]];
@@ -1128,16 +1240,16 @@ if [[ $? -eq 1 ]];
       create_centreon_tmpl 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_FAIL}"
+        echo -e "${bold}Step11${normal}  => Centreon template generation                          ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_OK}"
+        echo -e "${bold}Step11${normal}  => Centreon template generation                          ${STATUS_OK}"
       fi
     else 
       create_centreon_tmpl 2>>${INSTALL_LOG}
-      echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_OK}"
+      echo -e "${bold}Step11${normal}  => Centreon template generation                          ${STATUS_OK}"
     fi
   else
-    echo -e   "${bold}Step10${normal}  => Centreon template already installed                   ${STATUS_OK}"
+    echo -e   "${bold}Step11${normal}  => Centreon template already installed                   ${STATUS_OK}"
 fi
 
 
@@ -1149,23 +1261,23 @@ if [[ $? -eq 1 ]];
       centreon_install 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
+        echo -e "${bold}Step12${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_OK}"
+        echo -e "${bold}Step12${normal}  => Centreon web interface install                        ${STATUS_OK}"
         maj_conf "CENTREON_VER[0]" "$CENTREON_VER_OLD" "$CENTREON_VER[0]"    
       fi
     else 
       centreon_maj 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step11${normal}  => Centreon web interface maj                            ${STATUS_FAIL}"
+        echo -e "${bold}Step12${normal}  => Centreon web interface maj                            ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step11${normal}  => Centreon web interface maj                           ${STATUS_OK}"
+        echo -e "${bold}Step12${normal}  => Centreon web interface maj                           ${STATUS_OK}"
         maj_conf "CENTREON_VER[0]" "$CENTREON_VER_OLD" "$CENTREON_VER[0]"    
       fi
     fi
   else
-    echo -e   "${bold}Step11${normal}  => Centreon web already installed                   ${STATUS_OK}"
+    echo -e   "${bold}Step12${normal}  => Centreon web already installed                   ${STATUS_OK}"
 fi
 
 
@@ -1176,9 +1288,9 @@ then
     post_install 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
     then
-      echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_FAIL}"
+      echo -e "${bold}Step13${normal} => Post install                                          ${STATUS_FAIL}"
     else
-      echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_OK}"
+      echo -e "${bold}Step13${normal} => Post install                                          ${STATUS_OK}"
     fi
   fi
 fi
@@ -1189,9 +1301,9 @@ then
   widget_install 2>>${INSTALL_LOG}
   if [[ $? -ne 0 ]];
     then
-      echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_FAIL}"
+      echo -e "${bold}Step14${normal} => Widgets install                                       ${STATUS_FAIL}"
     else
-      echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_OK}"
+      echo -e "${bold}Step14${normal} => Widgets install                                       ${STATUS_OK}"
   fi
 fi 
 
@@ -1200,9 +1312,9 @@ then
   add_check_nrpe 2>>${INSTALL_LOG}
   if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step14${normal} => Nrpe install                                          ${STATUS_FAIL}"
+    echo -e "${bold}Step15${normal} => Nrpe install                                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step14${normal} => Nrpe install                                          ${STATUS_OK}"
+    echo -e "${bold}Step15${normal} => Nrpe install                                          ${STATUS_OK}"
   fi
 
 fi
