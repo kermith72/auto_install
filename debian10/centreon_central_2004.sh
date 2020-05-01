@@ -103,8 +103,8 @@ BROKER_GROUP="centreon-broker"
 CENTREON_USER="centreon"
 CENTREON_GROUP="centreon"
 ## TMPL file (template install file for Centreon)
-CENTREON_TMPL="centreon_engine.tmpl"
-CENTREON_TMPL="gorgone.tmpl"
+CENTREON_TMPL="centreon_install.tmpl"
+GORGONE_TMPL="gorgone.tmpl"
 ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $7}'`
 ## TimeZone php
 VARTIMEZONE="Europe/Paris"
@@ -505,7 +505,8 @@ apt-get install php php7.3-opcache libapache2-mod-php php-mysql \
         php-pear sudo tofrodos bsd-mailx lsb-release \
         libconfig-inifiles-perl libcrypt-des-perl librrds-perl \
         libdigest-hmac-perl libdigest-sha-perl libgd-perl php-ldap \
-        php-snmp php7.3-db php-date -y >> ${INSTALL_LOG}
+        php-snmp php7.3-db php-date \
+        libsnmp-perl snmpd snmptrapd snmp-mibs-downloader -y >> ${INSTALL_LOG}
 
 
 # Cleanup to prevent space full on /var
@@ -581,7 +582,7 @@ tar xzf centreon-gorgone-${GORGONE_VER[0]}.tar.gz
 cd ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_gorgone.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}/install.sh
+cp ${DIR_SCRIPT}/libinstall/install_gorgone.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}/install.sh >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Create template Gorgone" | tee -a ${INSTALL_LOG}
 cat > ${DL_DIR}/${GORGONE_TMPL} << EOF
@@ -594,7 +595,7 @@ GORGONE_CONF_FILE="/config.yaml"
 GORGONE_BINDIR="/usr/bin/"
 
 # perl related paths
-GORGONE_PERL="/usr/bin/perl5"
+GORGONE_PERL="/usr/share/perl5/"
 
 # system tools paths
 INIT_D="/etc/init.d"
@@ -608,7 +609,7 @@ GORGONE_USER="centreon-gorgone"
 GORGONE_GROUP="centreon-gorgone"
 EOF
 
-./install.sh -i -f ${DL_DIR}/${GORGONE_TMPL}
+./install.sh -i -f ${DL_DIR}/${GORGONE_TMPL} >> ${INSTALL_LOG}
 
 	
 }
@@ -706,6 +707,11 @@ PEAR_PATH="/usr/share/php/"
 PHP_FPM_SERVICE="php7.3-fpm"
 PHP_FPM_RELOAD=1
 DIR_PHP_FPM_CONF="/etc/php/7.3/fpm/pool.d/"
+
+GORGONE_VARLIB="/var/lib/centreon-gorgone"
+GORGONE_CONFIG="/etc/centreon-gorgone"
+GORGONE_USER="centreon-gorgone"
+GORGONE_GROUP="centreon-gorgone"
 EOF
 }
 
@@ -825,19 +831,13 @@ apt-get install curl  >> ${INSTALL_LOG}
 curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
-if [[ ${CENTREON_VER[0]} == "19.10.1" ]]; then
-  #modify file package.json
-  sed -i -e "s/19.10.0/19.10.1/g" package.json
-fi
 
 #build javascript dependencies
-npm install >> ${INSTALL_LOG}
+npm ci >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
-# remplace script functions for RestAPIV2 version < 19.1.0.5
-#rm ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
-#cp ${DIR_SCRIPT}/libinstall/functions ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
-#chmod +x ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions
+# remplace script install.sh
+cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}/install.sh >> ${INSTALL_LOG}
 
 
 if [ "$INSTALL_WEB" == "yes" ]
@@ -855,14 +855,6 @@ function post_install () {
 =====================================================================
 " | tee -a ${INSTALL_LOG}
 
-#bug fix version < 19.08
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
 
 #Modify default config
 # Monitoring engine information
@@ -875,44 +867,10 @@ sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL
 # sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
 sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
 
-# bug goup centreon-engine 
-/usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
-/usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
-/usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
-
-#bug statistic centengine issue #8084 version < 19.10.2
-#sed -i -e 's/"-s $self->{interval}"/"-s", $self->{interval}/g' /usr/share/perl5/centreon/script/nagiosPerfTrace.pm
-
-cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
-# Add API key for Centreon
-# https://gist.github.com/earthgecko/3089509
-# bash generate random 64 character alphanumeric string (upper and lowercase) and 
-APIKEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
-#modify file .env
-sed -i -e "s/%APP_SECRET%/${APIKEY}/g" .env
-#generate .env.local.php
-composer dump-env prod
-
-#Modify right cache version < 19.10.8
-#chown -R ${CENTREON_USER}:${CENTREON_GROUP} /var/cache/centreon
-#chmod -R 775 /var/cache/centreon
-
-#copy files
-cp .env ${INSTALL_DIR}/centreon
-cp .env.local.php ${INSTALL_DIR}/centreon
-#copy files version < 19.10.5
-#cp container.php ${INSTALL_DIR}/centreon/
-#mv api ${INSTALL_DIR}/centreon/
-#cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
-#cp config/bundles.php ${INSTALL_DIR}/centreon/config/
-#cp config/services.yaml ${INSTALL_DIR}/centreon/config/
-#mv config/Modules ${INSTALL_DIR}/centreon/config/
-#mv config/packages ${INSTALL_DIR}/centreon/config/
-#mv config/routes ${INSTALL_DIR}/centreon/config/
-#chown -R www-data: ${INSTALL_DIR}/centreon/config/*
-
-
-
+# bug group centreon-engine 
+#/usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
+#/usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
+#/usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
 
 
 # reload conf apache
@@ -929,6 +887,44 @@ chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
 mkdir /var/lib/centreon/centcore
 chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
 chmod 775 /var/lib/centreon/centcore
+
+# configure gorgone
+[ "$SCRIPT_VERBOSE" = true ] && echo "====> Configure gorgone" | tee -a ${INSTALL_LOG}
+cat /etc/centreon/config.yaml <<EOF
+name: config.yaml
+description: Configuration for Central server
+configuration: !include config.d/*.yaml
+EOF
+chmod 664 /etc/centreon/config.yaml
+chown centreon: /etc/centreon/config.yaml
+
+chmod 775 /etc/centreon/config.d
+chown centreon: /etc/centreon/config.d
+
+cat /etc/centreon/config.d/10-database.yaml <<EOF
+database:
+  db_configuration:
+    dsn: "mysql:host=localhost:3306;dbname=centreon"
+    username: "centreon"
+    password: "centreon"
+  db_realtime:
+    dsn: "mysql:host=localhost:3306;dbname=centreon_storage"
+    username: "centreon"
+    password: "centreon"
+EOF
+
+chown www-data: /etc/centreon/config.d/10-database.yaml
+
+cat /etc/centreon-gorgone/config.d/30-centreon.yaml <<EOF
+name: centreon.yaml
+description: Configure Centreon Gorgone to work with Centreon Web.
+centreon: !include /etc/centreon/config.d/*.yaml
+EOF
+
+# bugfix nodes gorgone
+sed -i -e "s/unshift \$register_subnodes->{\$_->\[0\]}/unshift \@{\$register_subnodes->{\$_->\[0\]}}/g" /usr/share/perl5/gorgone/modules/centreon/nodes/class.pm
+
+systemctl restart gorgoned
 
 #add cgroup centreon
 echo '[Unit]
