@@ -1219,13 +1219,13 @@ if [[ $? -eq 1 ]];
     centreon_gorgone_install 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step10${normal}  => Centreon Gorgone install                              ${STATUS_FAIL}"
+        echo -e "${bold}Step10${normal} => Centreon Gorgone install                              ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step10${normal}  => Centreon Gorgone install                              ${STATUS_OK}"
+        echo -e "${bold}Step10${normal} => Centreon Gorgone install                              ${STATUS_OK}"
         maj_conf "GORGONE_VER[0]" "$GORGONE_VER_OLD" "$GORGONE_VER[0]"    
     fi
   else
-    echo -e     "${bold}Step10${normal}  => Centreon Gorgone already installed                     ${STATUS_OK}"
+    echo -e     "${bold}Step10${normal} => Centreon Gorgone already installed                     ${STATUS_OK}"
 fi
 
 
@@ -1238,13 +1238,13 @@ if [[ $? -eq 1 ]];
       create_centreon_tmpl 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step11${normal}  => Centreon template generation                          ${STATUS_FAIL}"
+        echo -e "${bold}Step11${normal} => Centreon template generation                          ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step11${normal}  => Centreon template generation                          ${STATUS_OK}"
+        echo -e "${bold}Step11${normal} => Centreon template generation                          ${STATUS_OK}"
       fi
     else 
       create_centreon_tmpl 2>>${INSTALL_LOG}
-      echo -e "${bold}Step11${normal}  => Centreon template generation                          ${STATUS_OK}"
+      echo -e "${bold}Step11${normal} => Centreon template generation                          ${STATUS_OK}"
     fi
   else
     echo -e   "${bold}Step11${normal}  => Centreon template already installed                   ${STATUS_OK}"
@@ -1259,23 +1259,23 @@ if [[ $? -eq 1 ]];
       centreon_install 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step12${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
+        echo -e "${bold}Step12${normal} => Centreon web interface install                        ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step12${normal}  => Centreon web interface install                        ${STATUS_OK}"
+        echo -e "${bold}Step12${normal} => Centreon web interface install                        ${STATUS_OK}"
         maj_conf "CENTREON_VER[0]" "$CENTREON_VER_OLD" "$CENTREON_VER[0]"    
       fi
     else 
       centreon_maj 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step12${normal}  => Centreon web interface maj                            ${STATUS_FAIL}"
+        echo -e "${bold}Step12${normal} => Centreon web interface maj                            ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step12${normal}  => Centreon web interface maj                           ${STATUS_OK}"
+        echo -e "${bold}Step12${normal} => Centreon web interface maj                           ${STATUS_OK}"
         maj_conf "CENTREON_VER[0]" "$CENTREON_VER_OLD" "$CENTREON_VER[0]"    
       fi
     fi
   else
-    echo -e   "${bold}Step12${normal}  => Centreon web already installed                   ${STATUS_OK}"
+    echo -e   "${bold}Step12${normal} => Centreon web already installed                   ${STATUS_OK}"
 fi
 
 
