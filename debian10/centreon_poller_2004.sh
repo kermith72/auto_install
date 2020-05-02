@@ -410,7 +410,7 @@ tar xzf centreon-gorgone-${GORGONE_VER[0]}.tar.gz
 cd ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_gorgone.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_gorgone.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER}/install.sh >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Create template Gorgone" | tee -a ${INSTALL_LOG}
 cat > ${DL_DIR}/${GORGONE_TMPL} << EOF
@@ -653,7 +653,7 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 rm -rf /tmp/*
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/${PREFIX}${CENTREON_VER}/install.sh >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
@@ -910,13 +910,13 @@ if [[ $? -eq 1 ]];
     centreon_gorgone_install 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step8${normal} => Centreon Gorgone install                              ${STATUS_FAIL}"
+        echo -e "${bold}Step8${normal}  => Centreon Gorgone install                              ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step8${normal} => Centreon Gorgone install                              ${STATUS_OK}"
+        echo -e "${bold}Step8${normal}  => Centreon Gorgone install                              ${STATUS_OK}"
         maj_conf "GORGONE_VER" "$GORGONE_VER_OLD" "$GORGONE_VER"    
     fi
   else
-    echo -e     "${bold}Step8${normal} => Centreon Gorgone already installed                     ${STATUS_OK}"
+    echo -e     "${bold}Step8${normal}  => Centreon Gorgone already installed                     ${STATUS_OK}"
 fi
 
 verify_version "$CENTREON_VER" "$CENTREON_VER_OLD"
