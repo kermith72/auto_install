@@ -31,12 +31,14 @@ GORGONE_URL="${BASE_URL}/centreon-gorgone/centreon-gorgone-${GORGONE_VER[0]}.tar
 ## nrpe
 NRPE_VERSION="3.2.1"
 NRPE_URL="https://github.com/NagiosEnterprises/nrpe/archive/nrpe-3.2.1.tar.gz"
+## source script
+DIR_SCRIPT=$(cd $( dirname ${BASH_SOURCE[0]}) && pwd )
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
 INSTALL_DIR="/usr/share"
 ## Log install file
-INSTALL_LOG="/usr/local/src/centreon-install.log"
+INSTALL_LOG=${DL_DIR}"/centreon-install.log"
 ## Set mysql-server root password
 MYSQL_PASSWORD="password"
 ## Users and groups
@@ -653,7 +655,7 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 rm -rf /tmp/*
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/${PREFIX}${CENTREON_VER}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/centreon-web-{CENTREON_VER}/install.sh >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
