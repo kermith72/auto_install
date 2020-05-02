@@ -110,6 +110,8 @@ ETH0_IP=`/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $7}'`
 VARTIMEZONE="Europe/Paris"
 ## verbose script
 SCRIPT_VERBOSE=false
+## nb processor
+NB_PROC=`cat /proc/cpuinfo | grep processor | wc -l`
 
 # Usage info
 show_help() {
@@ -238,7 +240,7 @@ cmake \
    -DWITH_SHARED_LIB=1 \
    -DWITH_STATIC_LIB=0 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig .. >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 }
@@ -277,7 +279,7 @@ cmake \
  -DWITH_PREFIX_BINARY=/usr/lib/centreon-connector  \
  -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
  -DWITH_TESTING=0 .. >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 }
@@ -331,7 +333,7 @@ cmake \
    -DWITH_PKGCONFIG_SCRIPT=1 \
    -DWITH_PKGCONFIG_DIR=/usr/lib/pkgconfig \
    -DWITH_TESTING=0 .. >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 systemctl enable centengine.service >> ${INSTALL_LOG}
@@ -370,7 +372,7 @@ cd ${DL_DIR}/monitoring-plugins-${PLUGIN_VER}
 --prefix=/usr/lib/nagios/plugins --libexecdir=/usr/lib/nagios/plugins --enable-perl-modules --with-openssl=/usr/bin/openssl \
 --enable-extra-opts >> ${INSTALL_LOG}
 
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 }
 
@@ -469,7 +471,7 @@ cmake \
     -DWITH_STARTUP_DIR=/lib/systemd/system  \
     -DWITH_TESTING=0 \
     -DWITH_USER=${BROKER_USER} .. >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 systemctl enable cbd.service >> ${INSTALL_LOG}
 systemctl daemon-reload >> ${INSTALL_LOG}
@@ -505,7 +507,7 @@ apt-get install php php7.3-opcache libapache2-mod-php php-mysql \
         php-pear sudo tofrodos bsd-mailx lsb-release \
         libconfig-inifiles-perl libcrypt-des-perl librrds-perl \
         libdigest-hmac-perl libdigest-sha-perl libgd-perl php-ldap \
-        php-snmp php7.3-db php-date \
+        php-snmp php7.3-db php-date ntp \
         libsnmp-perl snmpd snmptrapd snmp-mibs-downloader -y >> ${INSTALL_LOG}
 
 
@@ -540,14 +542,14 @@ tar zxf ZMQ-LibZMQ4-0.01.tar.gz
 cd ZMQ-LibZMQ4-0.01
 sed -i -e "s/tools/.\/tools/g" Makefile.PL
 perl Makefile.PL >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 cd ..
 wget https://cpan.metacpan.org/authors/id/D/DM/DMAKI/ZMQ-Constants-1.04.tar.gz >> ${INSTALL_LOG}
 tar zxf ZMQ-Constants-1.04.tar.gz
 cd ZMQ-Constants-1.04
 perl Makefile.PL >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install lib-ssh" | tee -a ${INSTALL_LOG}
@@ -555,7 +557,7 @@ cd ${DL_DIR}
 /usr/bin/git clone https://github.com/garnier-quentin/perl-libssh.git >> ${INSTALL_LOG}
 cd perl-libssh
 perl Makefile.PL >> ${INSTALL_LOG}
-make >> ${INSTALL_LOG}
+make -j $NB_PROC >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "
