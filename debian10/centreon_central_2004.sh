@@ -57,8 +57,7 @@ if [[ ${CENTREON_VER[1]} == "1" ]]; then
 else
   CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER[0]}.tar.gz"
 fi
-CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
-## Sources widgetsMonitoring engine init.d script
+## Sources widgets 
 WIDGET_HOST_VER="20.04.0"
 WIDGET_HOSTGROUP_VER="20.04.0"
 WIDGET_SERVICE_VER="20.04.0"
@@ -224,6 +223,7 @@ if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
     wget ${CLIB_URL} -O ${DL_DIR}/centreon-clib-${CLIB_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    [ $? != 0 ] && return 1
 fi
 
 tar xzf centreon-clib-${CLIB_VER[0]}.tar.gz
@@ -269,10 +269,9 @@ cd ${DL_DIR}/centreon-connectors-${CONNECTOR_VER[0]}
 mkdir build
 cd build
 
-/usr/local/bin/conan install .. >> ${INSTALL_LOG}
-
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
+/usr/local/bin/conan install .. >> ${INSTALL_LOG}
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -404,23 +403,7 @@ chmod +x *
 mkdir -p /usr/lib/centreon/plugins
 cp -Rp * /usr/lib/centreon/plugins/
 
-#bug plugin 20191016
-if [[ ${PLUGIN_CENTREON_VER[0]} == "20191016" ]]; then
-  cd ${DL_DIR}
-  if [[ -e centreon-plugins-20190704.tar.gz ]]
-  then
-    echo 'File already exist !' | tee -a ${INSTALL_LOG}
-  else
-    wget http://files.download.centreon.com/public/centreon-plugins/centreon-plugins-20190704.tar.gz -O ${DL_DIR}/centreon-plugins-20190704.tar.gz >> ${INSTALL_LOG}
-  fi
 
-  tar xzf centreon-plugins-20190704.tar.gz
-  cd ${DL_DIR}/centreon-plugins-20190704
-  chown -R ${ENGINE_USER}:${ENGINE_GROUP} *
-  chmod +x *
-  cp centreon_centreon_database.pl /usr/lib/centreon/plugins/
-  cp centreon_mysql.pl /usr/lib/centreon/plugins/
-fi
 
 }
 
