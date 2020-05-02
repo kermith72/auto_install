@@ -27,7 +27,7 @@ PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLU
 PLUGIN_CENTREON_URL="${BASE_URL}/centreon-plugins/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
-GORGONE_URL="${BASE_URL}/centreon-gorgone/centreon-gorgone-${GORGONE_VER[0]}.tar.gz"
+GORGONE_URL="${BASE_URL}/centreon-gorgone/centreon-gorgone-${GORGONE_VER}.tar.gz"
 ## nrpe
 NRPE_VERSION="3.2.1"
 NRPE_URL="https://github.com/NagiosEnterprises/nrpe/archive/nrpe-3.2.1.tar.gz"
@@ -400,16 +400,16 @@ apt install libcryptx-perl libschedule-cron-perl libcrypt-cbc-perl \
            libnetaddr-ip-perl libhash-merge-perl -y >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
-if [[ -e centreon-gorgone-${GORGONE_VER[0]}.tar.gz ]]
+if [[ -e centreon-gorgone-${GORGONE_VER}.tar.gz ]]
   then
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
-    wget ${GORGONE_URL} -O ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}.tar.gz >> ${INSTALL_LOG}
+    wget ${GORGONE_URL} -O ${DL_DIR}/centreon-gorgone-${GORGONE_VER}.tar.gz >> ${INSTALL_LOG}
     [ $? != 0 ] && return 1
 fi
 
-tar xzf centreon-gorgone-${GORGONE_VER[0]}.tar.gz
-cd ${DL_DIR}/centreon-gorgone-${GORGONE_VER[0]}
+tar xzf centreon-gorgone-${GORGONE_VER}.tar.gz
+cd ${DL_DIR}/centreon-gorgone-${GORGONE_VER}
 
 # remplace script install.sh
 cp ${DIR_SCRIPT}/libinstall/install_gorgone.sh ${DL_DIR}/centreon-gorgone-${GORGONE_VER}/install.sh >> ${INSTALL_LOG}
