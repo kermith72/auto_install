@@ -853,9 +853,10 @@ sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL
 sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
 
 # bug group centreon-engine 
-#/usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
-#/usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
-#/usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+/usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
+/usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
+/usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+/usr/sbin/usermod -aG ${ENGINE_GROUP} centreon-gorgone
 
 
 # reload conf apache
