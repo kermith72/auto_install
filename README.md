@@ -1,7 +1,7 @@
 # auto_install
 Automated installation of Centreon on Debian with sources
 
-See [the explanation page](http://sugarbug.fr/atelier/installations/debian/centreon-install/centreon-install_1910-Buster/)
+See [the explanation page](https://www.sugarbug.fr/atelier/installations/debian/centreon-install/centreon-install_2004-Buster/)
 
 ## tags
 git clone https://github.com/kermith72/auto_install.git
@@ -10,9 +10,17 @@ cd auto_install
 
 git checkout v1.x
 
+
+### version 1.49
+new scripts for 20.04.0
+
+centreon-web 20.04.0, engine 20.04, broker 20.04 an new centreon-gorgone 20.04
+
+new script create_config_initialV6.sh for plugins 20.04.0
+
 ### version 1.48
 update widget for 19.04 and 19.10
-
+See [the explanation page](https://www.sugarbug.fr/atelier/installations/debian/centreon-install/centreon-install_1910-Buster/)
 
 ### version 1.47
 centreon-web 19.10.10 and 19.04.13, centreon-engine 19.10.13, connector 19.10.1
