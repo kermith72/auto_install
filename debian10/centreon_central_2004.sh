@@ -1110,17 +1110,17 @@ text_params
 nonfree_install 2>> ${INSTALL_LOG} 
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                       ${STATUS_FAIL}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                       ${STATUS_OK}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                          ${STATUS_OK}"
 fi
 
 mariadb_install 2>>${INSTALL_LOG}
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_FAIL}"
+    echo -e "${bold}Step2${normal}  => MariaDB Install                                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_OK}"
+    echo -e "${bold}Step2${normal}  => MariaDB Install                                          ${STATUS_OK}"
 fi
 
 verify_version "${CLIB_VER[0]}" "$CLIB_VER_OLD"
@@ -1212,13 +1212,13 @@ if [[ ${MAJ} > 1 ]];
     centreon_broker_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"                 ${STATUS_FAIL}"
+        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"                  ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"                 ${STATUS_OK}"
+        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"                  ${STATUS_OK}"
         maj_conf "BROKER_VER" "$BROKER_VER_OLD" "${BROKER_VER[0]}"    
     fi
   else
-    echo -e     "${bold}Step8${normal}  => Centreon Broker already "${CHAINE_UPDATE[${MAJ}]}"                 ${STATUS_OK}"
+    echo -e     "${bold}Step8${normal}  => Centreon Broker already "${CHAINE_UPDATE[${MAJ}]}"                  ${STATUS_OK}"
 fi
 
 verify_version "${CENTREON_VER[0]}" "$CENTREON_VER_OLD"
@@ -1465,6 +1465,7 @@ fi
 
 # Exec main function
 exist_conf
+> ${INSTALL_LOG}
 main
 echo -e ""
 echo -e "${bold}Go to http://${ETH0_IP}/centreon to complete the setup${normal} "
