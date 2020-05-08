@@ -1168,16 +1168,16 @@ if [[ ${MAJ} > 1 ]];
       create_centreon_tmpl 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step10${normal}  => Centreon template generation                            ${STATUS_FAIL}"
+        echo -e "${bold}Step10${normal} => Centreon template generation                         ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step10${normal}  => Centreon template generation                            ${STATUS_OK}"
+        echo -e "${bold}Step10${normal} => Centreon template generation                         ${STATUS_OK}"
       fi
     else 
       create_centreon_tmpl 2>>${INSTALL_LOG}
-      echo -e "${bold}Step10${normal}  => Centreon template generation                            ${STATUS_OK}"
+      echo -e "${bold}Step10${normal} => Centreon template generation                         ${STATUS_OK}"
     fi
   else
-    echo -e   "${bold}Step10${normal}  => Centreon template "${CHAINE_UPDATE[${MAJ}]}"                   ${STATUS_OK}"
+    echo -e   "${bold}Step10${normal} => Centreon template "${CHAINE_UPDATE[${MAJ}]}"                ${STATUS_OK}"
 fi
 
 
@@ -1370,6 +1370,7 @@ fi
 
 # Exec main function
 exist_conf
+> ${INSTALL_LOG}
 main
 echo -e ""
 echo -e "${bold}Go to http://${ETH0_IP}/centreon to complete the setup${normal} "
