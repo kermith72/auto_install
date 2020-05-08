@@ -263,13 +263,11 @@ function centreon_engine_install () {
 " | tee -a ${INSTALL_LOG}
 local MAJOUR=$1
 
-if [[ $MAJOUR == 2 ]]
-then
+if [[ $MAJOUR == 2 ]]; then
   groupadd -g 6001 ${ENGINE_GROUP}
   useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
 fi
-if [[ $MAJOUR > 2 ]]
-then
+if [[ $MAJOUR > 2 ]]; then
 	echo "arret centengine"
 	systemctl stop centengine
 fi
@@ -314,8 +312,7 @@ make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
 
 
-if [[ $MAJOUR > 2 ]]
-then
+if [[ $MAJOUR > 2 ]]; then
 	#change right configuration after update
 	chmod 775 /etc/centreon-engine/*
 fi
@@ -633,13 +630,24 @@ cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 # clean /tmp
 rm -rf /tmp/*
 
+#build php dependencies
+composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+
+if [[ ${CENTREON_VER[0]} == "19.10.1" ]]; then
+  #modify file package.json
+  sed -i -e "s/19.10.0/19.10.1/g" package.json
+fi
+
+#build javascript dependencies
+npm install >> ${INSTALL_LOG}
+npm run build >> ${INSTALL_LOG}
 
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
-
-  #./install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  
+  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 fi 
 
 }
@@ -745,104 +753,109 @@ function post_install () {
                           Post install
 =====================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
 
-#bug fix version < 19.08
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
-#sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
+if [[ $MAJOUR == 2 ]]; then
+  #bug fix version < 19.08
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/centreon
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/export-mysql-indexes
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/generateSqlLite
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/bin/import-mysql-indexes
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/downtimeManager.php
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centreon-backup.pl
+  #sed -i -e 's/@PHP_BIN@/\/usr\/bin\/php/g' ${INSTALL_DIR}/centreon/cron/centAcl.php
 
-#Modify default config
-# Monitoring engine information
-sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
-sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
-# Broker module information
-sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL_DIR}/centreon/www/install/var/brokers/centreon-broker;
-# bug Centreon_plugin
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
-sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
+  #Modify default config
+  # Monitoring engine information
+  sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+  sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+  # sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+  # Broker module information
+  sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL_DIR}/centreon/www/install/var/brokers/centreon-broker;
+  # bug Centreon_plugin
+  # sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
+  sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
 
-# bug goup centreon-engine 
-/usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
-/usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
-/usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+  # bug goup centreon-engine 
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
 
-#bug statistic centengine issue #8084 version < 19.10.2
-#sed -i -e 's/"-s $self->{interval}"/"-s", $self->{interval}/g' /usr/share/perl5/centreon/script/nagiosPerfTrace.pm
+  #bug statistic centengine issue #8084 version < 19.10.2
+  #sed -i -e 's/"-s $self->{interval}"/"-s", $self->{interval}/g' /usr/share/perl5/centreon/script/nagiosPerfTrace.pm
 
-cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
-# Add API key for Centreon
-# https://gist.github.com/earthgecko/3089509
-# bash generate random 64 character alphanumeric string (upper and lowercase) and 
-APIKEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
-#modify file .env
-sed -i -e "s/%APP_SECRET%/${APIKEY}/g" .env
-#generate .env.local.php
-composer dump-env prod
+  cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
+  # Add API key for Centreon
+  # https://gist.github.com/earthgecko/3089509
+  # bash generate random 64 character alphanumeric string (upper and lowercase) and 
+  APIKEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+  #modify file .env
+  sed -i -e "s/%APP_SECRET%/${APIKEY}/g" .env
+  #generate .env.local.php
+  composer dump-env prod
 
-#Modify right cache version < 19.10.8
-#chown -R ${CENTREON_USER}:${CENTREON_GROUP} /var/cache/centreon
-#chmod -R 775 /var/cache/centreon
+  #Modify right cache version < 19.10.8
+  #chown -R ${CENTREON_USER}:${CENTREON_GROUP} /var/cache/centreon
+  #chmod -R 775 /var/cache/centreon
 
-#copy files
-cp .env ${INSTALL_DIR}/centreon
-cp .env.local.php ${INSTALL_DIR}/centreon
-#copy files version < 19.10.5
-#cp container.php ${INSTALL_DIR}/centreon/
-#mv api ${INSTALL_DIR}/centreon/
-#cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
-#cp config/bundles.php ${INSTALL_DIR}/centreon/config/
-#cp config/services.yaml ${INSTALL_DIR}/centreon/config/
-#mv config/Modules ${INSTALL_DIR}/centreon/config/
-#mv config/packages ${INSTALL_DIR}/centreon/config/
-#mv config/routes ${INSTALL_DIR}/centreon/config/
-#chown -R www-data: ${INSTALL_DIR}/centreon/config/*
+  #copy files
+  cp .env ${INSTALL_DIR}/centreon
+  cp .env.local.php ${INSTALL_DIR}/centreon
+  #copy files version < 19.10.5
+  #cp container.php ${INSTALL_DIR}/centreon/
+  #mv api ${INSTALL_DIR}/centreon/
+  #cp config/bootstrap.php ${INSTALL_DIR}/centreon/config/
+  #cp config/bundles.php ${INSTALL_DIR}/centreon/config/
+  #cp config/services.yaml ${INSTALL_DIR}/centreon/config/
+  #mv config/Modules ${INSTALL_DIR}/centreon/config/
+  #mv config/packages ${INSTALL_DIR}/centreon/config/
+  #mv config/routes ${INSTALL_DIR}/centreon/config/
+  #chown -R www-data: ${INSTALL_DIR}/centreon/config/*
 
-# Add mysql config for Centreon
-cat >  /etc/mysql/conf.d/centreon.cnf << EOF
+  # Add mysql config for Centreon
+  cat >  /etc/mysql/conf.d/centreon.cnf << EOF
 [mysqld]
 innodb_file_per_table=1
 open_files_limit=32000
 sql_mode='ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
 EOF
 
-# Modifiy config systemd
-sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
+  # Modifiy config systemd
+  sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
 
-systemctl daemon-reload >> ${INSTALL_LOG}
-systemctl restart mysql >> ${INSTALL_LOG}
+  systemctl daemon-reload >> ${INSTALL_LOG}
+  systemctl restart mysql >> ${INSTALL_LOG}
 
-/usr/bin/mysql <<EOF
+  /usr/bin/mysql <<EOF
 use mysql;
 update user set plugin='' where user='root';
 flush privileges;
 EOF
 
-# add Timezone
-VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
-sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.3/fpm/php.ini
+  # add Timezone
+  VARTIMEZONEP=`echo ${VARTIMEZONE} | sed 's:\/:\\\/:g' `
+  sed -i -e "s/;date.timezone =/date.timezone = ${VARTIMEZONEP}/g" /etc/php/7.3/fpm/php.ini
 
 
-# reload conf apache
-a2enconf centreon.conf >> ${INSTALL_LOG}
-systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
+  # reload conf apache
+  a2enconf centreon.conf >> ${INSTALL_LOG}
+else
+  systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
+fi
 
-## Workarounds
-## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
-## (mode w+): Permission denied)
-chmod 775 /var/lib/centreon/centplugins
-chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
+if [[ $MAJOUR == 2 ]]; then
+  ## Workarounds
+  ## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
+  ## (mode w+): Permission denied)
+  chmod 775 /var/lib/centreon/centplugins
+  chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
 
-##bugfix create centcore for send external command to Poller
-mkdir /var/lib/centreon/centcore
-chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
-chmod 775 /var/lib/centreon/centcore
+  ##bugfix create centcore for send external command to Poller
+  mkdir /var/lib/centreon/centcore
+  chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
+  chmod 775 /var/lib/centreon/centcore
 
-#add cgroup centreon
+  #add cgroup centreon
 echo '[Unit]
 Description=Cgroup Centreon
 
@@ -855,14 +868,15 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
 
-systemctl daemon-reload
-systemctl enable centreon
+  systemctl daemon-reload
+  systemctl enable centreon
 
-# Install pack icônes V2 Pixelabs
-[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Pack Icônes V2 Pixelabs" | tee -a ${INSTALL_LOG}
-tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
-cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
-chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+  # Install pack icônes V2 Pixelabs
+  [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Pack Icônes V2 Pixelabs" | tee -a ${INSTALL_LOG}
+  tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
+  cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
+  chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+fi
 }
 
 ##ADDONS
@@ -1184,9 +1198,9 @@ fi
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
-  if [ -z "$CENTREON_VER_OLD" ]; 
+  if [[ ${MAJ} > 1 ]];
   then
-    post_install 2>>${INSTALL_LOG}
+    post_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
     then
       echo -e "${bold}Step12${normal} => Post install                                          ${STATUS_FAIL}"
