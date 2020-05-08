@@ -849,6 +849,8 @@ EOF
   a2enconf centreon.conf >> ${INSTALL_LOG}
 else
   systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
+  #purge sessions
+  rm /var/lib/centreon/sessions/*
 fi
 
 if [[ $MAJOUR == 2 ]]; then
