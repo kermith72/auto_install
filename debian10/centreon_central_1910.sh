@@ -411,6 +411,7 @@ function centreon_broker_install() {
                      Install Centreon Broker
 ======================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
 
 groupadd -g 6002 ${BROKER_GROUP}
 useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
@@ -477,6 +478,9 @@ function php_fpm_install() {
                      Install Php-fpm
 ======================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
+
+if [[ $MAJOUR == 2 ]]; then
 
 apt-get install php php7.3-opcache libapache2-mod-php php-mysql \
 	php-curl php-json php-gd php-intl php-mbstring php-xml \
@@ -498,7 +502,7 @@ a2enmod proxy_fcgi setenvif proxy rewrite >> ${INSTALL_LOG}
 a2enconf php7.3-fpm >> ${INSTALL_LOG}
 a2dismod php7.3 >> ${INSTALL_LOG}
 systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
-
+fi
 }
 
 function create_centreon_tmpl() {
@@ -1137,7 +1141,7 @@ verify_version "${CENTREON_VER[0]}" "$CENTREON_VER_OLD"
 MAJ=$?
 if [[ ${MAJ} > 1 ]];
   then
-    php_fpm_install 2>>${INSTALL_LOG}
+    php_fpm_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
     then
       echo -e "${bold}Step9${normal}  => Php-fpm install                                       ${STATUS_FAIL}"

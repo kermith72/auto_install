@@ -240,9 +240,7 @@ if [ "$silent_install" -ne 1 ] ; then
 		log "INFO" "$(gettext "You accepted GPL license")"
 	fi
 else 
-	if [ "$upgrade" -eq 0 ] ; then
-		. $user_install_vars
-	fi
+   . $user_install_vars
 fi
 
 if [ "$upgrade" -eq 1 ] ; then
