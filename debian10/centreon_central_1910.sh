@@ -30,7 +30,7 @@ if [[ ${CONNECTOR_VER[1]} == "1" ]]; then
 else
   CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER[0]}.tar.gz"
 fi
-if [[ ${CLIB_VER[1]} == "1" ]]; then
+if [[ ${ENGINE_VER[1]} == "1" ]]; then
   ENGINE_URL="${BASE_GITHUB}/centreon-engine/archive/${ENGINE_VER[0]}.tar.gz"
 else
   ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER[0]}.tar.gz"
