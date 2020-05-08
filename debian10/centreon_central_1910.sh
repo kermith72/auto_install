@@ -1027,17 +1027,17 @@ text_params
 nonfree_install 2>> ${INSTALL_LOG} 
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                       ${STATUS_FAIL}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                       ${STATUS_OK}"
+    echo -e "${bold}Step1${normal}  => repo non-free on Buster Install                          ${STATUS_OK}"
 fi
 
 mariadb_install 2>>${INSTALL_LOG}
 if [[ $? -ne 0 ]];
   then
-    echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_FAIL}"
+    echo -e "${bold}Step2${normal}  => MariaDB Install                                          ${STATUS_FAIL}"
   else
-    echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_OK}"
+    echo -e "${bold}Step2${normal}  => MariaDB Install                                          ${STATUS_OK}"
 fi
 
 verify_version "${CLIB_VER[0]}" "$CLIB_VER_OLD"
@@ -1133,13 +1133,13 @@ if [[ ${MAJ} > 1 ]];
     centreon_broker_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"                  ${STATUS_FAIL}"
+        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"          ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"                  ${STATUS_OK}"
+        echo -e "${bold}Step8${normal}  => Centreon Broker "${CHAINE_UPDATE[${MAJ}]}"          ${STATUS_OK}"
         maj_conf "BROKER_VER" "$BROKER_VER_OLD" "${BROKER_VER[0]}"    
     fi
   else
-    echo -e     "${bold}Step8${normal}  => Centreon Broker already "${CHAINE_UPDATE[${MAJ}]}"                  ${STATUS_OK}"
+    echo -e     "${bold}Step8${normal}  => Centreon Broker already "${CHAINE_UPDATE[${MAJ}]}"          ${STATUS_OK}"
 fi
 
 
@@ -1168,13 +1168,13 @@ if [[ ${MAJ} > 1 ]];
       create_centreon_tmpl 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_FAIL}"
+        echo -e "${bold}Step10${normal}  => Centreon template generation                            ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_OK}"
+        echo -e "${bold}Step10${normal}  => Centreon template generation                            ${STATUS_OK}"
       fi
     else 
       create_centreon_tmpl 2>>${INSTALL_LOG}
-      echo -e "${bold}Step10${normal}  => Centreon template generation                          ${STATUS_OK}"
+      echo -e "${bold}Step10${normal}  => Centreon template generation                            ${STATUS_OK}"
     fi
   else
     echo -e   "${bold}Step10${normal}  => Centreon template "${CHAINE_UPDATE[${MAJ}]}"                   ${STATUS_OK}"
@@ -1190,23 +1190,23 @@ if [[ ${MAJ} > 1 ]];
       centreon_install 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"                        ${STATUS_FAIL}"
+        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"           ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"                        ${STATUS_OK}"
+        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"           ${STATUS_OK}"
         maj_conf "CENTREON_VER" "$CENTREON_VER_OLD" "${CENTREON_VER[0]}"    
       fi
     else 
       centreon_maj 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
-        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"                        ${STATUS_FAIL}"
+        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"           ${STATUS_FAIL}"
       else
-        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"                        ${STATUS_OK}"
+        echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"           ${STATUS_OK}"
         maj_conf "CENTREON_VER" "$CENTREON_VER_OLD" "${CENTREON_VER[0]}"    
       fi
     fi
   else
-    echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"                        ${STATUS_OK}"
+    echo -e "${bold}Step11${normal} => Centreon web interface "${CHAINE_UPDATE[${MAJ}]}"           ${STATUS_OK}"
 fi
 
 
@@ -1217,9 +1217,9 @@ then
     post_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
     then
-      echo -e "${bold}Step12${normal} => Post install  "${CHAINE_UPDATE[${MAJ}]}"                                 ${STATUS_FAIL}"
+      echo -e "${bold}Step12${normal} => Post install  "${CHAINE_UPDATE[${MAJ}]}"                    ${STATUS_FAIL}"
     else
-      echo -e "${bold}Step12${normal} => Post install  "${CHAINE_UPDATE[${MAJ}]}"                                 ${STATUS_OK}"
+      echo -e "${bold}Step12${normal} => Post install  "${CHAINE_UPDATE[${MAJ}]}"                    ${STATUS_OK}"
     fi
   fi
 fi
@@ -1230,9 +1230,9 @@ then
   widget_install 2>>${INSTALL_LOG}
   if [[ $? -ne 0 ]];
     then
-      echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_FAIL}"
+      echo -e "${bold}Step13${normal} => Widgets install                                          ${STATUS_FAIL}"
     else
-      echo -e "${bold}Step13${normal} => Widgets install                                       ${STATUS_OK}"
+      echo -e "${bold}Step13${normal} => Widgets install                                          ${STATUS_OK}"
   fi
 fi 
 
