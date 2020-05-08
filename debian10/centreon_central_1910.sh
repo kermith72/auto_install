@@ -1,16 +1,16 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.48
-# 04/04/2020
+# v 1.50
+# 06/05/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.48"
+VERSION_BATCH="v 1.50"
 CLIB_VER=("19.10.0" "0")
 CONNECTOR_VER=("19.10.1" "0")
-ENGINE_VER=("19.10.13" "0")
+ENGINE_VER=("19.10.14" "0")
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER=("20200204" "0")
 BROKER_VER=("19.10.3" "0")
@@ -151,7 +151,11 @@ function mariadb_install() {
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-apt-get install -y mariadb-server >> ${INSTALL_LOG}
+/usr/bin/dpkg -l | /usr/bin/grep "mariadb-server-10.3" >> ${INSTALL_LOG}
+if [[ $? -ne 0 ]];
+then
+    apt-get install -y mariadb-server >> ${INSTALL_LOG}
+fi
 }
 
 function clib_install () {
@@ -257,9 +261,18 @@ function centreon_engine_install () {
                     Install Centreon Engine
 ======================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
 
-groupadd -g 6001 ${ENGINE_GROUP}
-useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
+if [[ $MAJOUR == 2 ]]
+then
+  groupadd -g 6001 ${ENGINE_GROUP}
+  useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
+fi
+if [[ $MAJOUR > 2 ]]
+then
+	echo "arret centengine"
+	systemctl stop centengine
+fi
 
 apt-get install -y libcgsi-gsoap-dev zlib1g-dev libssl-dev libxerces-c-dev >> ${INSTALL_LOG}
 
@@ -299,6 +312,13 @@ cmake \
    -DWITH_TESTING=0 . >> ${INSTALL_LOG}
 make >> ${INSTALL_LOG}
 make install >> ${INSTALL_LOG}
+
+
+if [[ $MAJOUR > 2 ]]
+then
+	#change right configuration after update
+	chmod 775 /etc/centreon-engine/*
+fi
 
 systemctl enable centengine.service >> ${INSTALL_LOG}
 systemctl daemon-reload >> ${INSTALL_LOG}
@@ -992,59 +1012,60 @@ if [[ $? -ne 0 ]];
     echo -e "${bold}Step2${normal}  => MariaDB Install                                       ${STATUS_OK}"
 fi
 
-verify_version "$CLIB_VER[0]" "$CLIB_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${CLIB_VER[0]}" "$CLIB_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
-    clib_install 2>>${INSTALL_LOG}
+    clib_install ${MAJ}  2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_FAIL}"
       else
         echo -e "${bold}Step3${normal}  => Clib install                                          ${STATUS_OK}"
-        maj_conf "CLIB_VER[0]" "$CLIB_VER_OLD" "$CLIB_VER[0]"
+        maj_conf "CLIB_VER" "$CLIB_VER_OLD" "${CLIB_VER[0]}"
     fi
   else
     echo -e "${bold}Step3${normal}  => Clib already installed                                ${STATUS_OK}"
 fi
 
 
-verify_version "$CONNECTOR_VER[0]" "$CONNECTOR_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${CONNECTOR_VER[0]}" "$CONNECTOR_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
-    centreon_connectors_install 2>>${INSTALL_LOG}
+    centreon_connectors_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step4${normal}  => Centreon Perl and SSH connectors install              ${STATUS_FAIL}"
       else
         echo -e "${bold}Step4${normal}  => Centreon Perl and SSH connectors install              ${STATUS_OK}"
-        maj_conf "CONNECTOR_VER[0]" "$CONNECTOR_VER_OLD" "$CONNECTOR_VER[0]"
+        maj_conf "CONNECTOR_VER" "$CONNECTOR_VER_OLD" "${CONNECTOR_VER[0]}"
     fi
   else
     echo -e  "${bold}Step4${normal}  => Centreon Perl and SSH connectors already installed    ${STATUS_OK}"
 fi
 
-verify_version "$ENGINE_VER[0]" "$ENGINE_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${ENGINE_VER[0]}" "$ENGINE_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
-    if [ ! -z "$ENGINE_VER_OLD" ]; then
-      /bin/systemctl stop centengine
-    fi 
-    centreon_engine_install 2>>${INSTALL_LOG}
+	  centreon_engine_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_FAIL}"
       else
         echo -e "${bold}Step5${normal}  => Centreon Engine install                               ${STATUS_OK}"
-        maj_conf "ENGINE_VER[0]" "$ENGINE_VER_OLD" "$ENGINE_VER[0]"
+        maj_conf "ENGINE_VER" "$ENGINE_VER_OLD" "${ENGINE_VER[0]}"
     fi
   else
     echo -e     "${bold}Step5${normal}  => Centreon Engine already installed                     ${STATUS_OK}"
 fi
 
 verify_version "$PLUGIN_VER" "$PLUGIN_VER_OLD"
-if [[ $? -eq 1 ]];
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
-    monitoring_plugin_install 2>>${INSTALL_LOG}
+    monitoring_plugin_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step6${normal}  => Monitoring plugins install                            ${STATUS_FAIL}"
@@ -1056,44 +1077,47 @@ if [[ $? -eq 1 ]];
     echo -e     "${bold}Step6${normal}  => Monitoring plugins already installed                  ${STATUS_OK}"
 fi
 
-verify_version "$PLUGIN_CENTREON_VER[0]" "$PLUGIN_CENTREON_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${PLUGIN_CENTREON_VER[0]}" "$PLUGIN_CENTREON_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
-    centreon_plugins_install 2>>${INSTALL_LOG}
+    centreon_plugins_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step7${normal}  => Centreon plugins install                              ${STATUS_FAIL}"
       else
         echo -e   "${bold}Step7${normal}  => Centreon plugins install                              ${STATUS_OK}"
-        maj_conf "PLUGIN_CENTREON_VER[0]" "$PLUGIN_CENTREON_VER_OLD" "$PLUGIN_CENTREON_VER[0]"    
+        maj_conf "PLUGIN_CENTREON_VER" "$PLUGIN_CENTREON_VER_OLD" "${PLUGIN_CENTREON_VER[0]}"    
     fi
   else
     echo -e     "${bold}Step7${normal}  => Centreon plugins already installed                    ${STATUS_OK}"
 fi
 
 
-verify_version "$BROKER_VER[0]" "$BROKER_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${BROKER_VER[0]}" "$BROKER_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
     if [ ! -z "$BROKER_VER_OLD" ]; then
       /bin/systemctl stop centengine
       /bin/systemctl stop cbd
     fi 
-    centreon_broker_install 2>>${INSTALL_LOG}
+    centreon_broker_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step8${normal}  => Centreon Broker install                               ${STATUS_FAIL}"
       else
         echo -e "${bold}Step8${normal}  => Centreon Broker install                               ${STATUS_OK}"
-        maj_conf "BROKER_VER[0]" "$BROKER_VER_OLD" "$BROKER_VER[0]"    
+        maj_conf "BROKER_VER" "$BROKER_VER_OLD" "${BROKER_VER[0]}"    
     fi
   else
     echo -e     "${bold}Step8${normal}  => Centreon Broker already installed                     ${STATUS_OK}"
 fi
 
 
-verify_version "$CENTREON_VER[0]" "$CENTREON_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${CENTREON_VER[0]}" "$CENTREON_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
     php_fpm_install 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
@@ -1107,8 +1131,9 @@ if [[ $? -eq 1 ]];
 fi
 
 
-verify_version "$CENTREON_VER[0]" "$CENTREON_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${CENTREON_VER[0]}" "$CENTREON_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
     if [ -z "$CENTREON_VER_OLD" ]; 
     then
@@ -1128,8 +1153,9 @@ if [[ $? -eq 1 ]];
 fi
 
 
-verify_version "$CENTREON_VER[0]" "$CENTREON_VER_OLD"
-if [[ $? -eq 1 ]];
+verify_version "${CENTREON_VER[0]}" "$CENTREON_VER_OLD"
+MAJ=$?
+if [[ ${MAJ} > 1 ]];
   then
     if [ -z "$CENTREON_VER_OLD" ]; 
     then
@@ -1139,7 +1165,7 @@ if [[ $? -eq 1 ]];
         echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_FAIL}"
       else
         echo -e "${bold}Step11${normal}  => Centreon web interface install                        ${STATUS_OK}"
-        maj_conf "CENTREON_VER[0]" "$CENTREON_VER_OLD" "$CENTREON_VER[0]"    
+        maj_conf "CENTREON_VER" "$CENTREON_VER_OLD" "${CENTREON_VER[0]}"    
       fi
     else 
       centreon_maj 2>>${INSTALL_LOG}
@@ -1148,7 +1174,7 @@ if [[ $? -eq 1 ]];
         echo -e "${bold}Step11${normal}  => Centreon web interface maj                            ${STATUS_FAIL}"
       else
         echo -e "${bold}Step11${normal}  => Centreon web interface maj                           ${STATUS_OK}"
-        maj_conf "CENTREON_VER[0]" "$CENTREON_VER_OLD" "$CENTREON_VER[0]"    
+        maj_conf "CENTREON_VER" "$CENTREON_VER_OLD" "${CENTREON_VER[0]}"    
       fi
     fi
   else
@@ -1199,45 +1225,53 @@ echo "##### Install completed #####" | tee -a ${INSTALL_LOG}
 
 # verify version
 # parameter $1:new version $2:old version
-# return 0:egal 1:update/install 2:newer version installed 
+# return 1:egal 2:install 3:newer version minor installed
+# 4:newer version major installed 0:old version 
 function verify_version () {
    if [ -z "$2" ]; then
-     return 1
+     # new install
+     return 2
    fi
    if [[ $1 == $2 ]]
    then
-     return 0
+     # already install
+     return 1
    fi
-       local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            return 1
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            return 2
-        fi
-    done
-    return 0
+   local IFS='.' 
+   read -r -a NEWVER <<< $1
+   read -r -a ANCVER <<< $2
+   if ((10#${NEWVER[0]} > 10#${ANCVER[0]}))
+   then
+	   # version major
+	   return 4
+   fi
+   if ((10#${NEWVER[0]} < 10#${ANCVER[0]}))
+   then
+	   #  newer version installed
+	   return 0
+   fi
+   if (((10#${NEWVER[1]} > 10#${ANCVER[1]})) && ((10#${NEWVER[0]} == 10#${ANCVER[0]})))
+   then
+	   # version major
+	   return 4
+   fi
+   if (((10#${NEWVER[1]} < 10#${ANCVER[1]})) && ((10#${NEWVER[0]} <= 10#${ANCVER[0]})))
+   then
+	   # newer version installed
+	   return 0
+   fi
+   if ((10#${NEWVER[2]} > 10#${ANCVER[2]}))
+   then
+	   # version minor
+	   return 3
+   fi
+   return 0
 }
 
 # maj conf
 # parameter $1: name variable $2: old value $3: new value
 function maj_conf () {
-	/bin/cat /etc/centreon/install_auto.conf | grep "^$1$"
+	/bin/cat /etc/centreon/install_auto.conf | grep "^$1="  >> ${INSTALL_LOG}
 	if [[ $? -ne 0 ]];
 	then
 	  echo "$1=$3" >> /etc/centreon/install_auto.conf
@@ -1255,7 +1289,9 @@ function exist_conf () {
 	  fi
 	  touch /etc/centreon/install_auto.conf
 	else
-          IFS="="
+	  #bug fix version-delete [0]
+      sed -i "s/\[0\]//g" /etc/centreon/install_auto.conf
+      IFS="="
 	  while read -r var value
           do
             export "${var}_OLD"="$value"
