@@ -642,6 +642,10 @@ fi
 npm install >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
+# remplace scripts
+cp ${DIR_SCRIPT}/libinstall/install_web_1910.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_1910.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/CentPluginsTraps.sh >> ${INSTALL_LOG}
+
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
