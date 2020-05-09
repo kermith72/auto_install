@@ -30,6 +30,8 @@ CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## nrpe
 NRPE_VERSION="3.2.1"
 NRPE_URL="https://github.com/NagiosEnterprises/nrpe/archive/nrpe-3.2.1.tar.gz"
+## source script
+DIR_SCRIPT=$(cd $( dirname ${BASH_SOURCE[0]}) && pwd )
 ## Temp install dir
 DL_DIR="/usr/local/src"
 ## Install dir
@@ -516,7 +518,7 @@ cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_1910.sh ${DL_DIR}/${PREFIX}${CENTRE
 
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
  
 
 }
@@ -657,7 +659,7 @@ usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
 usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
 chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine/
 chmod g-w /var/lib/centreon
-chmod ${CENTREON_USER}:${CENTREON_GROUP} /var/lib/centreon/centplugins
+chown ${CENTREON_USER}:${CENTREON_GROUP} /var/lib/centreon/centplugins
 
 if [[ $MAJOUR == 2 ]]; then
   mkdir /var/log/centreon-broker
