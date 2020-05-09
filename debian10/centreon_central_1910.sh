@@ -128,10 +128,12 @@ function text_params () {
   RES_COL="64"
   MOVE_TO_COL="\\033[${RES_COL}G"
   COL_RESET=$ESC_SEQ"39;49;00m"
+  COL_YELLOW=$ESC_SEQ"33;01m"
   COL_GREEN=$ESC_SEQ"32;01m"
   COL_RED=$ESC_SEQ"31;01m"
   STATUS_FAIL="${MOVE_TO_COL}[$COL_RED${bold}FAIL${normal}$COL_RESET]"
   STATUS_OK="${MOVE_TO_COL}[$COL_GREEN${bold} OK ${normal}$COL_RESET]"
+  STATUS_WARNING="${MOVE_TO_COL}[$COL_YELLOW${bold}WARN${normal}$COL_RESET]"
 }
 
 function nonfree_install () {
@@ -274,7 +276,7 @@ if [[ $MAJOUR == 2 ]]; then
   useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
 fi
 if [[ $MAJOUR > 2 ]]; then
-	echo "arret centengine"
+	echo "stop Centreon Engine${STATUS_WARNING}"
 	systemctl stop centengine
 fi
 
@@ -1137,7 +1139,9 @@ MAJ=$?
 if [[ ${MAJ} > 1 ]];
   then
     if [ ! -z "$BROKER_VER_OLD" ]; then
+      echo "stop Centreon Engine${STATUS_WARNING}"
       /bin/systemctl stop centengine
+      echo "stop Centreon Broker${STATUS_WARNING}"
       /bin/systemctl stop cbd
     fi 
     centreon_broker_install ${MAJ} 2>>${INSTALL_LOG}
