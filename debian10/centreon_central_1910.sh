@@ -863,7 +863,7 @@ else
   #purge sessions
   rm /var/lib/centreon/sessions/*
   #modify right for key ssh
-  if [ ! -d /var/lib/centreon/.ssh ] ;
+  if [ -d /var/lib/centreon/.ssh ] ;
   then
     chmod -R g-w /var/lib/centreon/.ssh
   fi
