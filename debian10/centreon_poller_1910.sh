@@ -868,6 +868,7 @@ fi
 verify_version "$CENTREON_VER" "$CENTREON_VER_OLD"
 MAJ=$?
 if [[ ${MAJ} > 1 ]];
+  then
     if [ -z "$CENTREON_VER_OLD" ]; 
     then
       centreon_install 2>>${INSTALL_LOG}
