@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
 # v 1.50
-# 06/05/2020
+# 09/05/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
