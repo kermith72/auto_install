@@ -125,7 +125,7 @@ function text_params () {
   ESC_SEQ="\x1b["
   bold=`tput bold`
   normal=`tput sgr0`
-  RES_COL="60"
+  RES_COL="64"
   MOVE_TO_COL="\\033[${RES_COL}G"
   COL_RESET=$ESC_SEQ"39;49;00m"
   COL_GREEN=$ESC_SEQ"32;01m"
@@ -855,6 +855,7 @@ EOF
 
   # reload conf apache
   a2enconf centreon.conf >> ${INSTALL_LOG}
+  systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
 else
   systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
   #purge sessions
