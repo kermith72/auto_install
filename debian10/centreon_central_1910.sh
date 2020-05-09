@@ -860,6 +860,11 @@ else
   systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
   #purge sessions
   rm /var/lib/centreon/sessions/*
+  #modify right for key ssh
+  if [ ! -d /var/lib/centreon/.ssh ] ;
+  then
+    chmod -R g-w /var/lib/centreon/.ssh
+  fi
 fi
 
 if [[ $MAJOUR == 2 ]]; then

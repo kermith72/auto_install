@@ -10,6 +10,12 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.50
+new script for centreon_central_1910.sh and centreon_poller_1910.sh
+
+centreon-engine 19.10.14
+
+new function update for 19.10.x see [the explanation page](https://www.sugarbug.fr/blog/script-auto-maj/)
 
 ### version 1.49
 new scripts for 20.04.0

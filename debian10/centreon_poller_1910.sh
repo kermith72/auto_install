@@ -508,8 +508,8 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 rm -rf /tmp/*
 
 # remplace scripts
-cp ${DIR_SCRIPT}/libinstall/install_web_1910.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
-cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_1910.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/CentPluginsTraps.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_web_1910.sh ${DL_DIR}/${PREFIX}${CENTREON_VER}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_1910.sh ${DL_DIR}/${PREFIX}${CENTREON_VER}/libinstall/CentPluginsTraps.sh >> ${INSTALL_LOG}
 
 
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
