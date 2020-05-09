@@ -200,7 +200,7 @@ if [[ $MAJOUR == 2 ]]; then
   useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
 fi
 if [[ $MAJOUR > 2 ]]; then
-	echo "stop Centreon Engine${STATUS_WARNING}"
+	echo -e "stop Centreon Engine${STATUS_WARNING}"
 	systemctl stop centengine
 fi
 

@@ -276,7 +276,7 @@ if [[ $MAJOUR == 2 ]]; then
   useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
 fi
 if [[ $MAJOUR > 2 ]]; then
-	echo "stop Centreon Engine${STATUS_WARNING}"
+	echo -e "stop Centreon Engine${STATUS_WARNING}"
 	systemctl stop centengine
 fi
 
@@ -1139,9 +1139,9 @@ MAJ=$?
 if [[ ${MAJ} > 1 ]];
   then
     if [ ! -z "$BROKER_VER_OLD" ]; then
-      echo "stop Centreon Engine${STATUS_WARNING}"
+      echo -e "stop Centreon Engine${STATUS_WARNING}"
       /bin/systemctl stop centengine
-      echo "stop Centreon Broker${STATUS_WARNING}"
+      echo -e "stop Centreon Broker${STATUS_WARNING}"
       /bin/systemctl stop cbd
     fi 
     centreon_broker_install ${MAJ} 2>>${INSTALL_LOG}
