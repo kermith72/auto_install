@@ -10,6 +10,15 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.51
+new script for centreon_central_2004.sh and centreon_poller_2004.sh
+
+centreon-engine 20.04.1, broker 20.04.2, gorgone 20.04.2
+
+new function update for 24.04.x see [the explanation page](https://www.sugarbug.fr/blog/files/script-auto-maj2.html)
+
+**Warning update 19.10 -> 20.04 not fonctionnal**
+
 ### version 1.50
 new script for centreon_central_1910.sh and centreon_poller_1910.sh
 
