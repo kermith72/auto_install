@@ -1070,45 +1070,53 @@ yes_no_default() {
 
 # verify version
 # parameter $1:new version $2:old version
-# return 0:egal 1:update/install 2:newer version installed 
+# return 1:egal 2:install 3:newer version minor installed
+# 4:newer version major installed 0:old version 
 function verify_version () {
    if [ -z "$2" ]; then
-     return 1
+     # new install
+     return 2
    fi
    if [[ $1 == $2 ]]
    then
-     return 0
+     # already install
+     return 1
    fi
-       local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            return 1
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            return 2
-        fi
-    done
-    return 0
+   local IFS='.' 
+   read -r -a NEWVER <<< $1
+   read -r -a ANCVER <<< $2
+   if ((10#${NEWVER[0]} > 10#${ANCVER[0]}))
+   then
+	   # version major
+	   return 4
+   fi
+   if ((10#${NEWVER[0]} < 10#${ANCVER[0]}))
+   then
+	   #  newer version installed
+	   return 0
+   fi
+   if (((10#${NEWVER[1]} > 10#${ANCVER[1]})) && ((10#${NEWVER[0]} == 10#${ANCVER[0]})))
+   then
+	   # version major
+	   return 4
+   fi
+   if (((10#${NEWVER[1]} < 10#${ANCVER[1]})) && ((10#${NEWVER[0]} <= 10#${ANCVER[0]})))
+   then
+	   # newer version installed
+	   return 0
+   fi
+   if ((10#${NEWVER[2]} > 10#${ANCVER[2]}))
+   then
+	   # version minor
+	   return 3
+   fi
+   return 0
 }
 
 # maj conf
 # parameter $1: name variable $2: old value $3: new value
 function maj_conf () {
-	/bin/cat /etc/centreon/install_auto.conf | grep "^$1$"
+	/bin/cat /etc/centreon/install_auto.conf | grep "^$1="
 	if [[ $? -ne 0 ]];
 	then
 	  echo "$1=$3" >> /etc/centreon/install_auto.conf
