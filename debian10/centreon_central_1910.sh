@@ -1034,7 +1034,7 @@ echo "
 ======================================================================
 "
   fi
-text_params
+
 
 nonfree_install 2>> ${INSTALL_LOG} 
 if [[ $? -ne 0 ]];
@@ -1383,6 +1383,7 @@ else
 fi
 
 # Exec main function
+text_params
 exist_conf
 > ${INSTALL_LOG}
 main
