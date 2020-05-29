@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.52
+centreon-engine 20.04.2, broker 20.04.4, engine 20.04.1
+
+new script create_config_initialV7.sh for plugins 20.04.0
+
 ### version 1.51
 new script for centreon_central_2004.sh and centreon_poller_2004.sh
 
