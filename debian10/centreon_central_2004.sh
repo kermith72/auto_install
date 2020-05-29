@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.51
-# 13/05/2020
+# v 1.52
+# 29/05/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.51"
+VERSION_BATCH="v 1.52"
 CLIB_VER=("20.04.0" "0")
 CONNECTOR_VER=("20.04.0" "0")
 ENGINE_VER=("20.04.1" "0")
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER=("20200204" "0")
-BROKER_VER=("20.04.2" "0")
+PLUGIN_CENTREON_VER=("20200410" "0")
+BROKER_VER=("20.04.4" "0")
 GORGONE_VER=("20.04.2" "0")
-CENTREON_VER=("20.04.0" "0")
+CENTREON_VER=("20.04.2" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -58,9 +58,9 @@ else
   CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER[0]}.tar.gz"
 fi
 ## Sources widgets 
-WIDGET_HOST_VER="20.04.0"
+WIDGET_HOST_VER="20.04.1"
 WIDGET_HOSTGROUP_VER="20.04.0"
-WIDGET_SERVICE_VER="20.04.0"
+WIDGET_SERVICE_VER="20.04.1"
 WIDGET_SERVICEGROUP_VER="20.04.0"
 WIDGET_GRID_MAP_VER="20.04.0"
 WIDGET_TOP_CPU_VER="20.04.0"
@@ -793,13 +793,24 @@ cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 # clean /tmp
 rm -rf /tmp/*
 
+#build php dependencies
+composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+
+#build javascript dependencies
+npm ci >> ${INSTALL_LOG}
+npm run build >> ${INSTALL_LOG}
+
+# remplace scripts for mode silent
+cp ${DIR_SCRIPT}/libinstall/install_web_2004.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_2004.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/CentPluginsTraps.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/functions_2004 ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/libinstall/functions >> ${INSTALL_LOG}
 
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  #./install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 fi 
 
 }
@@ -882,7 +893,7 @@ npm ci >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_web_2004.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
 
 
 if [ "$INSTALL_WEB" == "yes" ]
@@ -899,55 +910,56 @@ function post_install () {
                           Post install
 =====================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
+
+if [[ $MAJOUR == 2 ]]; then
+  #Modify default config
+  # Monitoring engine information
+  sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+  sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+  # sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
+  # Broker module information
+  sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL_DIR}/centreon/www/install/var/brokers/centreon-broker;
+  # bug Centreon_plugin
+  # sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
+  sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
+
+  # bug group centreon-engine 
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+  /usr/sbin/usermod -aG ${ENGINE_GROUP} centreon-gorgone
 
 
-#Modify default config
-# Monitoring engine information
-sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
-sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
-# Broker module information
-sed -i -e "s/lib64\/nagios\/cbmod.so/lib\/centreon-broker\/cbmod.so/g" ${INSTALL_DIR}/centreon/www/install/var/brokers/centreon-broker;
-# bug Centreon_plugin
-# sed -i -e "s/CENTREONPLUGINS/CENTREON_PLUGINS/g" ${INSTALL_DIR}/centreon/www/install/steps/functions.php;
-sed -i -e "s/centreon_plugins'] = \"\"/centreon_plugins'] = \"\/usr\/lib\/centreon\/plugins\"/g" ${INSTALL_DIR}/centreon/www/install/install.conf.php;
+  # reload conf apache
+  a2enconf centreon.conf >> ${INSTALL_LOG}
+  systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
 
-# bug group centreon-engine 
-/usr/sbin/usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
-/usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
-/usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
-/usr/sbin/usermod -aG ${ENGINE_GROUP} centreon-gorgone
+  ## Workarounds
+  ## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
+  ## (mode w+): Permission denied)
+  chmod 775 /var/lib/centreon/centplugins
+  chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
 
+  ##bugfix create centcore for send external command to Poller
+  mkdir /var/lib/centreon/centcore
+  chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
+  chmod 775 /var/lib/centreon/centcore
 
-# reload conf apache
-a2enconf centreon.conf >> ${INSTALL_LOG}
-systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
-
-## Workarounds
-## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
-## (mode w+): Permission denied)
-chmod 775 /var/lib/centreon/centplugins
-chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centplugins
-
-##bugfix create centcore for send external command to Poller
-mkdir /var/lib/centreon/centcore
-chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
-chmod 775 /var/lib/centreon/centcore
-
-# configure gorgone
-[ "$SCRIPT_VERBOSE" = true ] && echo "====> Configure gorgone" | tee -a ${INSTALL_LOG}
-cat > /etc/centreon/config.yaml <<EOF
+  # configure gorgone
+  [ "$SCRIPT_VERBOSE" = true ] && echo "====> Configure gorgone" | tee -a ${INSTALL_LOG}
+  cat > /etc/centreon/config.yaml <<EOF
 name: config.yaml
 description: Configuration for Central server
 configuration: !include config.d/*.yaml
 EOF
-chmod 664 /etc/centreon/config.yaml
-chown centreon: /etc/centreon/config.yaml
+  chmod 664 /etc/centreon/config.yaml
+  chown centreon: /etc/centreon/config.yaml
 
-chmod 775 /etc/centreon/config.d
-chown centreon: /etc/centreon/config.d
+  chmod 775 /etc/centreon/config.d
+  chown centreon: /etc/centreon/config.d
 
-cat > /etc/centreon/config.d/10-database.yaml <<EOF
+  cat > /etc/centreon/config.d/10-database.yaml <<EOF
 database:
   db_configuration:
     dsn: "mysql:host=localhost:3306;dbname=centreon"
@@ -959,21 +971,21 @@ database:
     password: "centreon"
 EOF
 
-chown www-data: /etc/centreon/config.d/10-database.yaml
+  chown www-data: /etc/centreon/config.d/10-database.yaml
 
-cat > /etc/centreon-gorgone/config.d/30-centreon.yaml <<EOF
+  cat > /etc/centreon-gorgone/config.d/30-centreon.yaml <<EOF
 name: centreon.yaml
 description: Configure Centreon Gorgone to work with Centreon Web.
 centreon: !include /etc/centreon/config.d/*.yaml
 EOF
 
-# bugfix nodes gorgone
-sed -i -e "s/unshift \$register_subnodes->{\$_->\[0\]}/unshift \@{\$register_subnodes->{\$_->\[0\]}}/g" /usr/share/perl5/gorgone/modules/centreon/nodes/class.pm
+  # bugfix nodes gorgone
+  sed -i -e "s/unshift \$register_subnodes->{\$_->\[0\]}/unshift \@{\$register_subnodes->{\$_->\[0\]}}/g" /usr/share/perl5/gorgone/modules/centreon/nodes/class.pm
 
-systemctl restart gorgoned
+  systemctl restart gorgoned
 
-#add cgroup centreon
-echo '[Unit]
+  #add cgroup centreon
+  echo '[Unit]
 Description=Cgroup Centreon
 
 [Service]
@@ -985,14 +997,25 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
 
-systemctl daemon-reload
-systemctl enable centreon
+  systemctl daemon-reload
+  systemctl enable centreon
 
-# Install pack icônes V2 Pixelabs
-[ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Pack Icônes V2 Pixelabs" | tee -a ${INSTALL_LOG}
-tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
-cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
-chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+  # Install pack icônes V2 Pixelabs
+  [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install Pack Icônes V2 Pixelabs" | tee -a ${INSTALL_LOG}
+  tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
+  cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
+  chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+else
+  systemctl status php7.3-fpm >> ${INSTALL_LOG}
+  if [[ $? > 0 ]]; then 
+    systemctl start php7.3-fpm >> ${INSTALL_LOG} 
+  fi
+  systemctl status apache2 >> ${INSTALL_LOG}
+  if [[ $? > 0 ]]; then 
+    systemctl start apache2 >> ${INSTALL_LOG} 
+  fi
+
+fi
 }
 
 ##ADDONS
@@ -1246,7 +1269,7 @@ verify_version "${CENTREON_VER[0]}" "$CENTREON_VER_OLD"
 MAJ=$?
 if [[ ${MAJ} > 1 ]];
   then
-    php_fpm_install 2>>${INSTALL_LOG}
+    php_fpm_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
     then
       echo -e "${bold}Step9${normal}  => Php-fpm "${CHAINE_UPDATE[${MAJ}]}"                          ${STATUS_FAIL}"
@@ -1328,14 +1351,14 @@ fi
 
 if [ "$INSTALL_WEB" == "yes" ]
 then
-  if [ -z "$CENTREON_VER_OLD" ]; 
+  if [[ ${MAJ} > 1 ]];
   then
-    post_install 2>>${INSTALL_LOG}
+    post_install ${MAJ} 2>>${INSTALL_LOG}
     if [[ $? -ne 0 ]];
     then
-      echo -e "${bold}Step13${normal} => Post install                                          ${STATUS_FAIL}"
+      echo -e "${bold}Step13${normal} => Post install ${CHAINE_UPDATE[${MAJ}]}${STATUS_FAIL}"
     else
-      echo -e "${bold}Step13${normal} => Post install                                          ${STATUS_OK}"
+      echo -e "${bold}Step13${normal} => Post install ${CHAINE_UPDATE[${MAJ}]}${STATUS_OK}"
     fi
   fi
 fi

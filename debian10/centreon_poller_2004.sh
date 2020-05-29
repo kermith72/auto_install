@@ -1,23 +1,21 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.51
-# 13/05/2020
+# v 1.52
+# 29/05/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.51"
+VERSION_BATCH="v 1.52"
 CLIB_VER="20.04.0"
 CONNECTOR_VER="20.04.0"
 ENGINE_VER="20.04.1"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20200204"
-BROKER_VER="20.04.2"
+PLUGIN_CENTREON_VER="20200410"
+BROKER_VER="20.04.4"
 GORGONE_VER="20.04.2"
-CENTREON_VER="20.04.0"
-# MariaDB Series
-MARIADB_VER='10.0'
+CENTREON_VER="20.04.2"
 ## Sources URL
 BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
@@ -610,11 +608,15 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 # clean /tmp
 rm -rf /tmp/*
 
+# remplace scripts for mode silent
+cp ${DIR_SCRIPT}/libinstall/install_web_2004.sh ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_2004.sh ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/CentPluginsTraps.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/functions_2004 ${DL_DIR}/centreon-web-${CENTREON_VER}/libinstall/functions >> ${INSTALL_LOG}
 
 
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  #./install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
  
 
 }
@@ -698,7 +700,7 @@ cd ${DL_DIR}/centreon-web-${CENTREON_VER}
 rm -rf /tmp/*
 
 # remplace script install.sh
-cp ${DIR_SCRIPT}/libinstall/install_web.sh ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh >> ${INSTALL_LOG}
+cp ${DIR_SCRIPT}/libinstall/install_web_2004.sh ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh >> ${INSTALL_LOG}
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
@@ -820,7 +822,7 @@ function main () {
   if [ "$ADD_NRPE" == "yes" ]
   then
 echo "
-================| Centreon Central Install details $VERSION_BATCH |============
+================| Centreon Poller Install details $VERSION_BATCH |============
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
@@ -835,7 +837,7 @@ echo "
 "
   else
 echo "
-================| Centreon Central Install details $VERSION_BATCH |============
+================| Centreon Poller Install details $VERSION_BATCH |============
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
@@ -1116,7 +1118,7 @@ function verify_version () {
 # maj conf
 # parameter $1: name variable $2: old value $3: new value
 function maj_conf () {
-	/bin/cat /etc/centreon/install_auto.conf | grep "^$1="
+	/bin/cat /etc/centreon/install_auto.conf | grep "^$1=" >> ${INSTALL_LOG} 
 	if [[ $? -ne 0 ]];
 	then
 	  echo "$1=$3" >> /etc/centreon/install_auto.conf

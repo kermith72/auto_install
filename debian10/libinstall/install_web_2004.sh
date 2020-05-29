@@ -211,22 +211,21 @@ for binary in $BINARIES; do
 done
 
 if [ "$silent_install" -ne 1 ] ; then 
-	###### Mandatory step
-	# ask if gorgone is already installed
-	echo -e "\n$line"
-	echo -e "\t$(gettext "Check mandatory gorgone service status")"
-	echo -e "$line"
+  ###### Mandatory step
+  # ask if gorgone is already installed
+  echo -e "\n$line"
+  echo -e "\t$(gettext "Check mandatory gorgone service status")"
+  echo -e "$line"
 
-	yes_no_default "$(gettext "Is the Gorgone module already installed?")"
-	if [ "$?" -ne 0 ] ; then
-		echo_failure "\n$(gettext "Gorgone is required.\nPlease install it before launching this script")" "$fail"
-		echo -e "\n\t$(gettext "Please read the documentation to manage the Gorgone daemon installation")"
-		echo -e "\t$(gettext "Available on github") : https://github.com/centreon/centreon-gorgone"
-		echo -e "\t$(gettext "or on the centreon documentation") : https://documentation.centreon.com/\n"
-		exit 1
-	fi
+  yes_no_default "$(gettext "Is the Gorgone module already installed?")"
+  if [ "$?" -ne 0 ] ; then
+      echo_failure "\n$(gettext "Gorgone is required.\nPlease install it before launching this script")" "$fail"
+      echo -e "\n\t$(gettext "Please read the documentation to manage the Gorgone daemon installation")"
+      echo -e "\t$(gettext "Available on github") : https://github.com/centreon/centreon-gorgone"
+      echo -e "\t$(gettext "or on the centreon documentation") : https://documentation.centreon.com/\n"
+      exit 1
+  fi
 fi
-
 # Script stop if one binary wasn't found
 if [ "$binary_fail" -eq 1 ] ; then
 	echo_info "$(gettext "Please check fail binary and retry")"
@@ -249,9 +248,9 @@ if [ "$silent_install" -ne 1 ] ; then
 		log "INFO" "Accepted the license"
 	fi
 else 
-	if [ "$upgrade" -eq 0 ] ; then
+	#if [ "$upgrade" -eq 0 ] ; then
 		. $user_install_vars
-	fi
+	#fi
 fi
 
 if [ "$upgrade" -eq 1 ] ; then
@@ -264,10 +263,14 @@ if [ "$upgrade" -eq 1 ] ; then
 		echo_success "$(gettext "Finding configuration file in:") $inst_upgrade_dir" "$ok"
 		log "INFO" "$(gettext "Old configuration found in ") $(ls $inst_upgrade_dir/instCent*)"
 		echo_info "$(gettext "You seem to have an existing Centreon.")\n"
-		yes_no_default "$(gettext "Do you want to use the last Centreon install parameters ?")" "$yes"
-		if [ "$?" -eq 0 ] ; then
+        if [ "$silent_install" -ne 1 ] ; then		
+		  yes_no_default "$(gettext "Do you want to use the last Centreon install parameters ?")" "$yes"
+		  if [ "$?" -eq 0 ] ; then
 			echo_passed "\n$(gettext "Using: ") $(ls $inst_upgrade_dir/instCent*)" "$ok"
 			use_upgrade_files="1"
+		  fi
+		else
+		  use_upgrade_files="1"
 		fi
 	fi
 fi
