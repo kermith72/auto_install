@@ -717,7 +717,7 @@ function main () {
   if [ "$ADD_NRPE" == "yes" ]
   then
 echo "
-================| Centreon Central Install details $VERSION_BATCH |============
+================| Centreon Poller Install details $VERSION_BATCH |============
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
@@ -731,7 +731,7 @@ echo "
 "
   else
 echo "
-================| Centreon Central Install details $VERSION_BATCH |============
+================| Centreon Poller Install details $VERSION_BATCH |============
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
