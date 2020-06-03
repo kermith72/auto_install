@@ -109,7 +109,7 @@ function clib_install () {
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-apt-get install -y build-essential cmake >> ${INSTALL_LOG}
+apt-get install -y build-essential wget cmake >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;

@@ -173,7 +173,7 @@ function clib_install () {
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-apt-get install -y build-essential cmake >> ${INSTALL_LOG}
+apt-get install -y build-essential cmake wget >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
@@ -861,7 +861,8 @@ EOF
 else
   systemctl restart apache2 php7.3-fpm >> ${INSTALL_LOG}
   #purge sessions
-  rm /var/lib/centreon/sessions/*
+  for i in `ls /var/lib/centreon/sessions/*`; do rm "$i"; done;
+  #rm /var/lib/centreon/sessions/*
   #modify right for key ssh
   if [ -d /var/lib/centreon/.ssh ] ;
   then

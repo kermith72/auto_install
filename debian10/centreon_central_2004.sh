@@ -229,7 +229,7 @@ function clib_install () {
 " | tee -a ${INSTALL_LOG}
 local MAJOUR=$1
 
-apt-get install -y cmake python3-pip >> ${INSTALL_LOG}
+apt-get install -y wget cmake python3-pip >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-clib-${CLIB_VER}.tar.gz ]] ;
