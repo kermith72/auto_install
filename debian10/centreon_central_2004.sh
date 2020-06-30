@@ -103,6 +103,8 @@ ENGINE_USER="centreon-engine"
 ENGINE_GROUP="centreon-engine"
 BROKER_USER="centreon-broker"
 BROKER_GROUP="centreon-broker"
+GORGONE_USER="centreon-gorgone"
+GORGONE_GROUP="centreon-gorgone"
 CENTREON_USER="centreon"
 CENTREON_GROUP="centreon"
 ## TMPL file (template install file for Centreon)
@@ -1118,7 +1120,8 @@ elif [[ $MAJOUR == 4 ]]; then
 
   #update major
   #purge sessions
-  for i in `ls /var/lib/centreon/sessions/*`; do rm "${i}"; done
+  #for i in `ls /var/lib/centreon/sessions/*`; do rm "${i}"; done
+  /usr/bin/find /var/lib/centreon/sessions/* | /usr/bin/xargs rm -f
   #add conf
   cat > /etc/centreon/config.d/10-database.yaml <<EOF
 database:
@@ -1151,13 +1154,17 @@ EOF
   chmod 775 /etc/centreon/config.d
   chgrp www-data /etc/centreon/config.d
   
+  #add user gorgone
+  usermod -aG ${ENGINE_GROUP} ${GORGONE_USER}
+  
+  
   #bugfix jisse44
   rm ${INSTALL_DIR}/centreon/src/Centreon/Infrastructure/Acknowledgement/AcknowledgmentRepositoryRDB.php
   
-  #modify permission
-  if [ -f /var/lib/centreon/.ssh ] ; then
-    chmod 700 /var/lib/centreon/.ssh
-  fi  
+  #stop centcore
+  systemctl stop centcore >> ${INSTALL_LOG}
+  systemctl disable centcore >> ${INSTALL_LOG}
+  
   
 else
   systemctl status php7.3-fpm >> ${INSTALL_LOG}
