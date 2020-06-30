@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.52
-# 29/05/2020
-# Thanks to Remy, Justice81 and Pixelabs
+# v 1.53
+# 30/06/2020
+# Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.52"
+VERSION_BATCH="v 1.53"
 CLIB_VER=("20.04.0" "0")
 CONNECTOR_VER=("20.04.0" "0")
-ENGINE_VER=("20.04.1" "0")
+ENGINE_VER=("20.04.3" "0")
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER=("20200410" "0")
-BROKER_VER=("20.04.4" "0")
-GORGONE_VER=("20.04.2" "0")
-CENTREON_VER=("20.04.2" "0")
+PLUGIN_CENTREON_VER=("20200602" "0")
+BROKER_VER=("20.04.5" "0")
+GORGONE_VER=("20.04.3" "0")
+CENTREON_VER=("20.04.3" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -58,9 +58,9 @@ else
   CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER[0]}.tar.gz"
 fi
 ## Sources widgets 
-WIDGET_HOST_VER="20.04.1"
+WIDGET_HOST_VER="20.04.3"
 WIDGET_HOSTGROUP_VER="20.04.0"
-WIDGET_SERVICE_VER="20.04.1"
+WIDGET_SERVICE_VER="20.04.2"
 WIDGET_SERVICEGROUP_VER="20.04.0"
 WIDGET_GRID_MAP_VER="20.04.0"
 WIDGET_TOP_CPU_VER="20.04.0"
@@ -94,6 +94,10 @@ INSTALL_DIR="/usr/share"
 INSTALL_LOG=${DL_DIR}"/centreon-install.log"
 ## Set mysql-server root password
 MYSQL_PASSWORD="password"
+##  mysql-server base centreon password
+MYSQL_CENTREON_PASSWORD="centreon"
+##  mysql-server base centreon_storage password
+MYSQL_CENTREON_STORAGE_PASSWORD="centreon"
 ## Users and groups
 ENGINE_USER="centreon-engine"
 ENGINE_GROUP="centreon-engine"
@@ -665,6 +669,10 @@ function create_centreon_tmpl() {
                   Centreon template generation
 ======================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
+
+if [[ $MAJOUR == 2 ]]; then
+
 cat > ${DL_DIR}/${CENTREON_TMPL} << EOF
 #Centreon template
 PROCESS_CENTREON_WWW=1
@@ -758,6 +766,104 @@ GORGONE_CONFIG="/etc/centreon-gorgone"
 GORGONE_USER="centreon-gorgone"
 GORGONE_GROUP="centreon-gorgone"
 EOF
+
+else
+
+cat > ${DL_DIR}/${CENTREON_TMPL} << EOF
+#Centreon template
+PROCESS_CENTREON_WWW=1
+PROCESS_CENTSTORAGE=1
+PROCESS_CENTCORE=1
+PROCESS_CENTREON_PLUGINS=1
+PROCESS_CENTREON_SNMP_TRAPS=1
+
+LOG_DIR="$BASE_DIR/log"
+LOG_FILE="$LOG_DIR/install_centreon.log"
+TMPDIR="/tmp/centreon-setup"
+SNMP_ETC="/etc/snmp/"
+PEAR_MODULES_LIST="pear.lst"
+PEAR_AUTOINST=1
+
+INSTALL_DIR_CENTREON="${INSTALL_DIR}/centreon"
+CENTREON_BINDIR="${INSTALL_DIR}/centreon/bin"
+CENTREON_DATADIR="${INSTALL_DIR}/centreon/data"
+CENTREON_USER=${CENTREON_USER}
+CENTREON_GROUP=${CENTREON_GROUP}
+PLUGIN_DIR="/usr/lib/nagios/plugins"
+CENTREON_LOG="/var/log/centreon"
+CENTREON_ETC="/etc/centreon"
+CENTREON_RUNDIR="/var/run/centreon"
+CENTREON_GENDIR="/var/cache/centreon"
+CENTSTORAGE_RRD="/var/lib/centreon"
+CENTREON_CACHEDIR="/var/cache/centreon"
+CENTSTORAGE_BINDIR="${INSTALL_DIR}/centreon/bin"
+CENTCORE_BINDIR="${INSTALL_DIR}/centreon/bin"
+CENTREON_VARLIB="/var/lib/centreon"
+CENTPLUGINS_TMP="/var/lib/centreon/centplugins"
+CENTPLUGINSTRAPS_BINDIR="${INSTALL_DIR}/centreon/bin"
+SNMPTT_BINDIR="${INSTALL_DIR}/centreon/bin"
+CENTCORE_INSTALL_INIT=1
+CENTCORE_INSTALL_RUNLVL=1
+CENTSTORAGE_INSTALL_INIT=0
+CENTSTORAGE_INSTALL_RUNLVL=0
+CENTREONTRAPD_BINDIR="${INSTALL_DIR}/centreon/bin"
+CENTREONTRAPD_INSTALL_INIT=1
+CENTREONTRAPD_INSTALL_RUNLVL=1
+CENTREON_PLUGINS=/usr/lib/centreon/plugins
+
+INSTALL_DIR_NAGIOS="/usr/bin"
+CENTREON_ENGINE_USER="${ENGINE_USER}"
+MONITORINGENGINE_USER="${CENTREON_USER}"
+MONITORINGENGINE_LOG="/var/log/centreon-engine"
+MONITORINGENGINE_INIT_SCRIPT="centengine"
+MONITORINGENGINE_BINARY="/usr/sbin/centengine"
+MONITORINGENGINE_ETC="/etc/centreon-engine"
+NAGIOS_PLUGIN="/usr/lib/nagios/plugins"
+FORCE_NAGIOS_USER=1
+NAGIOS_GROUP="${CENTREON_GROUP}"
+FORCE_NAGIOS_GROUP=1
+NAGIOS_INIT_SCRIPT="/etc/init.d/centengine"
+CENTREON_ENGINE_CONNECTORS="/usr/lib/centreon-connector"
+BROKER_USER="${BROKER_USER}"
+BROKER_ETC="/etc/centreon-broker"
+BROKER_INIT_SCRIPT="cbd"
+BROKER_LOG="/var/log/centreon-broker"
+SERVICE_BINARY="/usr/sbin/service"
+
+DIR_APACHE="/etc/apache2"
+DIR_APACHE_CONF="/etc/apache2/conf-available"
+APACHE_CONF="apache.conf"
+WEB_USER="www-data"
+WEB_GROUP="www-data"
+APACHE_RELOAD=0
+BIN_RRDTOOL="/opt/rddtool-broker/bin/rrdtool"
+BIN_MAIL="/usr/bin/mail"
+BIN_SSH="/usr/bin/ssh"
+BIN_SCP="/usr/bin/scp"
+PHP_BIN="/usr/bin/php"
+GREP="/bin/grep"
+CAT="/bin/cat"
+SED="/bin/sed"
+CHMOD="/bin/chmod"
+CHOWN="/bin/chown"
+
+RRD_PERL="/usr/lib/perl5"
+SUDO_FILE="/etc/sudoers.d/centreon"
+FORCE_SUDO_CONF=1
+INIT_D="/etc/init.d"
+CRON_D="/etc/cron.d"
+PEAR_PATH="/usr/share/php/"
+PHP_FPM_SERVICE="php7.3-fpm"
+PHP_FPM_RELOAD=0
+DIR_PHP_FPM_CONF="/etc/php/7.3/fpm/pool.d/"
+
+GORGONE_VARLIB="/var/lib/centreon-gorgone"
+GORGONE_CONFIG="/etc/centreon-gorgone"
+GORGONE_USER="centreon-gorgone"
+GORGONE_GROUP="centreon-gorgone"
+EOF
+
+fi
 }
 
 function centreon_maj () {
@@ -799,6 +905,7 @@ composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
 #build javascript dependencies
 npm ci >> ${INSTALL_LOG}
 npm run build >> ${INSTALL_LOG}
+
 
 # remplace scripts for mode silent
 cp ${DIR_SCRIPT}/libinstall/install_web_2004.sh ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh >> ${INSTALL_LOG}
@@ -913,7 +1020,8 @@ function post_install () {
 local MAJOUR=$1
 
 if [[ $MAJOUR == 2 ]]; then
-  #Modify default config
+  # install new config
+  # Modify default config
   # Monitoring engine information
   sed -i -e "s/share\/centreon-engine/sbin/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
   sed -i -e "s/lib64/lib/g" ${INSTALL_DIR}/centreon/www/install/var/engines/centreon-engine;
@@ -1005,6 +1113,52 @@ WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
   tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
   cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
   chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+  
+elif [[ $MAJOUR == 4 ]]; then
+
+  #update major
+  #purge sessions
+  for i in `ls /var/lib/centreon/sessions/*`; do rm "${i}"; done
+  #add conf
+  cat > /etc/centreon/config.d/10-database.yaml <<EOF
+database:
+  db_configuration:
+    dsn: "mysql:host=localhost:3306;dbname=centreon"
+    username: "centreon"
+    password: "${MYSQL_CENTREON_PASSWORD}"
+  db_realtime:
+    dsn: "mysql:host=localhost:3306;dbname=centreon_storage"
+    username: "centreon"
+    password: "${MYSQL_CENTREON_STORAGE_PASSWORD}"
+EOF
+
+  chown www-data: /etc/centreon/config.d/10-database.yaml
+
+  cat > /etc/centreon-gorgone/config.d/30-centreon.yaml <<EOF
+name: centreon.yaml
+description: Configure Centreon Gorgone to work with Centreon Web.
+centreon: !include /etc/centreon/config.d/*.yaml
+EOF
+
+  cat > /etc/centreon/config.yaml <<EOF
+name: config.yaml
+description: Configuration for Central server
+configuration: !include config.d/*.yaml
+EOF
+  chmod 664 /etc/centreon/config.yaml
+  chown centreon: /etc/centreon/config.yaml
+
+  chmod 775 /etc/centreon/config.d
+  chgrp www-data /etc/centreon/config.d
+  
+  #bugfix jisse44
+  rm ${INSTALL_DIR}/centreon/src/Centreon/Infrastructure/Acknowledgement/AcknowledgmentRepositoryRDB.php
+  
+  #modify permission
+  if [ -f /var/lib/centreon/.ssh ] ; then
+    chmod 700 /var/lib/centreon/.ssh
+  fi  
+  
 else
   systemctl status php7.3-fpm >> ${INSTALL_LOG}
   if [[ $? > 0 ]]; then 
@@ -1304,7 +1458,7 @@ if [[ ${MAJ} > 1 ]];
   then
     if [ -z "$CENTREON_VER_OLD" ]; 
     then
-      create_centreon_tmpl 2>>${INSTALL_LOG}
+      create_centreon_tmpl ${MAJ} 2>>${INSTALL_LOG}
       if [[ $? -ne 0 ]];
       then
         echo -e "${bold}Step11${normal} => Centreon template generation${STATUS_FAIL}"
@@ -1419,8 +1573,8 @@ yes_no_default() {
 
 # verify version
 # parameter $1:new version $2:old version
-# return 1:egal 2:install 3:newer version minor installed
-# 4:newer version major installed 0:old version 
+# return 1->egal 2->install 3->newer version minor installed
+# 4->newer version major installed 0->old version 
 function verify_version () {
    if [ -z "$2" ]; then
      # new install
@@ -1544,12 +1698,12 @@ if [[ $? -eq 1 ]]; then
   if [ "$?" -eq 1 ] ; then
       echo -e "Update Centreon cancelled${STATUS_WARNING}"
       exit 0
-  else
-    VERSIONANC=${CENTREON_VER_OLD:0:2}
-    if (( $VERSIONANC < 20 )); then
-      echo -e "Sorry update Centreon is not possible${STATUS_FAIL}"
-      exit 0      
-    fi
+  #else
+    #VERSIONANC=${CENTREON_VER_OLD:0:2}
+    #if (( $VERSIONANC < 20 )); then
+    #  echo -e "Sorry update Centreon is not possible${STATUS_FAIL}"
+    #  exit 0      
+    #fi
   fi
 fi
 # backup old log file...

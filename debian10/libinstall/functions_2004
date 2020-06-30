@@ -1227,7 +1227,7 @@ configureApache() {
         echo_success "$(gettext "Configuring Apache")" "$ok"
         # After finishing the configuration ->
         # reload apache ! (if admin wants :p)
-        if [ "${APACHE_RELOAD:-0}" -eq 0 ] ; then
+        if [ "${APACHE_RELOAD:-0}" -eq 0 ] && [ "$silent_install" -ne 1 ]; then
             yes_no_default "$(gettext "Do you want to reload your Apache ?")"
             [ $? -eq 0 ] && reload_service_apache
         elif [ "${APACHE_RELOAD:-0}" -eq 1 ] ; then
@@ -1520,7 +1520,7 @@ configure_php_fpm() {
         echo_success "$(gettext "Configuring PHP FPM")" "$ok"
 
         # Reload php-fpm ?
-        if [ "${PHP_FPM_RELOAD:-0}" -eq 0 ] ; then
+        if [ "${PHP_FPM_RELOAD:-0}" -eq 0 ] && [ "$silent_install" -ne 1 ] ; then
             yes_no_default "$(gettext "Do you want to reload PHP FPM service ?")"
             [ $? -eq 0 ] && reload_service_php_fpm
         elif [ "${PHP_FPM_RELOAD:-0}" -eq 1 ] ; then
