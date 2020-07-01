@@ -794,9 +794,16 @@ WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
   systemctl daemon-reload
   systemctl enable centreon
 
-#elif [[ $MAJOUR == 4 ]]; then
+elif [[ $MAJOUR == 4 ]]; then
 
-  #update major
+  # update major
+  ## create cache for gorgone
+  mkdir /var/cache/centreon
+  chown ${CENTREON_USER}:${CENTREON_GROUP}  /var/cache/centreon
+  chmod 775 /var/cache/centreon
+  
+  chmod -R 775 /etc/centreon-engine
+
 
 #else
   #
