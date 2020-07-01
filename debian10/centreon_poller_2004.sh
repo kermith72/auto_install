@@ -7,15 +7,15 @@
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.52"
+VERSION_BATCH="v 1.53"
 CLIB_VER="20.04.0"
 CONNECTOR_VER="20.04.0"
-ENGINE_VER="20.04.1"
+ENGINE_VER="20.04.3"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20200410"
-BROKER_VER="20.04.4"
-GORGONE_VER="20.04.2"
-CENTREON_VER="20.04.2"
+PLUGIN_CENTREON_VER="20200602"
+BROKER_VER="20.04.5"
+GORGONE_VER="20.04.3"
+CENTREON_VER="20.04.3"
 ## Sources URL
 BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
@@ -713,13 +713,17 @@ function post_install () {
                           Post install
 =====================================================================
 " | tee -a ${INSTALL_LOG}
+local MAJOUR=$1
 
-usermod -aG ${ENGINE_GROUP} centreon-gorgone
-usermod -aG ${BROKER_GROUP} centreon-gorgone
-usermod -aG ${CENTREON_GROUP} centreon-gorgone
-usermod -aG centreon-gorgone ${CENTREON_USER}
+if [[ $MAJOUR == 2 ]]; then
+ # install new config
 
-# Add /etc/sudoers.d/centreon
+  usermod -aG ${ENGINE_GROUP} centreon-gorgone
+  usermod -aG ${BROKER_GROUP} centreon-gorgone
+  usermod -aG ${CENTREON_GROUP} centreon-gorgone
+  usermod -aG centreon-gorgone ${CENTREON_USER}
+
+  # Add /etc/sudoers.d/centreon
 echo "## BEGIN: CENTREON SUDO
 
 User_Alias      CENTREON=%centreon
@@ -747,34 +751,34 @@ CENTREON   ALL = NOPASSWD: /usr/sbin/service cbd reload
 ## END: CENTREON SUDO" > /etc/sudoers.d/centreon
 
 
-## Workarounds
-## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
-## (mode w+): Permission denied)
-chown centreon: /var/log/centreon
-chmod 775 /var/log/centreon
-chown ${BROKER_USER}:${BROKER_GROUP} /etc/centreon-broker
-chmod 775 /etc/centreon-broker
-chmod -R 775 /etc/centreon-engine
-chmod 775 /var/lib/centreon-broker
-chown ${CENTREON_USER}:${CENTREON_GROUP} /etc/centreon-broker/*
+  ## Workarounds
+  ## config:  cannot open '/var/lib/centreon-broker/module-temporary.tmp-1-central-module-output-master-failover'
+  ## (mode w+): Permission denied)
+  chown centreon: /var/log/centreon
+  chmod 775 /var/log/centreon
+  chown ${BROKER_USER}:${BROKER_GROUP} /etc/centreon-broker
+  chmod 775 /etc/centreon-broker
+  chmod -R 775 /etc/centreon-engine
+  chmod 775 /var/lib/centreon-broker
+  chown ${CENTREON_USER}:${CENTREON_GROUP} /etc/centreon-broker/*
 
-## create cache for gorgone
-mkdir /var/cache/centreon
-chown ${CENTREON_USER}:${CENTREON_GROUP}  /var/cache/centreon
-chmod 775 /var/cache/centreon
+  ## create cache for gorgone
+  mkdir /var/cache/centreon
+  chown ${CENTREON_USER}:${CENTREON_GROUP}  /var/cache/centreon
+  chmod 775 /var/cache/centreon
 
-####usermod -aG ${ENGINE_GROUP} www-data
-usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
-usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
-chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine/
-chmod g-w /var/lib/centreon
-chmod ${CENTREON_USER}:${CENTREON_GROUP} /var/lib/centreon/centplugins
+  ####usermod -aG ${ENGINE_GROUP} www-data
+  usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
+  usermod -aG ${ENGINE_GROUP} ${BROKER_USER}
+  chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine/
+  chmod g-w /var/lib/centreon
+  chmod ${CENTREON_USER}:${CENTREON_GROUP} /var/lib/centreon/centplugins
 
-mkdir /var/log/centreon-broker
-chown ${BROKER_USER}: /var/log/centreon-broker
-chmod 775 /var/log/centreon-broker
+  mkdir /var/log/centreon-broker
+  chown ${BROKER_USER}: /var/log/centreon-broker
+  chmod 775 /var/log/centreon-broker
 
-#add cgroup centreon
+  #add cgroup centreon
 echo '[Unit]
 Description=Cgroup Centreon
 
@@ -787,8 +791,16 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
 
-systemctl daemon-reload
-systemctl enable centreon
+  systemctl daemon-reload
+  systemctl enable centreon
+
+#elif [[ $MAJOUR == 4 ]]; then
+
+  #update major
+
+#else
+  #
+fi
 }
 
 function add_check_nrpe() {
@@ -1021,12 +1033,15 @@ if [[ ${MAJ} > 1 ]];
     echo -e   "${bold}Step10${normal} => Centreon web ${CHAINE_UPDATE[${MAJ}]}${STATUS_OK}"
 fi
 
-post_install 2>>${INSTALL_LOG}
-if [[ $? -ne 0 ]];
-  then
-    echo -e "${bold}Step11${normal} => Post install                                          ${STATUS_FAIL}"
-  else
-    echo -e "${bold}Step11${normal} => Post install                                          ${STATUS_OK}"
+if [[ ${MAJ} > 1 ]];
+then
+  post_install ${MAJ} 2>>${INSTALL_LOG}
+    if [[ $? -ne 0 ]];
+    then
+      echo -e "${bold}Step11${normal} => Post install                                          ${STATUS_FAIL}"
+    else
+      echo -e "${bold}Step11${normal} => Post install                                          ${STATUS_OK}"
+    fi
 fi
 
 if [ "$ADD_NRPE" == "yes" ]
@@ -1175,12 +1190,12 @@ if [[ $? -eq 1 ]]; then
   if [ "$?" -eq 1 ] ; then
       echo -e "Update Centreon cancelled${STATUS_WARNING}"
       exit 0
-  else
-    VERSIONANC=${CENTREON_VER_OLD:0:2}
-    if (( $VERSIONANC < 20 )); then
-      echo -e "Sorry update Centreon is not possible${STATUS_FAIL}"
-      exit 0      
-    fi
+  #else
+  #  VERSIONANC=${CENTREON_VER_OLD:0:2}
+  #  if (( $VERSIONANC < 20 )); then
+  #    echo -e "Sorry update Centreon is not possible${STATUS_FAIL}"
+  #    exit 0      
+  #  fi
   fi
 fi
 # backup old log file...
