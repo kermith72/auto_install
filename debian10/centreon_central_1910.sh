@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
 # v 1.53
-# 28/06/2020
+# 22/07/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -12,9 +12,9 @@ CLIB_VER=("19.10.0" "0")
 CONNECTOR_VER=("19.10.1" "0")
 ENGINE_VER=("19.10.14" "0")
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER=("20200204" "0")
-BROKER_VER=("19.10.4" "0")
-CENTREON_VER=("19.10.13" "0")
+PLUGIN_CENTREON_VER=("20200602" "0")
+BROKER_VER=("19.10.5" "0")
+CENTREON_VER=("19.10.14" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL

@@ -10,6 +10,9 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.53
+centreon-engine 19.10.14, broker 19.10.5, engine 19.10.14
+
 ### version 1.52
 centreon-engine 20.04.2, broker 20.04.4, engine 20.04.1
 
