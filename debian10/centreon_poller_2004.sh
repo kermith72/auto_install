@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.52
-# 29/05/2020
+# v 1.54
+# 22/07/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.53"
+VERSION_BATCH="v 1.54"
 CLIB_VER="20.04.0"
 CONNECTOR_VER="20.04.0"
-ENGINE_VER="20.04.3"
+ENGINE_VER="20.04.4"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200602"
-BROKER_VER="20.04.5"
+BROKER_VER="20.04.6"
 GORGONE_VER="20.04.3"
-CENTREON_VER="20.04.3"
+CENTREON_VER="20.04.4"
 ## Sources URL
 BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
