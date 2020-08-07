@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.54
+centreon-engine 20.04.4, broker 20.04.7, web 20.04.4
+
+new script create_config_initialV8.sh for plugins 20.04.0 (plugin 20200803)
+
 ### version 1.53
 centreon-engine 19.10.14, broker 19.10.5, engine 19.10.14
 
