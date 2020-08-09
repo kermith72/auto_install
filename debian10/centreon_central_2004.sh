@@ -317,6 +317,11 @@ if [[ $MAJOUR == 2 ]]
 then
   groupadd -g 6001 ${ENGINE_GROUP}
   useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
+  #verify permission
+  if [[ $(ls -l "/var/lib/centreon-engine" | awk '{print $3}') = "root" ]] 
+  then
+    chown ${ENGINE_GROUP}:${ENGINE_USER} /var/lib/centreon-engine
+  fi
 fi
 if [[ $MAJOUR > 2 ]]
 then
@@ -461,6 +466,11 @@ then
   groupadd -g 6002 ${BROKER_GROUP}
   useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
   usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
+  #verify permission
+  if [[ $(ls -l "/var/lib/centreon-broker" | awk '{print $3}') = "root" ]] 
+  then
+    chown ${BROKER_GROUP}:${BROKER_USER} /var/lib/centreon-broker
+  fi
 fi
 if [[ $MAJOUR > 2 ]]
 then
