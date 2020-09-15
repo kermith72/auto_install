@@ -120,8 +120,8 @@ NB_PROC=`cat /proc/cpuinfo | grep processor | wc -l`
 ## print update
 CHAINE_UPDATE=("newer version installed" "already installed" "install" "update minor" "update major")
 ## message question
-yes="$(gettext "y")"
-no="$(gettext "n")"
+yes="y"
+no="n"
 
 # Usage info
 show_help() {
@@ -392,6 +392,10 @@ local MAJOUR=$1
 apt-get install --force-yes -y libgnutls28-dev libssl-dev libkrb5-dev libldap2-dev libsnmp-dev gawk \
         libwrap0-dev libmcrypt-dev smbclient fping gettext dnsutils libmodule-build-perl libmodule-install-perl \
         libnet-snmp-perl >> ${INSTALL_LOG}
+
+## override message question with gettext values
+yes="$(gettext "y")"
+no="$(gettext "n")"
 
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
