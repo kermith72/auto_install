@@ -7,7 +7,7 @@
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.54"
+VERSION_BATCH="v 1.55"
 CLIB_VER=("20.04.0" "0")
 CONNECTOR_VER=("20.04.0" "0")
 ENGINE_VER=("20.04.5" "0")
@@ -1181,6 +1181,10 @@ EOF
   
   
 else
+ 
+  #purge sessions
+  /usr/bin/find /var/lib/centreon/sessions/* | /usr/bin/xargs rm -f
+ 
   systemctl status php7.3-fpm >> ${INSTALL_LOG}
   if [[ $? > 0 ]]; then 
     systemctl start php7.3-fpm >> ${INSTALL_LOG} 
