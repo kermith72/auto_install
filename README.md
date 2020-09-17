@@ -10,6 +10,13 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.55
+centreon-engine 20.04.5, broker 20.04.8, gorgone 20.04.4, web 20.04.5
+
+centreon-engine 19.10.15, engine 19.10.15
+
+centreon-engine 19.04.18
+
 ### version 1.54
 centreon-engine 20.04.4, broker 20.04.7, web 20.04.4
 

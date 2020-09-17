@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon poller install script for Raspbian Buster
-# v 1.53
-# 22/07/2020
+# v 1.55
+# 17/09/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.53"
+VERSION_BATCH="v 1.55"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.1"
-ENGINE_VER="19.10.14"
+ENGINE_VER="19.10.15"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200602"
 BROKER_VER="19.10.5"
-CENTREON_VER="19.10.14"
+CENTREON_VER="19.10.15"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
