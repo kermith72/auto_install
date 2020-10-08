@@ -356,6 +356,7 @@ then
     $CLAPI -o host -a addtemplate -v "Central;htpl_App-MySQL"
     $CLAPI -o host -a addtemplate -v "Central;htpl_App-centreon-poller"
     $CLAPI -o host -a addtemplate -v "Central;htpl_App-centreon-central"
+    $CLAPI -o host -a addtemplate -v "Central;htpl_App-centreon-gorgone"
     $CLAPI -o host -a setmacro -v "Central;SNMPCOMMUNITY;public"
     $CLAPI -o host -a setmacro -v "Central;SNMPVERSION;2c"
     $CLAPI -o host -a setmacro -v "Central;MYSQLUSERNAME;${USER_BDD}"

@@ -47,13 +47,13 @@ create_app_centreon_gorgone() {
   then
     exec_clapi HTPL add "htpl_App-centreon-gorgone;HTPL_App-centreon-poller;;;;"
     exec_clapi STPL addhost "stpl_app_gorgone_events;htpl_App-centreon-gorgone"
-    exec_clapi STPL addhost "stpl_stpl_app_gorgone_nodes;htpl_App-centreon-gorgone"
+    exec_clapi STPL addhost "stpl_app_gorgone_nodes;htpl_App-centreon-gorgone"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEUSERNAME;"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEAPIPASSWORD;"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPORT;8085"
-    exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPROTOCOLE;HTTP"
+    exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPROTOCOLE;http"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEOPTION;"
-    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-poller;icon_image;Hardware/processing.png"
+    [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-gorgone;icon_image;Hardware/processing.png"
   fi
 }
 
