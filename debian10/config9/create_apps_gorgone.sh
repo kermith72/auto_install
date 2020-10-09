@@ -12,7 +12,7 @@ create_cmd_gorgone() {
 
   #cmd_app_gorgone_nodes
   exist_object CMD cmd_app_gorgone_nodes
-  [ $? -ne 0 ] &&   exec_clapi CMD ADD 'cmd_app_gorgone_nodes;check;$CENTREONPLUGINS$/centreon_gorgone_restapi.pl --plugin=apps::gorgone::restapi::plugin --mode=nodes --hostname=$HOSTADDRESS$ --api-username=$_HOSTGORGONEUSERNAME$ --api-password=$_HOSTGORGONEAPIPASSWORD$ --port=$_HOSTGORGONEPORT$ --proto=$_HOSTGORGONEPROTOCOLE$ $_HOSTGORGONEOPTION$ --filter-node-id=$_SERVICEFILTERNODEID$ --warning-ping-received-lasttime=$_SERVICEWARNINGPINGRECEIVEDLASTTIME$ --critical-ping-received-lasttime=$_SERVICECRITICALPINGRECEIVEDLASTTIME$ $_SERVICEOPTIONS$'
+  [ $? -ne 0 ] &&   exec_clapi CMD ADD 'cmd_app_gorgone_nodes;check;$CENTREONPLUGINS$/centreon_gorgone_restapi.pl --plugin=apps::gorgone::restapi::plugin --mode=nodes --hostname=$HOSTADDRESS$ --api-username=$_HOSTGORGONEUSERNAME$ --api-password=$_HOSTGORGONEPASSWORD$ --port=$_HOSTGORGONEPORT$ --proto=$_HOSTGORGONEPROTOCOLE$ $_HOSTGORGONEOPTION$ --filter-node-id=$_SERVICEFILTERNODEID$ --warning-ping-received-lasttime=$_SERVICEWARNINGPINGRECEIVEDLASTTIME$ --critical-ping-received-lasttime=$_SERVICECRITICALPINGRECEIVEDLASTTIME$ $_SERVICEOPTIONS$'
 
 
 }
@@ -49,7 +49,7 @@ create_app_centreon_gorgone() {
     exec_clapi STPL addhost "stpl_app_gorgone_events;htpl_App-centreon-gorgone"
     exec_clapi STPL addhost "stpl_app_gorgone_nodes;htpl_App-centreon-gorgone"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEUSERNAME;"
-    exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEAPIPASSWORD;"
+    exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPASSWORD;"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPORT;8085"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPROTOCOLE;http"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEOPTION;"
