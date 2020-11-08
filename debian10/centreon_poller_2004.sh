@@ -1207,7 +1207,7 @@ done
 text_params
 exist_conf
 if [[ $? -eq 1 ]]; then
-  yes_no_default "$(gettext "Centreon is already install, do you want to update ?")"
+  yes_no_default "$(gettext "Centreon is already installed, do you want to update ?")"
   if [ "$?" -eq 1 ] ; then
       echo -e "Update Centreon cancelled${STATUS_WARNING}"
       exit 0
