@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 19.10 + engine install script for Debian Buster
-# v 1.55
-# 17/09/2020
+# v 1.56
+# 08/11/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.55"
+VERSION_BATCH="v 1.56"
 CLIB_VER=("19.10.0" "0")
 CONNECTOR_VER=("19.10.1" "0")
 ENGINE_VER=("19.10.15" "0")
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER=("20200602" "0")
 BROKER_VER=("19.10.5" "0")
-CENTREON_VER=("19.10.15" "0")
+CENTREON_VER=("19.10.16" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -53,9 +53,9 @@ else
 fi
 CLAPI_URL="${BASE_URL}/Modules/CLAPI/centreon-clapi-${CLAPI_VER}.tar.gz"
 ## Sources widgetsMonitoring engine init.d script
-WIDGET_HOST_VER="19.10.6"
+WIDGET_HOST_VER="19.10.7"
 WIDGET_HOSTGROUP_VER="19.10.1"
-WIDGET_SERVICE_VER="19.10.6"
+WIDGET_SERVICE_VER="19.10.7"
 WIDGET_SERVICEGROUP_VER="19.10.1"
 WIDGET_GRID_MAP_VER="19.10.1"
 WIDGET_TOP_CPU_VER="19.10.1"
@@ -63,7 +63,7 @@ WIDGET_TOP_MEMORY_VER="19.10.1"
 WIDGET_TACTICAL_OVERVIEW_VER="19.10.1"
 WIDGET_HTTP_LOADER_VER="19.10.1"
 WIDGET_ENGINE_STATUS_VER="19.10.2"
-WIDGET_GRAPH_VER="19.10.1"
+WIDGET_GRAPH_VER="19.10.2"
 WIDGET_BASE="http://files.download.centreon.com/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
 WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"
@@ -107,6 +107,9 @@ SCRIPT_VERBOSE=false
 NB_PROC=`cat /proc/cpuinfo | grep processor | wc -l`
 ## print update
 CHAINE_UPDATE=("newer version installed" "already installed" "install" "update minor" "update major")
+## message question
+yes="y"
+no="n"
 
 # Usage info
 show_help() {
@@ -475,6 +478,7 @@ chmod 775 /var/log/centreon-broker
 if [[ -d /var/lib/centreon-broker ]]
   then
     chmod 775 /var/lib/centreon-broker
+    chown ${BROKER_USER}:${BROKER_GROUP} /var/lib/centreon-broker
 fi
 
 
@@ -734,8 +738,11 @@ rm -rf /tmp/*
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${INSTALL_LOG}
 php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_LOG}
 
+# update
+composer update -n >> ${INSTALL_LOG}
+
 #build php dependencies
-composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+composer install --no-dev --optimize-autoloader --no-plugins -n >> ${INSTALL_LOG}
 
 # add node-js
 apt-get install curl  >> ${INSTALL_LOG}
@@ -806,19 +813,19 @@ if [[ $MAJOUR == 2 ]]; then
   # Add API key for Centreon
   # https://gist.github.com/earthgecko/3089509
   # bash generate random 64 character alphanumeric string (upper and lowercase) and 
-  APIKEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+  #APIKEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
   #modify file .env
-  sed -i -e "s/%APP_SECRET%/${APIKEY}/g" .env
+  #sed -i -e "s/%APP_SECRET%/${APIKEY}/g" .env
   #generate .env.local.php
-  composer dump-env prod
+  #composer dump-env prod
 
   #Modify right cache version < 19.10.8
   #chown -R ${CENTREON_USER}:${CENTREON_GROUP} /var/cache/centreon
   #chmod -R 775 /var/cache/centreon
 
   #copy files
-  cp .env ${INSTALL_DIR}/centreon
-  cp .env.local.php ${INSTALL_DIR}/centreon
+  #cp .env ${INSTALL_DIR}/centreon
+  #cp .env.local.php ${INSTALL_DIR}/centreon
   #copy files version < 19.10.5
   #cp container.php ${INSTALL_DIR}/centreon/
   #mv api ${INSTALL_DIR}/centreon/
@@ -839,7 +846,7 @@ sql_mode='ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
 EOF
 
   # Modifiy config systemd
-  sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
+  sed -i -e "s/LimitNOFILE=16384/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
 
   systemctl daemon-reload >> ${INSTALL_LOG}
   systemctl restart mysql >> ${INSTALL_LOG}
@@ -881,6 +888,8 @@ if [[ $MAJOUR == 2 ]]; then
   mkdir /var/lib/centreon/centcore
   chown ${CENTREON_USER}:${CENTREON_USER} /var/lib/centreon/centcore
   chmod 775 /var/lib/centreon/centcore
+  
+  
 
   #add cgroup centreon
 echo '[Unit]
@@ -1266,6 +1275,32 @@ echo ""
 echo "##### Install completed #####" | tee -a ${INSTALL_LOG}
 }
 
+#----
+## make a question with yes/no possiblity
+## use "no" response by default
+## @param	message to print
+## @param 	default response (default to no)
+## @return 0 	yes
+## @return 1 	no
+## @Copyright	Copyright 2008, Guillaume Watteeux
+#----
+yes_no_default() {
+	local message=$1
+	local default=${2:-$no}
+	local res="not_define"
+	while [ "$res" != "$yes" ] && [ "$res" != "$no" ] && [ ! -z "$res" ] ; do
+		echo -e "\n$message\n$(gettext "[y/n], default to [$default]:")"
+		echo -en "> "
+		read res
+		[ -z "$res" ] && res="$default"
+	done
+	if [ "$res" = "$yes" ] ; then
+		return 0
+	else 
+		return 1
+	fi
+}
+
 # verify version
 # parameter $1:new version $2:old version
 # return 1:egal 2:install 3:newer version minor installed
@@ -1386,7 +1421,17 @@ fi
 # Exec main function
 text_params
 exist_conf
-> ${INSTALL_LOG}
+if [[ $? -eq 1 ]]; then
+  yes_no_default "$(gettext "Centreon is already installed, do you want to update ?")"
+  if [ "$?" -eq 1 ] ; then
+      echo -e "Update Centreon cancelled${STATUS_WARNING}"
+      exit 0
+  fi
+fi
+# backup old log file...
+if [ -e "${INSTALL_LOG}" ] ; then
+	mv "${INSTALL_LOG}" "${INSTALL_LOG}.`date +%Y%m%d-%H%M%S`"
+fi
 main
 echo -e ""
 echo -e "${bold}Go to http://${ETH0_IP}/centreon to complete the setup${normal} "

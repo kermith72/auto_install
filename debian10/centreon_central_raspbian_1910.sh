@@ -736,7 +736,7 @@ sql_mode='ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
 EOF
 
 # Modifiy config systemd
-sed -i -e "s/LimitNOFILE=16364/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
+sed -i -e "s/LimitNOFILE=16384/LimitNOFILE=32000/g" /lib/systemd/system/mariadb.service;
 
 systemctl daemon-reload >> ${INSTALL_LOG}
 systemctl restart mysql >> ${INSTALL_LOG}
