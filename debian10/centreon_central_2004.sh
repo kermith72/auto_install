@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.55
-# 17/09/2020
+# v 1.56
+# 20/11/2020
 # Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.55"
+VERSION_BATCH="v 1.56"
 CLIB_VER=("20.04.0" "0")
 CONNECTOR_VER=("20.04.0" "0")
-ENGINE_VER=("20.04.5" "0")
+ENGINE_VER=("20.04.7" "0")
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER=("20200803" "0")
-BROKER_VER=("20.04.8" "0")
-GORGONE_VER=("20.04.4" "0")
-CENTREON_VER=("20.04.5" "0")
+PLUGIN_CENTREON_VER=("20201006" "0")
+BROKER_VER=("20.04.9" "0")
+GORGONE_VER=("20.04.6" "0")
+CENTREON_VER=("20.04.7" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -58,9 +58,9 @@ else
   CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER[0]}.tar.gz"
 fi
 ## Sources widgets 
-WIDGET_HOST_VER="20.04.4"
+WIDGET_HOST_VER="20.04.5"
 WIDGET_HOSTGROUP_VER="20.04.0"
-WIDGET_SERVICE_VER="20.04.3"
+WIDGET_SERVICE_VER="20.04.4"
 WIDGET_SERVICEGROUP_VER="20.04.0"
 WIDGET_GRID_MAP_VER="20.04.0"
 WIDGET_TOP_CPU_VER="20.04.0"
@@ -68,7 +68,7 @@ WIDGET_TOP_MEMORY_VER="20.04.0"
 WIDGET_TACTICAL_OVERVIEW_VER="20.04.0"
 WIDGET_HTTP_LOADER_VER="20.04.0"
 WIDGET_ENGINE_STATUS_VER="20.04.1"
-WIDGET_GRAPH_VER="20.04.0"
+WIDGET_GRAPH_VER="20.04.1"
 WIDGET_BASE="http://files.download.centreon.com/public/centreon-widgets"
 WIDGET_HOST="${WIDGET_BASE}/centreon-widget-host-monitoring/centreon-widget-host-monitoring-${WIDGET_HOST_VER}.tar.gz"
 WIDGET_HOSTGROUP="${WIDGET_BASE}/centreon-widget-hostgroup-monitoring/centreon-widget-hostgroup-monitoring-${WIDGET_HOSTGROUP_VER}.tar.gz"
@@ -933,7 +933,7 @@ if [ "$INSTALL_WEB" == "yes" ]
 then
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 fi 
 
 }
@@ -1003,11 +1003,11 @@ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${
 php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_LOG}
 
 #build php dependencies
-composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+composer install --no-dev --optimize-autoloader -n >> ${INSTALL_LOG}
 
 # add node-js
 apt-get install curl  >> ${INSTALL_LOG}
-curl -sL https://deb.nodesource.com/setup_12.x | bash - >> ${INSTALL_LOG}
+curl -sL https://deb.nodesource.com/setup_14.x | bash - >> ${INSTALL_LOG}
 apt-get install -y nodejs >> ${INSTALL_LOG}
 
 
@@ -1023,7 +1023,7 @@ if [ "$INSTALL_WEB" == "yes" ]
 then
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  /usr/bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /bin/bash ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 fi 
 }
 

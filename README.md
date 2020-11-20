@@ -10,10 +10,19 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.56
+centreon-engine 20.04.7, broker 20.04.9, gorgone 20.04.6, web 20.04.7
+
+centreon-web 19.10.16
+
+centreon-web 19.04.20
+
+bugfix PHP composer and issue #12
+
 ### version 1.55
 centreon-engine 20.04.5, broker 20.04.8, gorgone 20.04.4, web 20.04.5
 
-centreon-engine 19.10.15, engine 19.10.15
+centreon-engine 19.10.15, web 19.10.15
 
 centreon-engine 19.04.18
 

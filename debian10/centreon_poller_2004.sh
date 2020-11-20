@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.55
-# 17/09/2020
+# v 1.56
+# 20/11/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.55"
+VERSION_BATCH="v 1.56"
 CLIB_VER="20.04.0"
 CONNECTOR_VER="20.04.0"
-ENGINE_VER="20.04.5"
+ENGINE_VER="20.04.7"
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER="20200803"
-BROKER_VER="20.04.8"
-GORGONE_VER="20.04.4"
-CENTREON_VER="20.04.5"
+PLUGIN_CENTREON_VER="20201006"
+BROKER_VER="20.04.9"
+GORGONE_VER="20.04.6"
+CENTREON_VER="20.04.7"
 ## Sources URL
 BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
@@ -630,7 +630,7 @@ cp ${DIR_SCRIPT}/libinstall/functions_2004 ${DL_DIR}/centreon-web-${CENTREON_VER
 
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  /usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
  
 
 }
@@ -718,7 +718,7 @@ cp ${DIR_SCRIPT}/libinstall/install_web_2004.sh ${DL_DIR}/centreon-web-${CENTREO
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
-/usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 }
 
 function post_install () {
