@@ -7,14 +7,14 @@
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.55"
+VERSION_BATCH="v 1.56"
 CLIB_VER="19.10.0"
 CONNECTOR_VER="19.10.1"
 ENGINE_VER="19.10.15"
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER="20200602"
 BROKER_VER="19.10.5"
-CENTREON_VER="19.10.15"
+CENTREON_VER="19.10.16"
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -518,7 +518,7 @@ cp ${DIR_SCRIPT}/libinstall/CentPluginsTraps_1910.sh ${DL_DIR}/centreon-web-${CE
 
   [ "$SCRIPT_VERBOSE" = true ] && echo " Apply Centreon template " | tee -a ${INSTALL_LOG}
 
-  /usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+  /bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -u /etc/centreon -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
  
 
 }
@@ -603,7 +603,7 @@ rm -rf /tmp/*
 
 [ "$SCRIPT_VERBOSE" = true ] && echo " Generate Centreon template " | tee -a ${INSTALL_LOG}
 
-/usr/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
+/bin/bash ${DL_DIR}/centreon-web-${CENTREON_VER}/install.sh -i -f ${DL_DIR}/${CENTREON_TMPL} >> ${INSTALL_LOG}
 }
 
 function post_install () {
