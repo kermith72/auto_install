@@ -683,7 +683,7 @@ php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"  >> ${
 php composer-setup.php --install-dir=/usr/bin --filename=composer  >> ${INSTALL_LOG}
 
 #build php dependencies
-composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+composer install --no-dev --optimize-autoloader -n >> ${INSTALL_LOG}
 
 # add node-js
 apt-get install curl  >> ${INSTALL_LOG}
