@@ -649,7 +649,7 @@ cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 rm -rf /tmp/*
 
 #build php dependencies
-composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+composer install --no-dev --optimize-autoloader -n >> ${INSTALL_LOG}
 
 if [[ ${CENTREON_VER[0]} == "19.10.1" ]]; then
   #modify file package.json
