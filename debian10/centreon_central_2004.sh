@@ -916,7 +916,7 @@ cd ${DL_DIR}/${PREFIX}${CENTREON_VER[0]}
 rm -rf /tmp/*
 
 #build php dependencies
-composer install --no-dev --optimize-autoloader  >> ${INSTALL_LOG}
+composer install --no-dev --optimize-autoloader -n >> ${INSTALL_LOG}
 
 #build javascript dependencies
 npm ci >> ${INSTALL_LOG}
