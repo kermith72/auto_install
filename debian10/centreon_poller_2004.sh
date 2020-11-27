@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
 # v 1.57
-# 26/11/2020
+# 27/11/2020
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -736,6 +736,8 @@ if [[ $MAJOUR == 2 ]]; then
   usermod -aG ${BROKER_GROUP} centreon-gorgone
   usermod -aG ${CENTREON_GROUP} centreon-gorgone
   usermod -aG centreon-gorgone ${CENTREON_USER}
+  usermod -aG centreon-gorgone ${ENGINE_USER}
+  usermod -aG centreon-gorgone ${BROKER_USER}
 
   # Add /etc/sudoers.d/centreon
 echo "## BEGIN: CENTREON SUDO
