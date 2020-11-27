@@ -1,20 +1,20 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.56
-# 20/11/2020
+# v 1.57
+# 26/11/2020
 # Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.56"
+VERSION_BATCH="v 1.57"
 CLIB_VER=("20.04.0" "0")
 CONNECTOR_VER=("20.04.0" "0")
 ENGINE_VER=("20.04.7" "0")
 PLUGIN_VER="2.2"
 PLUGIN_CENTREON_VER=("20201006" "0")
-BROKER_VER=("20.04.9" "0")
-GORGONE_VER=("20.04.6" "0")
+BROKER_VER=("20.04.10" "0")
+GORGONE_VER=("20.04.7" "0")
 CENTREON_VER=("20.04.7" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
