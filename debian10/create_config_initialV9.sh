@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_config_initialV9.sh
+# version 9.01
+# 07/12/2020
+# add template proxmox
 # version 9.00
 # 08/10/2020
 # new option without host configuration
@@ -102,6 +105,7 @@ BASE_DIR=$(dirname $0)
 . $BASE_DIR/config5/create_apps_mysql.sh
 . $BASE_DIR/config6/create_apps_centreon.sh
 . $BASE_DIR/config9/create_apps_gorgone.sh
+. $BASE_DIR/config9/create_template_virt_proxmox.sh
 
 # Usage info
 show_help() {
@@ -260,6 +264,10 @@ echo "Create Command gorgone"
 
 create_cmd_gorgone
 
+echo "Create Command Proxmox"
+
+create_cmd_virt_proxmox
+
 #*****************
 
 ###############################
@@ -307,6 +315,10 @@ echo "Create template app centreon gorgone"
 
 create_stpl_gorgone
 
+echo "Create template virt Proxmox"
+
+create_stpl_virt_proxmox
+
 ################################
 #*******HOTES MODELES **********
 ################################
@@ -331,6 +343,8 @@ echo "- cisco"
 create_cisco_snmp
 echo "- gorgone"
 create_app_centreon_gorgone
+echo "- proxmox"
+create_virt_proxmox
 
 
 if [ "$ADD_HOST" == "yes" ]

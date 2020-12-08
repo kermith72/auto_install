@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon 20.10 + engine install script for Debian Buster
 # v 1.57
-# 26/11/2020
+# 08/12/2020
 # Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -1130,6 +1130,12 @@ WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
   cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
   chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
   
+  # Install extra pack icônes
+  [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install extra Pack Icônes" | tee -a ${INSTALL_LOG}
+  tar xzf ${DIR_SCRIPT}/icones_extra.tar.gz -C ${DL_DIR}
+  cp -r ${DL_DIR}/icones_extra/* ${INSTALL_DIR}/centreon/www/img/media/
+  chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+
 elif [[ $MAJOUR == 4 ]]; then
 
   #update major
