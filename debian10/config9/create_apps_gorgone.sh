@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_apps_gorgone.sh
+# version 1.01
+# 11/12/2020
+# add template generic-host
 # version 1.00
 # 08/10/2020
 # for v 20.04.0
@@ -53,6 +56,7 @@ create_app_centreon_gorgone() {
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPORT;8085"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEPROTOCOLE;http"
     exec_clapi HTPL setmacro "htpl_App-centreon-gorgone;GORGONEOPTION;"
+    exec_clapi HTPL addtemplate "htpl_App-centreon-gorgone;generic-host"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-gorgone;icon_image;Hardware/processing.png"
   fi
 }

@@ -10,6 +10,12 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.58
+Update monitoring-plugins 2.3
+
+add template lm-sensors
+
+
 ### version 1.57
 new script for centreon_central_2010.sh and centreon_poller_2010.sh
 

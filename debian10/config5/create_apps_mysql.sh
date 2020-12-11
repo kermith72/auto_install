@@ -1,7 +1,10 @@
 #!/bin/bash
 # create_apps_mysql.sh
+# version 1.06
+# 11/12/2020
+# add template generic-host
 # version 1.05
-# 13/12/2020
+# 13/12/2019
 # update mode databases-size
 # version 1.04
 # 14/10/2019
@@ -192,6 +195,7 @@ create_apps_mysql () {
     exec_clapi HTPL setmacro "htpl_App-MySQL;MYSQLUSERNAME;"
     exec_clapi HTPL setmacro "htpl_App-MySQL;MYSQLPASSWORD;"
     exec_clapi HTPL setmacro "htpl_App-MySQL;MYSQLPORT;3306"
+    exec_clapi HTPL addtemplate "htpl_App-MySQL;generic-host"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-MySQL;icon_image;BDD/database.png"
   fi
 }

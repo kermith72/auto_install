@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_config_initialV9.sh
+# version 9.02
+# 11/12/2020
+# add template lm-sensors
 # version 9.01
 # 07/12/2020
 # add template proxmox
@@ -106,6 +109,7 @@ BASE_DIR=$(dirname $0)
 . $BASE_DIR/config6/create_apps_centreon.sh
 . $BASE_DIR/config9/create_apps_gorgone.sh
 . $BASE_DIR/config9/create_template_virt_proxmox.sh
+. $BASE_DIR/config9/create_template_apps_lmsensors_snmp.sh
 
 # Usage info
 show_help() {
@@ -268,6 +272,10 @@ echo "Create Command Proxmox"
 
 create_cmd_virt_proxmox
 
+echo "Create Command Lm-Sensors"
+
+create_cmd_lmsensors
+
 #*****************
 
 ###############################
@@ -319,6 +327,10 @@ echo "Create template virt Proxmox"
 
 create_stpl_virt_proxmox
 
+echo "Create template app lm-sensors"
+
+create_stpl_lmsensors_snmp
+
 ################################
 #*******HOTES MODELES **********
 ################################
@@ -345,7 +357,8 @@ echo "- gorgone"
 create_app_centreon_gorgone
 echo "- proxmox"
 create_virt_proxmox
-
+echo "- lm-sensors"
+create_app_lmsensors_snmp
 
 if [ "$ADD_HOST" == "yes" ]
 then
