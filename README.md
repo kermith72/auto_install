@@ -15,6 +15,8 @@ new script for centreon_central_2010.sh and centreon_poller_2010.sh
 
 centreon-web 19.10.7, broker 20.04.10, gorgone 20.04.7
 
+add template proxmox
+
 
 ### version 1.56
 centreon-engine 20.04.7, broker 20.04.9, gorgone 20.04.6, web 20.04.7
