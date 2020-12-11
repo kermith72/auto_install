@@ -21,7 +21,7 @@ create_cmd_virt_proxmox() {
   [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_virt_proxmox_version;check;\$CENTREONPLUGINS\$/centreon_proxmox_ve_restapi.pl --plugin apps::proxmox::ve::restapi::plugin --mode=version --hostname=\$HOSTADDRESS\$ --api-username='\$_HOSTPROXMOXUSERNAME\$' --api-password='\$_HOSTPROXMOXPASSWORD\$' --proto='\$_HOSTPROXMOXPROTO\$' --port='\$_HOSTPROXMOXPORT\$' --realm='\$_HOSTPROXMOXREALM\$' \$_HOSTPROXMOXOPTIONS\$ \$_SERVICEOPTIONS\$"
 
   # cmd_virt_proxmox_vm
-  exist_object CMD cmd_cmd_virt_proxmox_vm
+  exist_object CMD cmd_virt_proxmox_vm
   [ $? -ne 0 ] && exec_clapi CMD ADD "cmd_virt_proxmox_vm;check;\$CENTREONPLUGINS\$/centreon_proxmox_ve_restapi.pl --plugin apps::proxmox::ve::restapi::plugin --mode=vm-usage --hostname=\$HOSTADDRESS\$ --api-username='\$_HOSTPROXMOXUSERNAME\$' --api-password='\$_HOSTPROXMOXPASSWORD\$' --proto='\$_HOSTPROXMOXPROTO\$' --port='\$_HOSTPROXMOXPORT\$' --realm='\$_HOSTPROXMOXREALM\$' \$_HOSTPROXMOXOPTIONS\$ --filter-name='\$_SERVICEFILTERNAME\$' --warning-cpu='\$_SERVICEWARNINGCPU\$' --critical-cpu='\$_SERVICECRITICALCPU\$' --warning-memory='\$_SERVICEWARNINGMEMORY\$' --critical-memory='\$_SERVICECRITICALMEMORY\$' --warning-traffic-in='\$_SERVICEWARNINGTRAFFICIN\$' --critical-traffic-in='\$_SERVICECRITICALTRAFFICIN\$' --warning-traffic-out='\$_SERVICEWARNINGTRAFFICOUT\$' --critical-traffic-out='\$_SERVICECRITICALTRAFFICOUT\$' --warning-read-iops='\$_SERVICEWARNINGREADIOPS\$' --critical-read-iops='\$_SERVICECRITICALREADIOPS\$' --warning-write-iops='\$_SERVICEWARNINGWRITEIOPS\$' --critical-write-iops='\$_SERVICECRITICALWRITEIOPS\$' \$_SERVICEOPTIONS\$"
 
 
