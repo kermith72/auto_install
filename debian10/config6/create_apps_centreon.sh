@@ -1,5 +1,8 @@
 #!/bin/bash
 # create_apps_centreon.sh
+# version 1.01
+# 11/12/2020
+# add template generic-host
 # version 1.00
 # 24/04/2020
 # for v 20.04.0
@@ -107,6 +110,7 @@ create_centreon_poller() {
     exec_clapi STPL addhost "stpl_app_centreon_process-engine;htpl_App-centreon-poller"
     exec_clapi STPL addhost "stpl_app_centreon_process-ntpd;htpl_App-centreon-poller"
     exec_clapi STPL addhost "stpl_app_centreon_process-sshd;htpl_App-centreon-poller"
+    exec_clapi HTPL addtemplate "htpl_App-centreon-poller;generic-host"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-poller;icon_image;Hardware/processing.png"
   fi
 }
@@ -122,6 +126,7 @@ create_centreon_central() {
     exec_clapi STPL addhost "stpl_app_centreon_process-gorgoned;htpl_App-centreon-central"
     exec_clapi STPL addhost "stpl_app_centreon_process-broker-sql;htpl_App-centreon-central"
     exec_clapi STPL addhost "stpl_app_centreon_process-broker-rrd;htpl_App-centreon-central"
+    exec_clapi HTPL addtemplate "htpl_App-centreon-central;generic-host"
     [ "$ADD_ICONE" == "yes" ] && exec_clapi HTPL setparam "htpl_App-centreon-central;icon_image;Hardware/processing.png"
   fi
 }
