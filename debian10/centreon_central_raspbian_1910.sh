@@ -217,7 +217,7 @@ function centreon_engine_install () {
                     Install Centreon Engine
 ======================================================================
 " | tee -a ${INSTALL_LOG}
-git clone https://github.com/kermith72/auto_install.git
+
 groupadd -g 6001 ${ENGINE_GROUP}
 useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
 

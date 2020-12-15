@@ -1,7 +1,7 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.57
-# 26/11/2020
+# v 1.58
+# 15/12/2020
 # Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
@@ -174,7 +174,7 @@ function mariadb_install() {
 ======================================================================
 " | tee -a ${INSTALL_LOG}
 
-/usr/bin/dpkg -l | /usr/bin/grep "mariadb-server-10.3" >> ${INSTALL_LOG}
+/usr/bin/dpkg -l | grep "mariadb-server-10.3" >> ${INSTALL_LOG}
 if [[ $? -ne 0 ]];
 then
 	apt-get install -y mariadb-server >> ${INSTALL_LOG}
@@ -318,7 +318,7 @@ then
   groupadd -g 6001 ${ENGINE_GROUP}
   useradd -u 6001 -g ${ENGINE_GROUP} -m -r -d /var/lib/centreon-engine -c "Centreon-engine Admin" -s /bin/bash ${ENGINE_USER}
   #verify permission
-  if [ $(ls -l "/var/lib/centreon-engine" | awk '{print $3}') == "root" ]
+  if [ $(ls -ld "/var/lib/centreon-engine" | awk '{print $3}') == "root" ]
   then
     chown ${ENGINE_USER}:${ENGINE_GROUP} /var/lib/centreon-engine
   fi
@@ -471,7 +471,7 @@ then
   useradd -u 6002 -g ${BROKER_GROUP} -m -r -d /var/lib/centreon-broker -c "Centreon-broker Admin" -s /bin/bash  ${BROKER_USER}
   usermod -aG ${BROKER_GROUP} ${ENGINE_USER}
   #verify permission
-  if [ $(ls -l "/var/lib/centreon-broker" | awk '{print $3}') == "root" ]
+  if [ $(ls -ld "/var/lib/centreon-broker" | awk '{print $3}') == "root" ]
   then
     chown ${BROKER_USER}:${BROKER_GROUP} /var/lib/centreon-broker
   fi
