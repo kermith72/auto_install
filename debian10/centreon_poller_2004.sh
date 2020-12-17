@@ -350,8 +350,6 @@ if [[ $MAJOUR > 2 ]]
 then
       echo -e "stop Centreon Engine${STATUS_WARNING}"
       /bin/systemctl stop centengine
-      echo -e "stop Centreon Broker${STATUS_WARNING}"
-      /bin/systemctl stop cbd
 fi
 
 apt-get install git librrd-dev libmariadb-dev libgnutls28-dev lsb-release liblua5.2-dev -y >> ${INSTALL_LOG}
