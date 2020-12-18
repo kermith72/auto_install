@@ -15,6 +15,8 @@ Update monitoring-plugins 2.3
 
 add template lm-sensors
 
+new scripts for Raspberry OS : centreon_central_raspbian_2004.sh and centreon_poller_raspbian_2004.sh
+
 
 ### version 1.57
 new script for centreon_central_2010.sh and centreon_poller_2010.sh
