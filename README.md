@@ -11,7 +11,7 @@ cd auto_install
 git checkout v1.x
 
 ### version 1.58
-Update monitoring-plugins 2.3
+Update monitoring-plugins 2.3, gorgone 20.04.8
 
 add template lm-sensors
 
