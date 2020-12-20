@@ -14,7 +14,7 @@ ENGINE_VER="20.04.7"
 PLUGIN_VER="2.3"
 PLUGIN_CENTREON_VER="20201006"
 BROKER_VER="20.04.10"
-GORGONE_VER="20.04.7" 
+GORGONE_VER="20.04.8" 
 CENTREON_VER="20.04.7" 
 # MariaDB Series
 MARIADB_VER='10.0'
@@ -1064,6 +1064,13 @@ WantedBy=multi-user.target' > /lib/systemd/system/centreon.service
   tar xzf ${DIR_SCRIPT}/icones_pixelabs_v2.tar.gz -C ${DL_DIR}
   cp -r ${DL_DIR}/icones_pixelabs_v2/* ${INSTALL_DIR}/centreon/www/img/media/
   chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+  
+  # Install extra pack icônes
+  [ "$SCRIPT_VERBOSE" = true ] && echo "====> Install extra Pack Icônes" | tee -a ${INSTALL_LOG}
+  tar xzf ${DIR_SCRIPT}/icones_extra.tar.gz -C ${DL_DIR}
+  cp -r ${DL_DIR}/icones_extra/* ${INSTALL_DIR}/centreon/www/img/media/
+  chown -R www-data:www-data ${INSTALL_DIR}/centreon/www/img/media/
+
 
 elif [[ $MAJOUR == 4 ]]; then
 

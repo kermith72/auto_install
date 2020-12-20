@@ -423,6 +423,10 @@ if [ $? = 0 ];then
    fi
    RESULT=`$CLAPI $MODE_START`
    if [ $? = 0 ];then
+     if [[ $MODE_START == "-a pollerrestart -v 1" ]];then
+       echo "Restart cbd..."
+       systemctl restart cbd
+     fi
      echo "Configuration OK !"
    else
      echo "Error Reload/Restart Configuration !!!"
