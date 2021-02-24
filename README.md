@@ -10,6 +10,10 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.60
+centreon-web 20.10.3, engine 20.10.2, broker 20.10.3, gorgone 20.10.2, plugins 20210218
+
+
 ### version 1.59
 centreon-engine 20.10.1, broker 20.10.2, gorgone 20.10.1, plugins 20201211
 
