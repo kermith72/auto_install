@@ -1,27 +1,25 @@
 #!/bin/bash
 # Centreon poller install script for Debian Buster
-# v 1.60
-# 24/02/2021
+# v 1.61
+# 31/03/2021
 # Thanks to Remy, Justice81 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.60"
+VERSION_BATCH="v 1.61"
 CLIB_VER="20.10.0"
 CONNECTOR_VER="20.10.0"
 ENGINE_VER="20.10.2"
-PLUGIN_VER="2.3"
-PLUGIN_CENTREON_VER="20210218"
+PLUGIN_CENTREON_VER="20210317"
 BROKER_VER="20.10.3"
 GORGONE_VER="20.10.2"
-CENTREON_VER="20.10.3"
+CENTREON_VER="20.10.4"
 ## Sources URL
 BASE_URL="http://files.download.centreon.com/public"
 CLIB_URL="${BASE_URL}/centreon-clib/centreon-clib-${CLIB_VER}.tar.gz"
 CONNECTOR_URL="${BASE_URL}/centreon-connectors/centreon-connectors-${CONNECTOR_VER}.tar.gz"
 ENGINE_URL="${BASE_URL}/centreon-engine/centreon-engine-${ENGINE_VER}.tar.gz"
-PLUGIN_URL="https://www.monitoring-plugins.org/download/monitoring-plugins-${PLUGIN_VER}.tar.gz"
 PLUGIN_CENTREON_URL="${BASE_URL}/centreon-plugins/centreon-plugins-${PLUGIN_CENTREON_VER}.tar.gz"
 BROKER_URL="${BASE_URL}/centreon-broker/centreon-broker-${BROKER_VER}.tar.gz"
 CENTREON_URL="${BASE_URL}/centreon/centreon-web-${CENTREON_VER}.tar.gz"
@@ -262,11 +260,8 @@ function monitoring_plugin_install () {
                      Install Monitoring Plugins
 ======================================================================
 " | tee -a ${INSTALL_LOG}
-local MAJOUR=$1
 
-apt-get install --force-yes -y libgnutls28-dev libssl-dev libkrb5-dev libldap2-dev libsnmp-dev gawk \
-        libwrap0-dev libmcrypt-dev smbclient fping gettext dnsutils libmodule-build-perl libmodule-install-perl \
-        libnet-snmp-perl >> ${INSTALL_LOG}
+apt-get install monitoring-plugins -y  >> ${INSTALL_LOG}
 
 ## override message question with gettext values
 yes="$(gettext "y")"
@@ -275,24 +270,7 @@ no="$(gettext "n")"
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
 
-cd ${DL_DIR}
-if [[ -e monitoring-plugins-${PLUGIN_VER}.tar.gz ]]
-  then
-    echo 'File already exist !' | tee -a ${INSTALL_LOG}
-  else
-    wget --no-check-certificate ${PLUGIN_URL} -O ${DL_DIR}/monitoring-plugins-${PLUGIN_VER}.tar.gz >> ${INSTALL_LOG}
-    [ $? != 0 ] && return 1
-fi
 
-tar xzf monitoring-plugins-${PLUGIN_VER}.tar.gz
-cd ${DL_DIR}/monitoring-plugins-${PLUGIN_VER}
-
-./configure --with-nagios-user=${ENGINE_USER} --with-nagios-group=${ENGINE_GROUP} \
---prefix=/usr/lib/nagios/plugins --libexecdir=/usr/lib/nagios/plugins --enable-perl-modules --with-openssl=/usr/bin/openssl \
---enable-extra-opts >> ${INSTALL_LOG}
-
-make -j $NB_PROC >> ${INSTALL_LOG}
-make install >> ${INSTALL_LOG}
 }
 
 function centreon_plugins_install() {
@@ -862,7 +840,7 @@ echo "
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
-                  Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
+                  Plugins    : ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}
                   Gorgone    : ${GORGONE_VER}
                   Centreon   : ${CENTREON_VER}
@@ -877,7 +855,7 @@ echo "
                   Clib       : ${CLIB_VER}
                   Connector  : ${CONNECTOR_VER}
                   Engine     : ${ENGINE_VER}
-                  Plugins    : ${PLUGIN_VER} & ${PLUGIN_CENTREON_VER}
+                  Plugins    : ${PLUGIN_CENTREON_VER}
                   Broker     : ${BROKER_VER}
                   Gorgone    : ${GORGONE_VER}
                   Centreon   : ${CENTREON_VER}
@@ -944,21 +922,13 @@ if [[ ${MAJ} > 1 ]];
     echo -e     "${bold}Step4${normal}  => Centreon Engine ${CHAINE_UPDATE[${MAJ}]}${STATUS_OK}"
 fi
 
-verify_version "$PLUGIN_VER" "$PLUGIN_VER_OLD"
-MAJ=$?
-if [[ ${MAJ} > 1 ]];
+monitoring_plugin_install ${MAJ} 2>>${INSTALL_LOG}
+if [[ $? -ne 0 ]];
   then
-    monitoring_plugin_install ${MAJ} 2>>${INSTALL_LOG}
-    if [[ $? -ne 0 ]];
-      then
-        echo -e "${bold}Step5${normal}  => Monitoring plugins ${CHAINE_UPDATE[${MAJ}]}${STATUS_FAIL}"
-      else
-        echo -e "${bold}Step5${normal}  => Monitoring plugins ${CHAINE_UPDATE[${MAJ}]}${STATUS_OK}"
-        maj_conf "PLUGIN_VER" "$PLUGIN_VER_OLD" "$PLUGIN_VER"    
-    fi
+    echo -e "${bold}Step6${normal}  => Monitoring plugins ${CHAINE_UPDATE[2]}${STATUS_FAIL}"
   else
-    echo -e     "${bold}Step5${normal}  => Monitoring plugins ${CHAINE_UPDATE[${MAJ}]}${STATUS_OK}"
-fi    
+    echo -e "${bold}Step6${normal}  => Monitoring plugins ${CHAINE_UPDATE[2]}${STATUS_OK}"
+fi   
 
 verify_version "$PLUGIN_CENTREON_VER" "$PLUGIN_CENTREON_VER_OLD"
 MAJ=$?
