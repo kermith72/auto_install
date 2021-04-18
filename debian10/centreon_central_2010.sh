@@ -1033,7 +1033,10 @@ if [[ $MAJOUR == 2 ]]; then
   /usr/sbin/usermod -aG ${ENGINE_GROUP} centreon-gorgone
 
   # bug conf apache2, del 4 lines
-  sed -i -s '1,4d' /etc/apache2/conf-available/centreon.conf
+  /usr/bin/grep sameorigin /etc/apache2/conf-available/centreon.conf > /dev/null
+  if [[ $? == 0 ]]; then
+    sed -i -s '1,4d' /etc/apache2/conf-available/centreon.conf
+  fi
 
   # reload conf apache
   a2enconf centreon.conf >> ${INSTALL_LOG}

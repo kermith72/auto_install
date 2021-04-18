@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.58
-# 15/12/2020
+# v 1.61
+# 17/04/2020
 # Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.57"
+VERSION_BATCH="v 1.61"
 CLIB_VER=("20.04.0" "0")
 CONNECTOR_VER=("20.04.0" "0")
 ENGINE_VER=("20.04.7" "0")
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER=("20201006" "0")
-BROKER_VER=("20.04.10" "0")
-GORGONE_VER=("20.04.7" "0")
-CENTREON_VER=("20.04.7" "0")
+PLUGIN_CENTREON_VER=("20210317" "0")
+BROKER_VER=("20.04.12" "0")
+GORGONE_VER=("20.04.10" "0")
+CENTREON_VER=("20.04.12" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -1053,6 +1053,12 @@ if [[ $MAJOUR == 2 ]]; then
   /usr/sbin/usermod -aG ${ENGINE_GROUP} www-data
   /usr/sbin/usermod -aG ${ENGINE_GROUP} ${CENTREON_USER}
   /usr/sbin/usermod -aG ${ENGINE_GROUP} centreon-gorgone
+
+  # bug conf apache2, del 4 lines
+  /usr/bin/grep sameorigin /etc/apache2/conf-available/centreon.conf > /dev/null
+  if [[ $? == 0 ]]; then
+    sed -i -s '1,4d' /etc/apache2/conf-available/centreon.conf
+  fi
 
 
   # reload conf apache
