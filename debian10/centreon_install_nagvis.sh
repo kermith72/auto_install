@@ -77,7 +77,12 @@ function nagvis_install () {
 function nagvis_conf_apache () {
   
   #delete file nagvis.conf
-  rm /etc/apache2/conf-available/nagvis.conf >> ${INSTALL_LOG}
+if [[ -e /etc/apache2/conf-available/nagvis.conf ]] ;
+  then
+    echo 'File already exist !' | tee -a ${INSTALL_LOG}
+  else
+    rm /etc/apache2/conf-available/nagvis.conf >> ${INSTALL_LOG}
+  fi
   
   #conf apache
   cat > /etc/apache2/conf-available/nagvis.conf <<EOF
@@ -173,11 +178,19 @@ function nagvis_conf () {
   #copy map
   cp ${DIR_SCRIPT}/nagvis/general.cfg ${INSTALL_DIR}/nagvis/etc/maps/
   cp ${DIR_SCRIPT}/nagvis/platCentreon.cfg ${INSTALL_DIR}/nagvis/etc/maps/
+  chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/maps/general.jpg
+  chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/maps/platCentreon.jpg
+  chmod 660 ${INSTALL_DIR}/nagvis/etc/maps/general.jpg
+  chmod 660 ${INSTALL_DIR}/nagvis/etc/maps/platCentreon.jpg
   
   #copy img
-  cp ${DIR_SCRIPT}/nagvis/general.jpg ${INSTALL_DIR}/share/userfiles/images/maps
-  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/share/userfiles/images/maps
-  
+  cp ${DIR_SCRIPT}/nagvis/general.jpg ${INSTALL_DIR}/nagvis/share/userfiles/images/maps
+  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/share/nagvis/userfiles/images/maps
+  chown www-data:www-data ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/general.jpg
+  chown www-data:www-data ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/platCentreon.jpg
+  chmod 664 ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/general.jpg
+  chmod 664 ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/platCentreon.jpg
+
   
   #extract mdp base
   mysql_password=$(/usr/bin/grep -i mysql_passwd /etc/centreon/conf.pm | /usr/bin/cut -f 3 -d " ")
