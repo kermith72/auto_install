@@ -1,7 +1,7 @@
 #!/bin/bash
 # install Nagvis
 # v 1.61
-# 18/04/2020
+# 20/04/2020
 # 
 #
 
@@ -23,6 +23,10 @@ DL_DIR="/usr/local/src"
 INSTALL_DIR="/usr/share"
 ## Log install file
 INSTALL_LOG=${DL_DIR}"/nagvis-install.log"
+
+ETH0_IP=$(/sbin/ip route get 8.8.8.8 | /usr/bin/awk 'NR==1 {print $7}')
+
+
 
 # Usage info
 show_help() {
@@ -163,6 +167,18 @@ function nagvis_conf () {
   chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/nagvis.ini.php
   chmod 664 ${INSTALL_DIR}/nagvis/etc/nagvis.ini.php
   
+  #delete demo
+  rm ${INSTALL_DIR}/nagvis/etc/conf.d/demo.ini.php
+  
+  #copy map
+  cp ${DIR_SCRIPT}/nagvis/general.cfg ${INSTALL_DIR}/nagvis/etc/maps/
+  cp ${DIR_SCRIPT}/nagvis/platCentreon.cfg ${INSTALL_DIR}/nagvis/etc/maps/
+  
+  #copy img
+  cp ${DIR_SCRIPT}/nagvis/general.jpg ${INSTALL_DIR}/share/userfiles/images/maps
+  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/share/userfiles/images/maps
+  
+  
   #extract mdp base
   mysql_password=$(/usr/bin/grep -i mysql_passwd /etc/centreon/conf.pm | /usr/bin/cut -f 3 -d " ")
   sed -i -e "s/dbpass=\"centreon\"/dbpass=\"${mysql_password:1:$((${#mysql_password}-3))}\"/g" ${INSTALL_DIR}/nagvis/etc/nagvis.ini.php
@@ -186,7 +202,7 @@ function nagvis_module_install () {
 
 function main () {
   echo "
-================| Nagvis Install details $VERSION_BATCH |============
+====================| Nagvis Install details $VERSION_BATCH |=================
                   Nagvis     : ${NAGVIS_VER}
 ======================================================================
 "	
