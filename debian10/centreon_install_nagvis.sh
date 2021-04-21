@@ -77,7 +77,7 @@ function nagvis_install () {
 function nagvis_conf_apache () {
   
   #delete file nagvis.conf
-if [[ -e /etc/apache2/conf-available/nagvis.conf ]] ;
+if [ -e /etc/apache2/conf-available/nagvis.conf ] ;
   then
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
@@ -178,14 +178,14 @@ function nagvis_conf () {
   #copy map
   cp ${DIR_SCRIPT}/nagvis/general.cfg ${INSTALL_DIR}/nagvis/etc/maps/
   cp ${DIR_SCRIPT}/nagvis/platCentreon.cfg ${INSTALL_DIR}/nagvis/etc/maps/
-  chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/maps/general.jpg
-  chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/maps/platCentreon.jpg
-  chmod 660 ${INSTALL_DIR}/nagvis/etc/maps/general.jpg
-  chmod 660 ${INSTALL_DIR}/nagvis/etc/maps/platCentreon.jpg
+  chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/maps/general.cfg
+  chown www-data:www-data ${INSTALL_DIR}/nagvis/etc/maps/platCentreon.cfg
+  chmod 660 ${INSTALL_DIR}/nagvis/etc/maps/general.cfg
+  chmod 660 ${INSTALL_DIR}/nagvis/etc/maps/platCentreon.cfg
   
   #copy img
   cp ${DIR_SCRIPT}/nagvis/general.jpg ${INSTALL_DIR}/nagvis/share/userfiles/images/maps
-  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/share/nagvis/userfiles/images/maps
+  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/nagvis/share/nagvis/userfiles/images/maps
   chown www-data:www-data ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/general.jpg
   chown www-data:www-data ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/platCentreon.jpg
   chmod 664 ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/general.jpg
