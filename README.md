@@ -10,6 +10,11 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.62
+gorgone 20.10.3
+
+bug fix script centreon_install_nagvis
+
 ### version 1.61
 centreon-web 20.10.5, engine 20.10.2, broker 20.10.3, gorgone 20.10.2, plugins 20210317
 
