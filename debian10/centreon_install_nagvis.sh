@@ -77,7 +77,7 @@ function nagvis_install () {
 function nagvis_conf_apache () {
   
   #delete file nagvis.conf
-if [ -e /etc/apache2/conf-available/nagvis.conf ] ;
+if [ -e /etc/apache2/conf-available/nagvis.conf ] 
   then
     echo 'File already exist !' | tee -a ${INSTALL_LOG}
   else
@@ -185,7 +185,7 @@ function nagvis_conf () {
   
   #copy img
   cp ${DIR_SCRIPT}/nagvis/general.jpg ${INSTALL_DIR}/nagvis/share/userfiles/images/maps
-  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/nagvis/share/nagvis/userfiles/images/maps
+  cp ${DIR_SCRIPT}/nagvis/platCentreon.jpg ${INSTALL_DIR}/nagvis/share/userfiles/images/maps
   chown www-data:www-data ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/general.jpg
   chown www-data:www-data ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/platCentreon.jpg
   chmod 664 ${INSTALL_DIR}/nagvis/share/userfiles/images/maps/general.jpg
