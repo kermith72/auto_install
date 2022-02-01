@@ -1,21 +1,21 @@
 #!/bin/bash
 # Centreon 20.04 + engine install script for Debian Buster
-# v 1.61
-# 17/04/2020
+# v 1.70
+# 01/02/2022
 # Thanks to Remy, Justice81, Jisse44 and Pixelabs
 #
 export DEBIAN_FRONTEND=noninteractive
 # Variables
 ## Versions
-VERSION_BATCH="v 1.61"
-CLIB_VER=("20.04.0" "0")
-CONNECTOR_VER=("20.04.0" "0")
-ENGINE_VER=("20.04.7" "0")
+VERSION_BATCH="v 1.70"
+CLIB_VER=("20.04.3" "0")
+CONNECTOR_VER=("20.04.2" "0")
+ENGINE_VER=("20.04.14" "0")
 PLUGIN_VER="2.2"
-PLUGIN_CENTREON_VER=("20210317" "0")
-BROKER_VER=("20.04.12" "0")
-GORGONE_VER=("20.04.10" "0")
-CENTREON_VER=("20.04.12" "0")
+PLUGIN_CENTREON_VER=("20220113" "0")
+BROKER_VER=("20.04.17" "0")
+GORGONE_VER=("20.04.11" "0")
+CENTREON_VER=("20.04.20" "0")
 # MariaDB Series
 MARIADB_VER='10.0'
 ## Sources URL
@@ -222,6 +222,9 @@ use mysql;
 update user set plugin='' where user='root';
 flush privileges;
 EOF
+    
+    #create file sock
+    /usr/bin/ln -s /run/mysqld/mysqld.sock /var/lib/mysql/mysql.sock
 
 fi
 
@@ -275,7 +278,9 @@ local MAJOUR=$1
 
 apt-get install -y libperl-dev libssh2-1-dev libgcrypt-dev >> ${INSTALL_LOG}
 /usr/bin/pip3 install conan >> ${INSTALL_LOG}
-/usr/local/bin/conan remote add centreon https://api.bintray.com/conan/centreon/centreon >> ${INSTALL_LOG}
+
+# bintray dead since 2021/05/01
+#/usr/local/bin/conan remote add centreon https://api.bintray.com/conan/centreon/centreon >> ${INSTALL_LOG}
 
 cd ${DL_DIR}
 if [[ -e centreon-connectors-${CONNECTOR_VER[0]}.tar.gz ]]
@@ -293,7 +298,7 @@ cd build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
-/usr/local/bin/conan install .. >> ${INSTALL_LOG}
+/usr/local/bin/conan install .. -s compiler.libcxx=libstdc++11 --build=missing >> ${INSTALL_LOG}
 
 cmake \
  -DWITH_PREFIX=/usr  \
@@ -350,7 +355,7 @@ cd build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation" | tee -a ${INSTALL_LOG}
 
-/usr/local/bin/conan install .. >> ${INSTALL_LOG}
+/usr/local/bin/conan install .. -s compiler.libcxx=libstdc++11 --build=missing >> ${INSTALL_LOG}
 
 cmake \
    -DWITH_CENTREON_CLIB_INCLUDE_DIR=/usr/include \
@@ -484,7 +489,7 @@ then
       /bin/systemctl stop cbd
 fi
 
-apt-get install git librrd-dev libmariadb-dev libgnutls28-dev lsb-release liblua5.2-dev -y >> ${INSTALL_LOG}
+apt-get install git librrd-dev libmariadb-dev libgnutls28-dev lsb-release liblua5.3-dev -y >> ${INSTALL_LOG}
 
 # Cleanup to prevent space full on /var
 apt-get clean >> ${INSTALL_LOG}
@@ -505,7 +510,7 @@ cd build
 
 [ "$SCRIPT_VERBOSE" = true ] && echo "====> Compilation broker" | tee -a ${INSTALL_LOG}
 
-/usr/local/bin/conan install .. >> ${INSTALL_LOG}
+/usr/local/bin/conan install .. -s compiler.libcxx=libstdc++11 --build=missing >> ${INSTALL_LOG}
 
 cmake \
     -DWITH_DAEMONS='central-broker;central-rrd' \
