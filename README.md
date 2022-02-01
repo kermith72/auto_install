@@ -10,6 +10,10 @@ cd auto_install
 
 git checkout v1.x
 
+### version 1.70
+delete bintray for 20.04
+centreon-web 20.04.20, engine 20.04.14, broker 20.04.17, gorgone 20.04.11, clib 20.04.3, connector 20.04.2, plugin 20220113
+
 ### version 1.62
 gorgone 20.10.3
 
